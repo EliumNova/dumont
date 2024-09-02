@@ -3,7 +3,6 @@ import { Clientes } from "../models/Clientes.js";
 import { Dispositivos } from "../models/Dispositivos.js";
 import { generateToken } from "../../utils/utilsClientes.js";
 import { handleError } from "../../utils/utilsErrors.js";
-import { where } from "sequelize";
 
 const createCliente = expressAsyncHandler(async (req, res) => {
   try {

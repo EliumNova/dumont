@@ -27,6 +27,6 @@ dispositivosRouter.put(
   validateUpdateDispositivos,
   updateDispositivo
 );
-dispositivosRouter.delete("/delete/:id", deleteDispositivo);
+dispositivosRouter.delete("/delete/:id", checkAuth, deleteDispositivo);
 
 export default dispositivosRouter;

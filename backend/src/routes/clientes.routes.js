@@ -35,6 +35,6 @@ clientesRouter.put(
   validateUpdateClientes,
   updateCliente
 );
-clientesRouter.delete("/delete/:id", deleteCliente);
+clientesRouter.delete("/delete/:id", checkAuth, deleteCliente);
 
 export default clientesRouter;
