@@ -6,10 +6,10 @@ services:
     container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 1120712
+      MYSQL_ROOT_PASSWORD: "EliumNova"
       MYSQL_DATABASE: dumont
       MYSQL_USER: user
-      MYSQL_PASSWORD: 1120712
+      MYSQL_PASSWORD: 1234567
     ports:
       - "3306:3306"
     volumes:
