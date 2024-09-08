@@ -7,7 +7,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: "EliumNova"
-      MYSQL_DATABASE: sql108.infinityfree.com
+      MYSQL_DATABASE: if0_37270977_dumont
       MYSQL_USER: if0_37270977
       MYSQL_PASSWORD: EliumNova
     ports:
