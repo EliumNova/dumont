@@ -27,10 +27,10 @@ app.use(express.urlencoded({ extended: true }));
 
 await sequelize.authenticate();
 await sequelize.sync();
-app.use("/usuarios", usuariosRouter);
-app.use("/clientes", clientesRouter);
-app.use("/dispositivos", dispositivosRouter);
-app.use("/files", filesRouter);
+app.use("/api/usuarios", usuariosRouter);
+app.use("/api/clientes", clientesRouter);
+app.use("/api/dispositivos", dispositivosRouter);
+app.use("/api/files", filesRouter);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

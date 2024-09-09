@@ -12,7 +12,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { Provider, useDispatch } from "react-redux";
-import {setUser} from "@/lib/slices/authSlice"
+import { setUser } from "@/lib/slices/authSlice";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -31,8 +31,6 @@ function Login() {
   const [emailMethod, setEmailMethod] = useState(false);
   const [method, setMethod] = useState(false);
   const [ableNewPassword, setAbleNewPassword] = useState(false);
-
-  let URL = "https://z49h2l20-3000.brs.devtunnels.ms/usuarios/login";
   const dispatch = useDispatch();
   // llevar token a cookie
   function storeTokenInCookie(token) {
@@ -45,7 +43,6 @@ function Login() {
     });
   }
 
-
   const handleLogin = async (e) => {
     e.preventDefault();
     ({
@@ -56,10 +53,7 @@ function Login() {
     try {
       console.log("log 2", loginUser);
 
-      const response = await axios.post(
-        URL,
-        loginUser
-      );
+      const response = await axios.post("/api/usuarios/login", loginUser);
       console.log("response:  ", response);
       if (response) {
         const { token } = response.data;
@@ -80,7 +74,6 @@ function Login() {
     }
   };
 
-
   // Función para validar el input (asegúrate de definir esta función)
   const validateInput = (value) => {
     // Ejemplo de validación simple
@@ -94,19 +87,19 @@ function Login() {
     // Validar el input antes de actualizar el estado
     if (validateInput(value)) {
       // Actualizar el estado del objeto formState
-      setLoginUser(prevState => ({
+      setLoginUser((prevState) => ({
         ...prevState,
-        [name]: value
+        [name]: value,
       }));
     } else {
-      setErrorMessage({error: "Caracteres inválidos en el campo."});
+      setErrorMessage({ error: "Caracteres inválidos en el campo." });
 
       // Limpiar el mensaje de error después de 3 segundos
       setTimeout(() => {
         setErrorMessage("");
       }, 3000);
     }
-    
+
     // Usar el valor actual directamente
     console.log("Current Input:", value);
   };
@@ -125,8 +118,7 @@ function Login() {
         </div>
         <form
           onSubmit={handleLogin}
-          className="login-form flex items-center flex-col  w-full transition-all duration-300 "
-        >
+          className="login-form flex items-center flex-col  w-full transition-all duration-300 ">
           <div className="form-group flex flex-col gap-1 w-[32rem] p-4 my-2">
             <label htmlFor="email" className="text-sm font-semibold">
               Email
@@ -168,23 +160,20 @@ function Login() {
             )}
             <span
               onClick={() => setShowModal(true)}
-              className="text-[#353344] text-lg relative bottom-5 cursor-pointer"
-            >
+              className="text-[#353344] text-lg relative bottom-5 cursor-pointer">
               ¿Olvidaste tu contraseña?
             </span>
           </div>
           {errorMessage.error && (
             <div
               className="p-2 h-8 text-xs rounded flex justify-center  
-          items-center bg-red-700 text-white font-medium -top-8 relative "
-            >
+          items-center bg-red-700 text-white font-medium -top-8 relative ">
               {errorMessage.error}{" "}
             </div>
           )}
           <button
             type="submit"
-            className="w-[30rem] h-14 relative bottom-4 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
-          >
+            className="w-[30rem] h-14 relative bottom-4 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold">
             {" "}
             {inLogin ? (
               <p className="animate-pulse">Ingresando...</p>
