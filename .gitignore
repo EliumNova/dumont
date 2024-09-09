@@ -2,3 +2,4 @@ backend/node_modules
 backend/.env
 backend/docker/mysql
 backend/public
+/node_modules
