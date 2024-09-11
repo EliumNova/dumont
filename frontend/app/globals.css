@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+html{
+  background-color: #F2F5F6;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer utilities {
+  .before-content {
+    @apply relative;
+  }
+
+  .before-content::before {
+    content: "Pone tu documento sin espacios y sin carácteres especiales.";
+    @apply absolute text-text-icon text-xs md:text-sm w-5/6 top-[7.2rem] md:top-28;
+  }
+}
