@@ -1,8 +1,10 @@
 "use client";
+
 import React, { useState } from "react";
 import ReactInputMask from "react-input-mask";
 import InputField from "../components/InputField";
 import PasswordField from "../components/PasswordField";
+import ModalWindow from "../components/ModalWindow";
 
 function UserRegistration() {
   const [showPassword, setShowPassword] = useState({
@@ -19,8 +21,8 @@ function UserRegistration() {
     dni: "",
     phone: "",
   });
+  const [modal, setModal] = useState(false);
 
-  // Función para manejar el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -41,6 +43,14 @@ function UserRegistration() {
       return;
     }
 
+    // Validar el formato del teléfono
+    const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+    if (!phoneRegex.test(phone)) {
+      setErrorMessage("Número de teléfono inválido.");
+      setTimeout(() => setErrorMessage(""), 3000);
+      return;
+    }
+
     // Resetear el formulario
     setRegisterUser({
       name: "",
@@ -52,17 +62,12 @@ function UserRegistration() {
       phone: "",
     });
 
-    // Si todo es correcto, procesar el registro
-    console.log("Formulario enviado");
-    console.log(JSON.stringify(registerUser, null, 2)); // Muestra el formulario con sangría
+    setModal(true);
+    setTimeout(() => {
+      setModal(false);
+    }, 3000);
+    console.log(JSON.stringify(registerUser, null, 2));
   };
-
-  const errorMessageBox = () => {
-    setErrorMessage("Caracteres inválidos en el campo.");
-    setTimeout(() => setErrorMessage(""), 3000);
-  };
-
-  const validateInput = (value, regex) => regex.test(value);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,7 +76,7 @@ function UserRegistration() {
 
     const validations = {
       dni: /^[0-9]*$/,
-      phone: /^[0-9\s]*$/,
+      phone: /^[0-9\s()]*$/, // Acepta números y espacios, paréntesis y guiones
       name: /^[a-zA-Z\s]*$/,
       email: /^[a-zA-Z@.\s]*$/,
       password: /^[a-zA-Z0-9@.\s\W]*$/,
@@ -82,29 +87,34 @@ function UserRegistration() {
       const maskedValue = e.target.inputElement
         ? e.target.inputElement.value
         : value;
-      setRegisterUser((prev) => ({
-        ...prev,
-        [name]: maskedValue,
-      }));
+      registrar(name, maskedValue);
     } else if (name in validations) {
       if (value === "" || validateInput(processedValue, validations[name])) {
-        setRegisterUser((prev) => ({
-          ...prev,
-          [name]: processedValue,
-        }));
+        registrar(name, processedValue);
       } else {
         errorMessageBox();
       }
     } else {
-      setRegisterUser((prev) => ({
-        ...prev,
-        [name]: processedValue,
-      }));
+      registrar(name, processedValue);
     }
   };
 
+  const errorMessageBox = () => {
+    setErrorMessage("Caracteres inválidos en el campo.");
+    setTimeout(() => setErrorMessage(""), 3000);
+  };
+
+  const validateInput = (value, regex) => regex.test(value);
+
+  const registrar = (name, processedValue) => {
+    return setRegisterUser((prev) => ({
+      ...prev,
+      [name]: processedValue,
+    }));
+  };
   return (
     <div className="flex flex-col gap-4 md:justify-center items-start h-[100%] w-3/4 p-12 m-auto flex-wrap">
+      {modal ? <ModalWindow /> : <div></div>}
       <div className="left-0 md:left-[9.5rem] relative ">
         <h2 className="text-3xl md:text-5xl font-semibold">Crear una cuenta</h2>
       </div>
