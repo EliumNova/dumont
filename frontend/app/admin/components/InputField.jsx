@@ -6,9 +6,19 @@ export default function InputField({
   placeholder,
   type = "text",
   required,
+  order = { flex: 0, grid: 0 },
 }) {
+  // Si `order` es un objeto con `flex` y `grid`, aplicamos esos valores en línea
+  const flexOrder = order.flex !== undefined ? order.flex : 0;
+  const gridOrder = order.grid !== undefined ? order.grid : 0;
+
   return (
-    <div className="flex flex-col gap-3 w-[32rem] p-4 my-2">
+    <div
+      style={{ order: flexOrder }} // Aplica el orden en línea para Flexbox
+      className={`flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2 ${
+        gridOrder !== 0 ? `xl:order-${gridOrder}` : ""
+      }`}
+    >
       <label htmlFor={id} className="text-sm font-semibold">
         {label}
       </label>

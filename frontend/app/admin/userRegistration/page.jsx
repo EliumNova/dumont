@@ -4,6 +4,7 @@ import ReactInputMask from "react-input-mask";
 import InputField from "../components/InputField";
 import PasswordField from "../components/PasswordField";
 import ModalWindow from "../components/ModalWindow";
+import { Griffy } from "next/font/google";
 
 function UserRegistration() {
   const [showPassword, setShowPassword] = useState({
@@ -124,55 +125,64 @@ function UserRegistration() {
   };
 
   return (
-    <div className="flex flex-col gap-4 md:justify-center items-start h-[100%] w-3/4 p-12 m-auto flex-wrap">
+    <div className="container mx-auto flex flex-col justify-center items-center justify-center my-5">
       {modal ? <ModalWindow /> : <div></div>}
-      <div className="left-0 md:left-[9.5rem] relative ">
-        <h2 className="text-3xl md:text-5xl font-semibold">Crear una cuenta</h2>
-      </div>
+
+      <h2 className="text-3xl md:text-5xl font-semibold my-10">
+        Crear una cuenta
+      </h2>
+
       <form
         onSubmit={handleSubmit}
-        className="flex items-center flex-col w-full"
+        className="flex flex-col items-center w-full my-10"
       >
-        <div className="w-4/5 h-auto flex flex-row gap-x-8 flex-wrap justify-start items-center">
-          <InputField
-            label="Nombre Completo"
-            id="name"
-            value={registerUser.name}
-            onChange={handleChange}
-            placeholder="Ingresa tu nombre completo"
-            required
-          />
-          <InputField
-            label="DNI"
-            id="dni"
-            value={registerUser.dni}
-            onChange={handleChange}
-            placeholder="Ingresa tu documento"
-            required
-          />
-          <InputField
-            label="Email"
-            id="email"
-            value={registerUser.email}
-            onChange={handleChange}
-            placeholder="Ingresa tu email"
-            type="email"
-            required
-          />
-          <div className="flex flex-col gap-3 w-[32rem] p-4 my-2">
-            <label htmlFor="phone" className="text-sm font-semibold">
-              Número de teléfono
-            </label>
-            <ReactInputMask
-              mask="(999) 999-9999"
-              name="phone"
-              value={registerUser.phone}
+        <div className="flex flex-col gap-x-8 w-full lg:justify-start items-center xl:grid xl:grid-rows-4 xl:grid-flow-col xl:justify-center xl:items-center">
+          <div className="flex flex-col gap-3">
+            <InputField
+              order={{ flex: 1, grid: 1 }}
+              label="Nombre Completo"
+              id="name"
+              value={registerUser.name}
               onChange={handleChange}
-              placeholder="Ingresa tu número de teléfono"
-              className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              placeholder="Ingresa tu nombre completo"
+              required
             />
+            <InputField
+              order={{ flex: 2, grid: 1 }}
+              label="DNI"
+              id="dni"
+              value={registerUser.dni}
+              onChange={handleChange}
+              placeholder="Ingresa tu documento"
+              required
+            />
+            <InputField
+              order={{ flex: 3, grid: 1 }}
+              label="Email"
+              id="email"
+              value={registerUser.email}
+              onChange={handleChange}
+              placeholder="Ingresa tu email"
+              type="email"
+              required
+            />
+
+            <div className="order-4 flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2 ">
+              <label htmlFor="phone" className="text-sm font-semibold">
+                Número de teléfono
+              </label>
+              <ReactInputMask
+                mask="(999) 999-9999"
+                name="phone"
+                value={registerUser.phone}
+                onChange={handleChange}
+                placeholder="Ingresa tu número de teléfono"
+                className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              />
+            </div>
           </div>
-          <PasswordField
+
+          {/* <PasswordField
             label="Password"
             name="password"
             value={registerUser.password}
@@ -182,6 +192,7 @@ function UserRegistration() {
             }
             onChange={handleChange}
             required
+            order={{ flex: 1, grid: 2 }} // Define el order para flex y grid
           />
           <PasswordField
             label="Repetir Password"
@@ -193,8 +204,10 @@ function UserRegistration() {
             }
             onChange={handleChange}
             required
-          />
-          <div className="flex flex-col gap-3 w-[32rem] pt-1 p-4 my-2 relative bottom-7">
+            order={{ flex: 1, grid: 2 }} // Define el order para flex y grid
+          /> */}
+          {/* 
+          <div className="flex flex-col gap-3 w-full lg:w-[32rem] p-4 order-1">
             <label htmlFor="admin" className="text-sm font-semibold">
               Administrador
             </label>
@@ -209,7 +222,7 @@ function UserRegistration() {
               <option value="true">Sí</option>
               <option value="false">No</option>
             </select>
-          </div>
+          </div> */}
         </div>
         {errorMessage && (
           <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium relative">
@@ -218,7 +231,7 @@ function UserRegistration() {
         )}
         <button
           type="submit"
-          className="w-[30rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+          className="w-60 lg:w-[30rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
         >
           Registrarse
         </button>
