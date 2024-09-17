@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import ReactInputMask from "react-input-mask";
 import InputField from "../components/InputField";
@@ -43,6 +42,17 @@ function UserRegistration() {
       return;
     }
 
+    // Validar la contraseña
+    const passwordRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{10,}$/;
+    if (!passwordRegex.test(password)) {
+      setErrorMessage(
+        "La contraseña debe tener al menos 10 caracteres, una letra, un número y un símbolo."
+      );
+      setTimeout(() => setErrorMessage(""), 3000);
+      return;
+    }
+
     // Validar el formato del teléfono
     const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
     if (!phoneRegex.test(phone)) {
@@ -79,8 +89,8 @@ function UserRegistration() {
       phone: /^[0-9\s()]*$/, // Acepta números y espacios, paréntesis y guiones
       name: /^[a-zA-Z\s]*$/,
       email: /^[a-zA-Z@.\s]*$/,
-      password: /^[a-zA-Z0-9@.\s\W]*$/,
-      validatePassword: /^[a-zA-Z0-9@.\s\W]*$/,
+      password: /^[A-Za-z\d\W_]*$/, // Cambiado para incluir letras, números y símbolos
+      validatePassword: /^[A-Za-z\d\W_]*$/, // Cambiado para incluir letras, números y símbolos
     };
 
     if (name === "phone") {
@@ -112,6 +122,7 @@ function UserRegistration() {
       [name]: processedValue,
     }));
   };
+
   return (
     <div className="flex flex-col gap-4 md:justify-center items-start h-[100%] w-3/4 p-12 m-auto flex-wrap">
       {modal ? <ModalWindow /> : <div></div>}
