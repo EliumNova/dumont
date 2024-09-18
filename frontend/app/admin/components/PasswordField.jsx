@@ -9,14 +9,11 @@ export default function PasswordField({
   togglePassword,
   onChange,
   required,
-  order = {}, // Props para ordenar en flex y grid
+  className = "", // Permitir pasar clases adicionales
 }) {
-  const flexOrder = order.flex !== undefined ? `order-${order.flex}` : "";
-  const gridOrder = order.grid !== undefined ? `xl:order-${order.grid}` : "";
-
   return (
     <div
-      className={`flex flex-col gap-3 w-full lg:w-[32rem] p-4 ${flexOrder} ${gridOrder}`}
+      className={`w-full lg:w-[32rem] my-4 p-4 ${className}`} // Ocupa toda la columna
     >
       <label htmlFor={name} className="text-sm font-semibold">
         {label}

@@ -27,10 +27,12 @@ function Navbar() {
     `}
     >
       <div className="flex flex-row gap-4 justify-center items-center  ">
-        {isAdminSubroute && (<Link href={customerRegisterUrl ? ("/admin/customerMenu"): ("/admin")}>
-          <IoIosArrowForward className="rotate-180 h-10 w-12 m-0 cursor-pointer transition-all duration-150 hover:scale-110  " />
-          </Link>)}
-          
+        {isAdminSubroute && (
+          <Link href={customerRegisterUrl ? "/admin/customerMenu" : "/admin"}>
+            <IoIosArrowForward className="rotate-180 h-10 w-12 m-0 cursor-pointer transition-all duration-150 hover:scale-110  " />
+          </Link>
+        )}
+
         <Image
           width={50}
           height={50}

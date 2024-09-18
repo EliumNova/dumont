@@ -6,19 +6,10 @@ export default function InputField({
   placeholder,
   type = "text",
   required,
-  order = { flex: 0, grid: 0 },
+  className = "", // Nueva prop para pasar clases adicionales
 }) {
-  // Si `order` es un objeto con `flex` y `grid`, aplicamos esos valores en línea
-  const flexOrder = order.flex !== undefined ? order.flex : 0;
-  const gridOrder = order.grid !== undefined ? order.grid : 0;
-
   return (
-    <div
-      style={{ order: flexOrder }} // Aplica el orden en línea para Flexbox
-      className={`flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2 ${
-        gridOrder !== 0 ? `xl:order-${gridOrder}` : ""
-      }`}
-    >
+    <div className={`w-full flex flex-col lg:w-[32rem] p-4 my-2 ${className}`}>
       <label htmlFor={id} className="text-sm font-semibold">
         {label}
       </label>
@@ -30,7 +21,7 @@ export default function InputField({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+        className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
       />
     </div>
   );
