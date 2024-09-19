@@ -1,25 +1,25 @@
-"use client";
-import React, { useState } from "react";
-import ReactInputMask from "react-input-mask";
-import InputField from "../components/InputField";
-import PasswordField from "../components/PasswordField";
-import ModalWindow from "../components/ModalWindow";
-import { Griffy } from "next/font/google";
+'use client';
+import React, { useState } from 'react';
+import ReactInputMask from 'react-input-mask';
+import InputField from '../components/InputField';
+import PasswordField from '../components/PasswordField';
+import ModalWindow from '../components/ModalWindow';
+import { Griffy } from 'next/font/google';
 
 function UserRegistration() {
   const [showPassword, setShowPassword] = useState({
     first: false,
     second: false,
   });
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
   const [registerUser, setRegisterUser] = useState({
-    name: "",
-    email: "",
-    password: "",
-    validatePassword: "",
+    name: '',
+    email: '',
+    password: '',
+    validatePassword: '',
     admin: false,
-    dni: "",
-    phone: "",
+    dni: '',
+    phone: '',
   });
   const [modal, setModal] = useState(false);
 
@@ -31,15 +31,15 @@ function UserRegistration() {
 
     // Validar que todos los campos están llenos
     if (!name || !email || !password || !validatePassword || !dni || !phone) {
-      setErrorMessage("Todos los campos son obligatorios.");
-      setTimeout(() => setErrorMessage(""), 3000);
+      setErrorMessage('Todos los campos son obligatorios.');
+      setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
 
     // Validar que las contraseñas coincidan
     if (password !== validatePassword) {
-      setErrorMessage("Las contraseñas no coinciden.");
-      setTimeout(() => setErrorMessage(""), 3000);
+      setErrorMessage('Las contraseñas no coinciden.');
+      setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
 
@@ -48,42 +48,42 @@ function UserRegistration() {
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{10,}$/;
     if (!passwordRegex.test(password)) {
       setErrorMessage(
-        "La contraseña debe tener al menos 10 caracteres, una letra, un número y un símbolo."
+        'La contraseña debe tener al menos 10 caracteres, una letra, un número y un símbolo.'
       );
-      setTimeout(() => setErrorMessage(""), 3000);
+      setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
 
     // Validar el formato del teléfono
     const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
     if (!phoneRegex.test(phone)) {
-      setErrorMessage("Número de teléfono inválido.");
-      setTimeout(() => setErrorMessage(""), 3000);
+      setErrorMessage('Número de teléfono inválido.');
+      setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
+    console.log(JSON.stringify(registerUser, null, 2));
 
     // Resetear el formulario
     setRegisterUser({
-      name: "",
-      email: "",
-      password: "",
-      validatePassword: "",
+      name: '',
+      email: '',
+      password: '',
+      validatePassword: '',
       admin: false,
-      dni: "",
-      phone: "",
+      dni: '',
+      phone: '',
     });
 
     setModal(true);
     setTimeout(() => {
       setModal(false);
     }, 3000);
-    console.log(JSON.stringify(registerUser, null, 2));
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    const processedValue = name === "admin" ? value === "true" : value;
+    const processedValue = name === 'admin' ? value === 'true' : value;
 
     const validations = {
       dni: /^[0-9]*$/,
@@ -94,13 +94,13 @@ function UserRegistration() {
       validatePassword: /^[A-Za-z\d\W_]*$/,
     };
 
-    if (name === "phone") {
+    if (name === 'phone') {
       const maskedValue = e.target.inputElement
         ? e.target.inputElement.value
         : value;
       registrar(name, maskedValue);
     } else if (name in validations) {
-      if (value === "" || validateInput(processedValue, validations[name])) {
+      if (value === '' || validateInput(processedValue, validations[name])) {
         registrar(name, processedValue);
       } else {
         errorMessageBox();
@@ -111,8 +111,8 @@ function UserRegistration() {
   };
 
   const errorMessageBox = () => {
-    setErrorMessage("Caracteres inválidos en el campo.");
-    setTimeout(() => setErrorMessage(""), 3000);
+    setErrorMessage('Caracteres inválidos en el campo.');
+    setTimeout(() => setErrorMessage(''), 3000);
   };
 
   const validateInput = (value, regex) => regex.test(value);
@@ -188,7 +188,6 @@ function UserRegistration() {
             }
             onChange={handleChange}
             required
-            order={5}
             className="col-span-1 xl:col-start-1 xl:row-start-3"
           />
           <PasswordField
@@ -201,7 +200,6 @@ function UserRegistration() {
             }
             onChange={handleChange}
             required
-            order={6}
             className="col-span-1 xl:col-start-2 xl:row-start-3"
           />
           <div className="col-span-1 xl:col-start-1 xl:row-start-4 flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2">

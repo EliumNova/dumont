@@ -1,5 +1,5 @@
-import { GoEye } from "react-icons/go";
-import { RiEyeCloseLine } from "react-icons/ri";
+import { GoEye } from 'react-icons/go';
+import { RiEyeCloseLine } from 'react-icons/ri';
 
 export default function PasswordField({
   label,
@@ -9,7 +9,7 @@ export default function PasswordField({
   togglePassword,
   onChange,
   required,
-  className = "", // Permitir pasar clases adicionales
+  className = '', // Permitir pasar clases adicionales
 }) {
   return (
     <div
@@ -20,7 +20,7 @@ export default function PasswordField({
       </label>
       <div className="relative">
         <input
-          type={showPassword ? "text" : "password"}
+          type={showPassword ? 'text' : 'password'}
           id={name}
           name={name}
           value={value}
