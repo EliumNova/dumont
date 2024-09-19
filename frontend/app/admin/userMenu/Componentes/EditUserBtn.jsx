@@ -5,6 +5,7 @@ import InputField from '../../components/InputField';
 function EditUserBtn({ datos }) {
   const [editUser, setEditUser] = useState(false);
   const [userDelete, setUserDelete] = useState(false);
+  const [userSave, setUserSave] = useState(false);
   const [registerUser, setRegisterUser] = useState({
     name: '',
     email: '',
@@ -57,13 +58,13 @@ function EditUserBtn({ datos }) {
     <div className="flex p-1 gap-5">
       <button
         onClick={handleModalOpen}
-        className="w-10 h-10 bg-blue-800 rounded-full text-white flex items-center justify-center"
+        className=" text-white flex items-center justify-center"
       >
-        Modal
+        <img src="/svg/editUser.svg" alt="" />
       </button>
       {editUser && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 p-10">
-          <div className="relative flex flex-col bg-white p-8 rounded-lg shadow-lg xl:w-[600px] w-full max-h-[80vh] overflow-y-auto gap-5">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 p-2 lg:p-10">
+          <div className="relative flex flex-col bg-white p-8 rounded-lg shadow-lg xl:w-[600px] w-full max-h-[80vh] overflow-y-auto">
             <h2 className="text-4xl font-semibold mb-7">Editar Usuario</h2>
 
             <InputField
@@ -88,7 +89,7 @@ function EditUserBtn({ datos }) {
               required
               className="gap-3 font-light p-0"
               labelClassName="font-light"
-              inputClassName="rounded-2xl"
+              inputClassName="rounded-2xl "
             />
             <InputField
               label="DNI"
@@ -120,17 +121,15 @@ function EditUserBtn({ datos }) {
               </select>
             </div>
 
-            <div className="flex gap-5 flex-col lg:flex-row">
+            <div className="flex gap-10 flex-col lg:flex-row my-4">
               <button
-                onClick={() => setEditUser(false)}
+                onClick={() => setUserSave(!userSave)}
                 className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
               >
                 Cancelar
               </button>
               <button
-                onClick={() => {
-                  setEditUser(false);
-                }}
+                onClick={() => setEditUser(false)}
                 className="bg-blue-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
               >
                 Guardar
@@ -151,7 +150,7 @@ function EditUserBtn({ datos }) {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
           <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
             <img src="/svg/alertIcon.svg" alt="" />
-            <p className="text-lg">¿Deseas descartar la edición del usuario?</p>
+            <p className="">¿Estas seguro que deseas eliminar este usuario?</p>
             <div className="flex gap-5 flex-col lg:flex-row">
               <button
                 onClick={() => setUserDelete(!userDelete)}
@@ -160,10 +159,39 @@ function EditUserBtn({ datos }) {
                 Cancelar
               </button>
               <button
-                onClick={() => setUserDelete(!userDelete)}
-                className="bg-blue-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
+                onClick={() => {
+                  setUserDelete(!userDelete);
+                  setEditUser(!editUser);
+                }}
+                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
               >
                 Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {userSave && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
+          <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
+            <img src="/svg/alertIcon.svg" alt="" />
+            <p className="text-lg">¿Deseas descartar la edición del usuario?</p>
+            <div className="flex gap-5 flex-col lg:flex-row">
+              <button
+                onClick={() => setUserSave(!userSave)}
+                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  setUserSave(!userSave);
+                  setEditUser(!editUser);
+                }}
+                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
+              >
+                Eliminar
               </button>
             </div>
           </div>

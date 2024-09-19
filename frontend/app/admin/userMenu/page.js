@@ -8,8 +8,7 @@ function CustomerMenu() {
 
       <div className="flex flex-col justify-center items-center ">
         <Table />
-
-        <EditUserBtn />
+        {/* <EditUserBtn /> */}
       </div>
     </div>
   );

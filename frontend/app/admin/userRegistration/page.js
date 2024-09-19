@@ -144,7 +144,7 @@ function UserRegistration() {
             onChange={handleChange}
             placeholder="Ingresa tu nombre completo"
             required
-            className="col-span-1 xl:col-start-1 row-start-1 lg:w-[32rem] gap-3 font-semibold"
+            className="col-span-1 xl:col-start-1 row-start-1 lg:w-[32rem] gap-3 font-semibold p-4"
             inputClassName="font-light"
           />
           <InputField
@@ -154,7 +154,7 @@ function UserRegistration() {
             onChange={handleChange}
             placeholder="Ingresa tu documento"
             required
-            className="col-span-1 xl:col-start-2 xl:row-start-1 lg:w-[32rem] gap-3 font-semibold"
+            className="col-span-1 xl:col-start-2 xl:row-start-1 lg:w-[32rem] gap-3 font-semibold p-4"
             inputClassName="font-light"
           />
           <InputField
@@ -165,7 +165,7 @@ function UserRegistration() {
             placeholder="Ingresa tu email"
             type="email"
             required
-            className="col-span-1 xl:col-start-1 xl:row-start-2 lg:w-[32rem] gap-3 font-semibold"
+            className="col-span-1 xl:col-start-1 xl:row-start-2 lg:w-[32rem] gap-3 font-semibold p-4"
             inputClassName="font-light"
           />
           <div className="col-span-1 xl:col-start-2 xl:row-start-2 flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2">

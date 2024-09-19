@@ -11,7 +11,7 @@ export default function InputField({
   inputClassName = '',
 }) {
   return (
-    <div className={`w-full flex flex-col p-4 my-2 ${className}`}>
+    <div className={`w-full flex flex-col my-2 ${className}`}>
       <label htmlFor={id} className={`text-sm ${labelClassName}`}>
         {label}
       </label>
