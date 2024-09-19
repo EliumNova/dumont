@@ -144,7 +144,8 @@ function UserRegistration() {
             onChange={handleChange}
             placeholder="Ingresa tu nombre completo"
             required
-            className="col-span-1 xl:col-start-1 row-start-1"
+            className="col-span-1 xl:col-start-1 row-start-1 lg:w-[32rem] gap-3 font-semibold"
+            inputClassName="font-light"
           />
           <InputField
             label="DNI"
@@ -153,7 +154,8 @@ function UserRegistration() {
             onChange={handleChange}
             placeholder="Ingresa tu documento"
             required
-            className="col-span-1 xl:col-start-2 xl:row-start-1"
+            className="col-span-1 xl:col-start-2 xl:row-start-1 lg:w-[32rem] gap-3 font-semibold"
+            inputClassName="font-light"
           />
           <InputField
             label="Email"
@@ -163,7 +165,8 @@ function UserRegistration() {
             placeholder="Ingresa tu email"
             type="email"
             required
-            className="col-span-1 xl:col-start-1 xl:row-start-2"
+            className="col-span-1 xl:col-start-1 xl:row-start-2 lg:w-[32rem] gap-3 font-semibold"
+            inputClassName="font-light"
           />
           <div className="col-span-1 xl:col-start-2 xl:row-start-2 flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2">
             <label htmlFor="phone" className="text-sm font-semibold">

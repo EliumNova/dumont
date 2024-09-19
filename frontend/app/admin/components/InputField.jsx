@@ -4,13 +4,15 @@ export default function InputField({
   value,
   onChange,
   placeholder,
-  type = "text",
+  type = 'text',
   required,
-  className = "", // Nueva prop para pasar clases adicionales
+  className = '', // Nueva prop para pasar clases adicionales
+  labelClassName = '',
+  inputClassName = '',
 }) {
   return (
-    <div className={`w-full flex flex-col lg:w-[32rem] p-4 my-2 ${className}`}>
-      <label htmlFor={id} className="text-sm font-semibold">
+    <div className={`w-full flex flex-col p-4 my-2 ${className}`}>
+      <label htmlFor={id} className={`text-sm ${labelClassName}`}>
         {label}
       </label>
       <input
@@ -21,7 +23,7 @@ export default function InputField({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
+        className={`bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full ${inputClassName}`}
       />
     </div>
   );
