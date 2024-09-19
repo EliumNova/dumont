@@ -87,11 +87,11 @@ function UserRegistration() {
 
     const validations = {
       dni: /^[0-9]*$/,
-      phone: /^[0-9\s()]*$/, // Acepta números y espacios, paréntesis y guiones
+      phone: /^[0-9\s()]*$/,
       name: /^[a-zA-Z\s]*$/,
       email: /^[a-zA-Z@.\s]*$/,
-      password: /^[A-Za-z\d\W_]*$/, // Cambiado para incluir letras, números y símbolos
-      validatePassword: /^[A-Za-z\d\W_]*$/, // Cambiado para incluir letras, números y símbolos
+      password: /^[A-Za-z\d\W_]*$/,
+      validatePassword: /^[A-Za-z\d\W_]*$/,
     };
 
     if (name === "phone") {
@@ -128,15 +128,15 @@ function UserRegistration() {
     <div className="container mx-auto flex flex-col justify-center items-center justify-center my-5">
       {modal ? <ModalWindow /> : <div></div>}
 
-      <h2 className="text-3xl md:text-5xl font-semibold my-10">
+      <h2 className="text-3xl md:text-5xl font-semibold my-10 place-self-center xl:place-self-start xl:pl-[11%] 2xl:pl-[14%]">
         Crear una cuenta
       </h2>
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col items-center w-full my-10 px-4"
+        className="flex flex-col items-center w-full lg:w-9/12 xl:w-10/12  my-10 px-4"
       >
-        <div className="container mx-auto grid grid-cols-1 gap-x-8 w-full items-center xl:grid-cols-2 xl:grid-rows-4 justify-items-center xl:items-center">
+        <div className="container mx-auto grid grid-cols-1 w-full  items-center xl:grid-cols-2 xl:grid-rows-4 justify-items-center xl:items-center">
           <InputField
             label="Nombre Completo"
             id="name"
@@ -144,7 +144,7 @@ function UserRegistration() {
             onChange={handleChange}
             placeholder="Ingresa tu nombre completo"
             required
-            className="col-span-1 xl:col-start-1 row-start-1" // Primera columna en pantallas grandes
+            className="col-span-1 xl:col-start-1 row-start-1"
           />
           <InputField
             label="DNI"
@@ -153,7 +153,7 @@ function UserRegistration() {
             onChange={handleChange}
             placeholder="Ingresa tu documento"
             required
-            className="col-span-1 xl:col-start-2 xl:row-start-1" // Segunda columna en pantallas grandes
+            className="col-span-1 xl:col-start-2 xl:row-start-1"
           />
           <InputField
             label="Email"
@@ -163,7 +163,7 @@ function UserRegistration() {
             placeholder="Ingresa tu email"
             type="email"
             required
-            className="col-span-1 xl:col-start-1 xl:row-start-2" // Primera columna en pantallas grandes
+            className="col-span-1 xl:col-start-1 xl:row-start-2"
           />
           <div className="col-span-1 xl:col-start-2 xl:row-start-2 flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2">
             <label htmlFor="phone" className="text-sm font-semibold">
@@ -189,7 +189,7 @@ function UserRegistration() {
             onChange={handleChange}
             required
             order={5}
-            className="col-span-1 xl:col-start-1 xl:row-start-3" // Ocupar toda la fila en pantallas grandes
+            className="col-span-1 xl:col-start-1 xl:row-start-3"
           />
           <PasswordField
             label="Repetir Password"
@@ -202,7 +202,7 @@ function UserRegistration() {
             onChange={handleChange}
             required
             order={6}
-            className="col-span-1 xl:col-start-2 xl:row-start-3" // Ocupar toda la fila en pantallas grandes
+            className="col-span-1 xl:col-start-2 xl:row-start-3"
           />
           <div className="col-span-1 xl:col-start-1 xl:row-start-4 flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2">
             <label htmlFor="admin" className="text-sm font-semibold">
@@ -221,7 +221,6 @@ function UserRegistration() {
             </select>
           </div>
         </div>
-
         {errorMessage && (
           <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium relative">
             {errorMessage}
