@@ -165,7 +165,7 @@ function EditUserBtn({ datos }) {
                 }}
                 className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
               >
-                Guardar
+                Eliminar
               </button>
             </div>
           </div>
@@ -191,7 +191,7 @@ function EditUserBtn({ datos }) {
                 }}
                 className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
               >
-                Eliminar
+                Aceptar
               </button>
             </div>
           </div>
