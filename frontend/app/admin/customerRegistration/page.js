@@ -1,29 +1,29 @@
-"use client";
-import React, { useState } from "react";
-import Principales from "./Componentes/Principales";
-import Ubicacion from "./Componentes/Ubicacion";
-import Horus from "./Componentes/Horus";
-import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import CompleteModal from "./Componentes/CompleteModal";
-import { useRouter } from "next/navigation";
+'use client';
+import React, { useState } from 'react';
+import Principales from './Componentes/Principales';
+import Ubicacion from './Componentes/Ubicacion';
+import Horus from './Componentes/Horus';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import CompleteModal from './Componentes/CompleteModal';
+import { useRouter } from 'next/navigation';
 
 function CustomerRegistration() {
   const newCustomerStore = useSelector((state) => state.newCustomer);
   const dispatch = useDispatch();
   const router = useRouter();
-  console.log("store newCustomerStore", newCustomerStore);
+  // console.log('store newCustomerStore', newCustomerStore);
+
   const [progress, setProgress] = useState(33);
   const [inPrincipales, setInPrincipales] = useState(true);
-
   const [inUbication, setInUbication] = useState(false);
   const [inHorus, setInHorus] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-// Accediendo a la variable en tu código
-let URL = `http://localhost:4000/api/clientes/create`;
+  // Accediendo a la variable en tu código
+  let URL = `http://localhost:4000/api/clientes/create`;
 
-  let response = ""
+  let response = '';
   const handleSubmit = (e) => {
     if (inPrincipales) {
       setInUbication(true);
@@ -33,23 +33,23 @@ let URL = `http://localhost:4000/api/clientes/create`;
       setInUbication(false);
       setInHorus(true);
       setProgress(100);
-    }else if (inHorus){
+    } else if (inHorus) {
       e.preventDefault();
-     console.log('store completa: ',newCustomerStore)
-     response = axios.post(URL, newCustomerStore)
-     console.log('reponse:',response)
-   /**  setShowModal(true)
+      console.log('store completa: ', newCustomerStore);
+      response = axios.post(URL, newCustomerStore);
+      console.log('reponse:', response);
+      /**  setShowModal(true)
      setTimeout(() => {
       router.push("/admin/customerMenu");
     }, 2500); */
     }
-    console.log("submit");
+    console.log('submit');
   };
-  console.log('reponse out:',response)
+  // console.log('reponse out:', response);
 
   const handleBack = () => {
     if (inPrincipales) {
-      console.log("volver");
+      console.log('volver');
     } else if (inUbication) {
       setInUbication(false);
       setInPrincipales(true);
@@ -78,7 +78,7 @@ let URL = `http://localhost:4000/api/clientes/create`;
             className="h-full bg-black rounded"
             style={{
               width: `${progress}%`,
-              transition: "width 0.3s ease-in-out",
+              transition: 'width 0.3s ease-in-out',
             }} // Ajusta el ancho dinámicamente
           />
         </div>
@@ -108,14 +108,11 @@ let URL = `http://localhost:4000/api/clientes/create`;
           </button>
         </div>
       </form>
-       {showModal && (
+      {showModal && (
         <>
-          <CompleteModal
-            setShowModal={setShowModal}
-          />
+          <CompleteModal setShowModal={setShowModal} />
         </>
       )}
-
     </div>
   );
 }

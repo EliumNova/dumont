@@ -1,5 +1,4 @@
-// src/app/slices/authSlice.js
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   principales: null,
@@ -8,7 +7,7 @@ const initialState = {
 };
 
 const newCustomerSlice = createSlice({
-  name: "newCustomer",
+  name: 'newCustomer',
   initialState,
   reducers: {
     setPrincipales(state, action) {
@@ -38,10 +37,6 @@ const newCustomerSlice = createSlice({
   },
 });
 
-export const {
-  setPrincipales,
-  setUbicacion,
-  setHorus,
-  cancel,
-} = newCustomerSlice.actions;
+export const { setPrincipales, setUbicacion, setHorus, cancel } =
+  newCustomerSlice.actions;
 export default newCustomerSlice.reducer;

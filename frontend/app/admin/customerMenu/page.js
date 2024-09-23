@@ -1,43 +1,43 @@
-"use client";
-import Image from "next/image";
-import React, { useState } from "react";
-import { TbUserEdit } from "react-icons/tb";
-import { IoIosArrowForward } from "react-icons/io";
-import Link from "next/link";
+'use client';
+import Image from 'next/image';
+import React, { useState } from 'react';
+import { TbUserEdit } from 'react-icons/tb';
+import { IoIosArrowForward } from 'react-icons/io';
+import Link from 'next/link';
 
 function CustomerMenu() {
   const [user, setUsers] = useState([
     {
-      name: "Jacob Jones",
-      photo: "/UserIcon1.jpeg",
+      name: 'Jacob Jones',
+      photo: '/UserIcon1.jpeg',
       clients: [],
     },
     {
-      name: "Maria Jones",
-      photo: "/UserIcon2.jpeg",
+      name: 'Maria Jones',
+      photo: '/UserIcon2.jpeg',
       clients: [],
     },
     {
-      name: "Pamela Jones",
-      photo: "/UserIcon3.jpeg",
+      name: 'Pamela Jones',
+      photo: '/UserIcon3.jpeg',
       clients: [],
     },
     {
-      name: "Roberta Jones",
-      photo: "/UserIcon4.jpeg",
+      name: 'Roberta Jones',
+      photo: '/UserIcon4.jpeg',
       clients: [],
     },
     {
-      name: "Carlos Jones",
-      photo: "/UserIcon5.jpeg",
+      name: 'Carlos Jones',
+      photo: '/UserIcon5.jpeg',
       clients: [],
     },
   ]);
 
   return (
     <div
-      className=" flex flex-col gap-12 md:justify-center 
-    items-center h-[100%] w-3/4 p-12 m-auto flex-wrap "
+      className="flex flex-col gap-12 md:justify-center 
+    items-center h-[100%] w-3/4 p-12 m-auto flex-wrap"
     >
       <input
         type="text"
@@ -59,22 +59,26 @@ function CustomerMenu() {
                 width={200}
                 height={200}
                 src={user.photo}
-                alt={"user avatar profile"}
+                alt={'user avatar profile'}
                 className="rounded-full"
               />
             </div>
 
             <h3 className="font-bold text-xl">{user.name}</h3>
 
-            <TbUserEdit className="text-text-icon cursor-pointer w-10 h-10 left-3 relative" />
+            <TbUserEdit
+              className="text-text-icon cursor-pointer w-10 h-10 left-3 relative"
+              onClick={() => console.log('1')}
+            />
           </li>
         ))}
-        
+
         <li className=" flex items-start justify-start mt-14 ml-5">
-         <Link  href={"/admin/customerRegistration"}>
-         <button className="rounded-full bg-principal text-white font-bold text-3xl w-20 h-20 hover:scale-125 transition-all duration-300" >
-            +
-          </button></Link>
+          <Link href={'/admin/customerRegistration'}>
+            <button className="rounded-full bg-principal text-white font-bold text-3xl w-20 h-20 hover:scale-125 transition-all duration-300">
+              +
+            </button>
+          </Link>
         </li>
       </ul>
 
