@@ -20,6 +20,15 @@ export const Usuarios = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    Telefono: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     DNI: {
       type: DataTypes.INTEGER,
       allowNull: false,

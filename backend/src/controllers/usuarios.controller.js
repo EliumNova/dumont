@@ -6,10 +6,12 @@ import bcrypt from "bcryptjs";
 
 const createUsuarios = expressAsyncHandler(async (req, res) => {
   try {
-    const { Name, Email, DNI, Password } = req.body;
+    const { Name, Email, DNI, Password, Telefono, isAdmin } = req.body;
     const newUser = new Usuarios({
       Name,
       Email,
+      Telefono,
+      isAdmin,
       DNI,
       Password,
     });
@@ -48,6 +50,8 @@ const updateUsuario = expressAsyncHandler(async (req, res) => {
       usuario.Email = Email ?? usuario.Email;
       usuario.DNI = DNI ?? usuario.DNI;
       usuario.Password = Password ?? usuario.Password;
+      usuario.Telefono = Telefono ?? usuario.Telefono;
+      usuario.isAdmin = isAdmin ?? usuario.isAdmin;
       const updatedUsuario = await usuario.save();
       res.send(updatedUsuario);
     } else {
@@ -80,13 +84,12 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
     if (usuario) {
       if (bcrypt.compareSync(Password, usuario.Password)) {
         const token = generateToken(usuario);
-        res.send({
+        res.status(400).send({
           id: usuario.idUsuarios,
           Name: usuario.Name,
           Email: usuario.Email,
           token,
         });
-        return;
       }
     }
     res.status(401).send({ message: "Email o contraseña incorrectos" });
