@@ -1,11 +1,11 @@
 import { setPrincipales } from '@/lib/slices/newCustomerSlice';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
+import Link from 'next/link';
 import InputField from './InputField';
 import SelectField from './SelectedField';
 
-function Principales() {
+function Principales({ setInUbication, setProgress, setInPrincipales }) {
   const storePrincipales = useSelector(
     (state) => state.newCustomer.principales
   );
@@ -55,135 +55,146 @@ function Principales() {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
-    const {
-      customerCode,
-      segmentacion,
-      codeDistribuidor,
-      email,
-      webPage,
-      alcoholAccess,
-    } = principalesInfo;
+    // const {
+    //   customerCode,
+    //   segmentacion,
+    //   codeDistribuidor,
+    //   email,
+    //   webPage,
+    //   alcoholAccess,
+    // } = principalesInfo;
 
-    // Validar campos requeridos
-    if (
-      !customerCode ||
-      !segmentacion ||
-      !codeDistribuidor ||
-      !email ||
-      !webPage ||
-      !alcoholAccess
-    ) {
-      setErrorMessage('Todos los campos son obligatorios.');
-      return;
-    }
+    // // Validar campos requeridos
+    // if (
+    //   !customerCode ||
+    //   !segmentacion ||
+    //   !codeDistribuidor ||
+    //   !email ||
+    //   !webPage ||
+    //   !alcoholAccess
+    // ) {
+    //   setErrorMessage('Todos los campos son obligatorios.');
+    //   return;
+    // }
 
-    // Validar email
-    if (!validateEmail(email)) {
-      setErrorMessage('El email debe tener un formato válido.');
-      return;
-    }
+    // // Validar email
+    // if (!validateEmail(email)) {
+    //   setErrorMessage('El email debe tener un formato válido.');
+    //   return;
+    // }
 
-    // Validar URL
-    if (!validateURL(webPage)) {
-      setErrorMessage('La URL debe empezar con www y terminar con .com');
-      return;
-    }
+    // // Validar URL
+    // if (!validateURL(webPage)) {
+    //   setErrorMessage('La URL debe empezar con www y terminar con .com');
+    //   return;
+    // }
 
-    // Si todas las validaciones pasan, enviar datos
-    dispatch(setPrincipales(principalesInfo));
-    setPrincipalesInfo({
-      customerCode: '',
-      segmentacion: '',
-      codeDistribuidor: '',
-      email: '',
-      webPage: '',
-      alcoholAccess: '',
-      phone: '',
-    });
-    setErrorMessage('');
+    // // Si todas las validaciones pasan, enviar datos
+    // dispatch(setPrincipales(principalesInfo));
+    setInUbication(true);
+    setProgress(66);
+    setInPrincipales(false);
+    // setErrorMessage('');
   };
 
   return (
-    <div className="w-4/5 h-auto flex flex-row gap-x-8 flex-wrap justify-start items-center">
-      {/* Código del cliente */}
-      <InputField
-        label="Código del cliente"
-        name="customerCode"
-        value={principalesInfo.customerCode}
-        onChange={handleChange}
-        placeholder="Ingresa tu numero de cliente"
-      />
-      {/* Segmentación */}
-      <SelectField
-        label="Segmentación"
-        name="segmentacion"
-        value={principalesInfo.segmentacion}
-        onChange={handleChange}
-        options={[
-          { value: '', label: 'Selecciona...' },
-          { value: 'kiosco', label: 'Kiosco' },
-          { value: 'no', label: 'No' },
-        ]}
-      />
-      {/* Código del distribuidor */}
-      <InputField
-        label="Código del distribuidor"
-        name="codeDistribuidor"
-        value={principalesInfo.codeDistribuidor}
-        onChange={handleChange}
-        placeholder="Ingresa tu código de distribuidor"
-      />
-      {/* Correo electrónico */}
-      <InputField
-        label="Correo electrónico"
-        name="email"
-        type="email"
-        value={principalesInfo.email}
-        onChange={handleChange}
-        placeholder="Ingresa tu correo electrónico"
-      />
-      {/* Página web */}
-      <InputField
-        label="Página Web"
-        name="webPage"
-        value={principalesInfo.webPage}
-        onChange={handleChange}
-        placeholder="Ingresa tu página web"
-      />
-      {/* Permiso de venta de alcohol */}
-      <SelectField
-        label="Permiso Venta Alcohol"
-        name="alcoholAccess"
-        value={principalesInfo.alcoholAccess}
-        onChange={handleChange}
-        options={[
-          { value: '', label: 'Selecciona...' },
-          { value: 'si', label: 'Sí' },
-          { value: 'no', label: 'No' },
-        ]}
-      />
-      {/* Teléfono */}
-      <InputField
-        label="Teléfono"
-        name="phone"
-        value={principalesInfo.phone}
-        onChange={handleChange}
-        placeholder="Ingresa tu número de teléfono"
-      />
-      {/* Mensaje de error */}
-      {errorMessage && (
-        <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium -top-8 relative">
-          {errorMessage}
+    <div className="container mx-auto flex flex-col items-center gap-5">
+      <div className="w-4/5 h-auto flex flex-row gap-x-8 flex-wrap justify-start items-center">
+        {/* Código del cliente */}
+        <InputField
+          label="Código del cliente"
+          name="customerCode"
+          value={principalesInfo.customerCode}
+          onChange={handleChange}
+          placeholder="Ingresa tu numero de cliente"
+        />
+        {/* Segmentación */}
+        <SelectField
+          label="Segmentación"
+          name="segmentacion"
+          value={principalesInfo.segmentacion}
+          onChange={handleChange}
+          options={[
+            { value: '', label: 'Selecciona...' },
+            { value: 'kiosco', label: 'Kiosco' },
+            { value: 'no', label: 'No' },
+          ]}
+        />
+        {/* Código del distribuidor */}
+        <InputField
+          label="Código del distribuidor"
+          name="codeDistribuidor"
+          value={principalesInfo.codeDistribuidor}
+          onChange={handleChange}
+          placeholder="Ingresa tu código de distribuidor"
+        />
+        {/* Correo electrónico */}
+        <InputField
+          label="Correo electrónico"
+          name="email"
+          type="email"
+          value={principalesInfo.email}
+          onChange={handleChange}
+          placeholder="Ingresa tu correo electrónico"
+        />
+        {/* Página web */}
+        <InputField
+          label="Página Web"
+          name="webPage"
+          value={principalesInfo.webPage}
+          onChange={handleChange}
+          placeholder="Ingresa tu página web"
+        />
+        {/* Permiso de venta de alcohol */}
+        <SelectField
+          label="Permiso Venta Alcohol"
+          name="alcoholAccess"
+          value={principalesInfo.alcoholAccess}
+          onChange={handleChange}
+          options={[
+            { value: '', label: 'Selecciona...' },
+            { value: 'si', label: 'Sí' },
+            { value: 'no', label: 'No' },
+          ]}
+        />
+        {/* Teléfono */}
+        <InputField
+          label="Teléfono"
+          name="phone"
+          value={principalesInfo.phone}
+          onChange={handleChange}
+          placeholder="Ingresa tu número de teléfono"
+        />
+      </div>
+
+      <div>
+        {/* Mensaje de error */}
+        {errorMessage && (
+          <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium ">
+            {errorMessage}
+          </div>
+        )}
+        <div className="flex gap-5">
+          <Link href={'/admin/customerMenu'}>
+            <button
+              // onClick={handleBack}
+              className="w-[15rem] h-14 relative top-11
+          bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
+            >
+              Cancelar
+            </button>
+          </Link>
+
+          <button
+            onClick={handleSubmit}
+            className="w-[15rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+          >
+            Siguiente
+          </button>
         </div>
-      )}
-      <button
-        onClick={handleSubmit}
-        className="w-[15rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
-      >
-        Enviar
-      </button>
+      </div>
     </div>
   );
 }

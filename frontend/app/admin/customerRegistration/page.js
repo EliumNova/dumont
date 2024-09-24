@@ -24,27 +24,27 @@ function CustomerRegistration() {
   let URL = `http://localhost:4000/api/clientes/create`;
 
   let response = '';
-  const handleSubmit = (e) => {
-    if (inPrincipales) {
-      setInUbication(true);
-      setProgress(66);
-      setInPrincipales(false);
-    } else if (inUbication) {
-      setInUbication(false);
-      setInHorus(true);
-      setProgress(100);
-    } else if (inHorus) {
-      e.preventDefault();
-      console.log('store completa: ', newCustomerStore);
-      response = axios.post(URL, newCustomerStore);
-      console.log('reponse:', response);
-      /**  setShowModal(true)
-     setTimeout(() => {
-      router.push("/admin/customerMenu");
-    }, 2500); */
-    }
-    console.log('submit');
-  };
+  // const handleSubmit = (e) => {
+  //   if (inPrincipales) {
+  //     setInUbication(true);
+  //     setProgress(66);
+  //     setInPrincipales(false);
+  //   } else if (inUbication) {
+  //     setInUbication(false);
+  //     setInHorus(true);
+  //     setProgress(100);
+  //   } else if (inHorus) {
+  //     e.preventDefault();
+  //     console.log('store completa: ', newCustomerStore);
+  //     response = axios.post(URL, newCustomerStore);
+  //     console.log('reponse:', response);
+  //     /**  setShowModal(true)
+  //    setTimeout(() => {
+  //     router.push("/admin/customerMenu");
+  //   }, 2500); */
+  //   }
+  //   console.log('submit');
+  // };
   // console.log('reponse out:', response);
 
   const handleBack = () => {
@@ -84,14 +84,26 @@ function CustomerRegistration() {
         </div>
       </div>
       <form
-        onSubmit={handleSubmit}
+        // onSubmit={handleSubmit}
         className=" flex items-center flex-col  w-full  "
       >
-        {inPrincipales && <Principales />}
-        {inUbication && <Ubicacion />}
+        {inPrincipales && (
+          <Principales
+            setInUbication={setInUbication}
+            setProgress={setProgress}
+            setInPrincipales={setInPrincipales}
+          />
+        )}
+        {inUbication && (
+          <Ubicacion
+            setInUbication={setInUbication}
+            setProgress={setProgress}
+            setInPrincipales={setInPrincipales}
+          />
+        )}
         {inHorus && <Horus />}
 
-        <div className="flex flex-row gap-4 justify-center items-center p-4">
+        {/* <div className="flex flex-row gap-4 justify-center items-center p-4">
           <button
             onClick={handleBack}
             className="w-[15rem] h-14 relative top-11
@@ -100,13 +112,13 @@ function CustomerRegistration() {
             {inPrincipales ? <> Cancelar</> : <>Atras</>}
           </button>
           <button
-            onClick={handleSubmit}
+            // onClick={}
             className="w-[15rem] h-14 relative top-11
           bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
           >
             {inHorus ? <>Registrar Cliente</> : <> Siguiente</>}
           </button>
-        </div>
+        </div> */}
       </form>
       {showModal && (
         <>
