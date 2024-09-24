@@ -2,7 +2,12 @@ import { setUbicacion } from '@/lib/slices/newCustomerSlice';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-function Ubicacion({ setInUbication, setProgress, setInPrincipales }) {
+function Ubicacion({
+  setInHorus,
+  setProgress,
+  setInPrincipales,
+  setInUbication,
+}) {
   const storeUbicacion = useSelector((state) => state.newCustomer.ubicacion);
   const dispatch = useDispatch();
   console.log('store ubicacion', storeUbicacion);
@@ -27,20 +32,6 @@ function Ubicacion({ setInUbication, setProgress, setInPrincipales }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    const { localidad, calle, altura, email, entreCalle1, entreCalle2 } =
-      ubicacionInfo;
-
-    if (
-      !localidad ||
-      !calle ||
-      !altura ||
-      !email ||
-      !entreCalle1 ||
-      !entreCalle2
-    ) {
-      setErrorMessage('Todos los campos son obligatorios.');
-      return;
-    }
     // Validar el input antes de actualizar el estado
     if (validateInput(value)) {
       // Actualizar el estado del objeto formState
@@ -63,6 +54,31 @@ function Ubicacion({ setInUbication, setProgress, setInPrincipales }) {
     setInUbication(false);
     setInPrincipales(true);
     setProgress(33);
+  };
+
+  const handleSubmit = (e) => {
+    // e.preventDefault();
+
+    // const { localidad, calle, altura, email, entreCalle1, entreCalle2 } =
+    //   ubicacionInfo;
+
+    // if (
+    //   !localidad ||
+    //   !calle ||
+    //   !altura ||
+    //   !email ||
+    //   !entreCalle1 ||
+    //   !entreCalle2
+    // ) {
+    //   setErrorMessage({ error: 'Todos los campos son obligatorios.' });
+    //   return;
+    // }
+    // Si todas las validaciones pasan, enviar datos
+    // dispatch(setInUbication(principalesInfo));
+    setInUbication(false);
+    setInHorus(true);
+    setProgress(100);
+    // setErrorMessage('');
   };
   return (
     <div className="container mx-auto flex flex-col items-center gap-5">
@@ -139,6 +155,7 @@ function Ubicacion({ setInUbication, setProgress, setInPrincipales }) {
           </div>
         </div>
       </div>
+
       <div>
         {/* Mensaje de error */}
         {errorMessage.error && (
@@ -158,7 +175,7 @@ function Ubicacion({ setInUbication, setProgress, setInPrincipales }) {
             Atras
           </button>
           <button
-            // onClick={handleSubmit}
+            onClick={handleSubmit}
             className="w-[15rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
           >
             Enviar

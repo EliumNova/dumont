@@ -98,6 +98,7 @@ function CustomerRegistration() {
           <Ubicacion
             setInUbication={setInUbication}
             setProgress={setProgress}
+            setInHorus={setInHorus}
             setInPrincipales={setInPrincipales}
           />
         )}
