@@ -2,8 +2,10 @@
 import { setHorus } from '@/lib/slices/newCustomerSlice';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/navigation';
 
 function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
+  const router = useRouter();
   const storeHorus = useSelector((state) => state.newCustomer.horus);
   const dispatch = useDispatch();
   console.log('store principales', storeHorus);
@@ -55,9 +57,12 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
       setErrorMessage({ error: 'Todos los campos son obligatorios.' });
       return;
     }
-    // Si todas las validaciones pasan, enviar datos
+    // // Si todas las validaciones pasan, enviar datos
     dispatch(setHorus(horusInfo));
     setShowModal(true);
+    setTimeout(() => {
+      router.push('/admin/');
+    }, 3000);
   };
   // Función handleChange modificada
   const handleChange = (e) => {

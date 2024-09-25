@@ -100,8 +100,8 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center gap-5">
-      <div className="w-4/5 h-auto flex flex-row gap-x-8 flex-wrap justify-start items-center">
+    <div className="container mx-auto flex flex-col items-center">
+      <div className="w-10/12 h-auto grid grid-rows-2 grid-cols-1 xl:grid-cols-2 w-full justify-items-center">
         {/* Código del cliente */}
         <InputField
           label="Código del cliente"
@@ -160,6 +160,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           ]}
         />
         {/* Teléfono */}
+
         <InputField
           label="Teléfono"
           name="phone"
@@ -176,7 +177,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
             {errorMessage}
           </div>
         )}
-        <div className="flex gap-5">
+        <div className="flex gap-5 flex-col xl:flex-row">
           <Link href={'/admin/customerMenu'}>
             <button
               // onClick={handleBack}

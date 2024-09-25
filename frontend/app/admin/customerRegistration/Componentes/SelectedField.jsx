@@ -1,5 +1,5 @@
 const SelectField = ({ label, name, value, onChange, options }) => (
-  <div className="flex flex-col gap-3 w-[32rem] p-4 my-2">
+  <div className="flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2">
     <label htmlFor={name} className="text-sm font-semibold">
       {label}
     </label>
