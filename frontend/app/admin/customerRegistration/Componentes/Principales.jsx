@@ -55,48 +55,48 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
   };
 
   const handleSubmit = (e) => {
-    // e.preventDefault();
+    e.preventDefault();
 
-    // const {
-    //   customerCode,
-    //   segmentacion,
-    //   codeDistribuidor,
-    //   email,
-    //   webPage,
-    //   alcoholAccess,
-    // } = principalesInfo;
+    const {
+      customerCode,
+      segmentacion,
+      codeDistribuidor,
+      email,
+      webPage,
+      alcoholAccess,
+    } = principalesInfo;
 
-    // // Validar campos requeridos
-    // if (
-    //   !customerCode ||
-    //   !segmentacion ||
-    //   !codeDistribuidor ||
-    //   !email ||
-    //   !webPage ||
-    //   !alcoholAccess
-    // ) {
-    //   setErrorMessage('Todos los campos son obligatorios.');
-    //   return;
-    // }
+    // Validar campos requeridos
+    if (
+      !customerCode ||
+      !segmentacion ||
+      !codeDistribuidor ||
+      !email ||
+      !webPage ||
+      !alcoholAccess
+    ) {
+      setErrorMessage('Todos los campos son obligatorios.');
+      return;
+    }
 
-    // // Validar email
-    // if (!validateEmail(email)) {
-    //   setErrorMessage('El email debe tener un formato válido.');
-    //   return;
-    // }
+    // Validar email
+    if (!validateEmail(email)) {
+      setErrorMessage('El email debe tener un formato válido.');
+      return;
+    }
 
-    // // Validar URL
-    // if (!validateURL(webPage)) {
-    //   setErrorMessage('La URL debe empezar con www y terminar con .com');
-    //   return;
-    // }
+    // Validar URL
+    if (!validateURL(webPage)) {
+      setErrorMessage('La URL debe empezar con www y terminar con .com');
+      return;
+    }
 
     // // Si todas las validaciones pasan, enviar datos
-    // dispatch(setPrincipales(principalesInfo));
+    dispatch(setPrincipales(principalesInfo));
+    console.log(principalesInfo);
     setInUbication(true);
     setProgress(66);
     setInPrincipales(false);
-    // setErrorMessage('');
   };
 
   return (

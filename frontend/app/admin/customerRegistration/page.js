@@ -102,7 +102,14 @@ function CustomerRegistration() {
             setInPrincipales={setInPrincipales}
           />
         )}
-        {inHorus && <Horus />}
+        {inHorus && (
+          <Horus
+            setInUbication={setInUbication}
+            setProgress={setProgress}
+            setInHorus={setInHorus}
+            setShowModal={setShowModal}
+          />
+        )}
 
         {/* <div className="flex flex-row gap-4 justify-center items-center p-4">
           <button

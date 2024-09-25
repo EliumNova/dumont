@@ -10,12 +10,11 @@ function Ubicacion({
 }) {
   const storeUbicacion = useSelector((state) => state.newCustomer.ubicacion);
   const dispatch = useDispatch();
-  console.log('store ubicacion', storeUbicacion);
+
   const [ubicacionInfo, setUbicacionInfo] = useState({
     localidad: storeUbicacion?.localidad || '',
     calle: storeUbicacion?.calle || '',
     altura: storeUbicacion?.altura || '',
-    email: storeUbicacion?.email || '',
     entreCalle1: storeUbicacion?.entreCalle1 || '',
     entreCalle2: storeUbicacion?.entreCalle2 || '',
   });
@@ -57,24 +56,19 @@ function Ubicacion({
   };
 
   const handleSubmit = (e) => {
-    // e.preventDefault();
+    e.preventDefault();
 
-    // const { localidad, calle, altura, email, entreCalle1, entreCalle2 } =
-    //   ubicacionInfo;
+    const { localidad, calle, altura, entreCalle1, entreCalle2 } =
+      ubicacionInfo;
 
-    // if (
-    //   !localidad ||
-    //   !calle ||
-    //   !altura ||
-    //   !email ||
-    //   !entreCalle1 ||
-    //   !entreCalle2
-    // ) {
-    //   setErrorMessage({ error: 'Todos los campos son obligatorios.' });
-    //   return;
-    // }
+    console.log(ubicacionInfo);
+    if (!localidad || !calle || !altura || !entreCalle1 || !entreCalle2) {
+      setErrorMessage({ error: 'Todos los campos son obligatorios.' });
+      return;
+    }
     // Si todas las validaciones pasan, enviar datos
-    // dispatch(setInUbication(principalesInfo));
+    dispatch(setUbicacion(ubicacionInfo));
+    console.log(ubicacionInfo);
     setInUbication(false);
     setInHorus(true);
     setProgress(100);
