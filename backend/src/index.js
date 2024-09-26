@@ -12,6 +12,7 @@ import "./models/Clientes.js";
 import "./models/Dispositivos.js";
 import { sequelize } from "./db/db.js";
 import bodyParser from "body-parser";
+import morgan from "morgan"
 dotenv.config();
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(express.static("./public"));
 app.use(cookieParser());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"));
 
 await sequelize.authenticate();
 await sequelize.sync();

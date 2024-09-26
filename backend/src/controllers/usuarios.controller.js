@@ -3,6 +3,8 @@ import { Usuarios } from "../models/Usuarios.js";
 import { generateToken } from "../../utils/utilsUsuarios.js";
 import { handleError } from "../../utils/utilsErrors.js";
 import bcrypt from "bcryptjs";
+import { PublishCommand } from '@aws-sdk/client-sns';
+import { snsClient } from "../../utils/utilsVerify.js";
 
 const createUsuarios = expressAsyncHandler(async (req, res) => {
   try {
@@ -43,7 +45,7 @@ const getUsuarioById = expressAsyncHandler(async (req, res) => {
 
 const updateUsuario = expressAsyncHandler(async (req, res) => {
   try {
-    const { Name, Email, DNI, Password } = req.body;
+    const { Name, Email, DNI, Password, Telefono, isAdmin } = req.body;
     const usuario = await Usuarios.findByPk(req.params.id);
     if (usuario) {
       usuario.Name = Name ?? usuario.Name;
@@ -98,6 +100,31 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const verifySms = expressAsyncHandler(async( req, res) => {
+  try {
+      const {idUsuarios} = req.body;
+      const usuario = await Usuarios.findByPk(idUsuarios);
+      console.log(usuario.Telefono);
+
+      const formattedPhoneNumber = usuario.Telefono.startsWith('+') ? usuario.Telefono : `+${usuario.Telefono}`;
+      const codeVerify = Math.random().toString().substring(2,6) //cuatro digitos
+      const params = {
+        Message: "Tu codigo Dumont es: " + `${codeVerify}`, 
+        PhoneNumber: formattedPhoneNumber //usuario.CelPhone
+      }
+
+      const command = new PublishCommand(params);
+      const data = await snsClient.send(command);
+      console.log(data);
+      
+      res.status(200).send(codeVerify)
+      
+  } catch (err) {
+      res.status(500)(`Falló el envío del mensaje :${err.message}`)
+  }
+  
+});
+
 const UsuariosController = {
   createUsuarios,
   getUsuarios,
@@ -105,6 +132,7 @@ const UsuariosController = {
   updateUsuario,
   deleteUsuario,
   loginUsuario,
+  verifySms,
 };
 
 export default UsuariosController;
