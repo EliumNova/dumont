@@ -5,7 +5,7 @@ import { handleError } from "../../utils/utilsErrors.js";
 import bcrypt from "bcryptjs";
 import { transporter } from "../../utils/mailer.js";
 import { verifyEmailTemplate } from "../../utils/htmlEmails.js";
-import { PublishCommand } from '@aws-sdk/client-sns';
+import { PublishCommand } from "@aws-sdk/client-sns";
 import { snsClient } from "../../utils/utilsVerify.js";
 
 const createUsuarios = expressAsyncHandler(async (req, res) => {
@@ -94,28 +94,28 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
         res.status(401).send({
           message: "Usuario no verificado, enviando mail de verificacion",
         });
-      } else {
-        if (bcrypt.compareSync(Password, usuario.Password)) {
-          const token = generateToken(usuario);
-          res.status(400).send({
-            id: usuario.idUsuarios,
-            Name: usuario.Name,
-            Email: usuario.Email,
-            token,
-          });
-        }
+      }
+      if (bcrypt.compareSync(Password, usuario.Password)) {
+        const token = generateToken(usuario);
+        res.status(400).send({
+          id: usuario.idUsuarios,
+          Name: usuario.Name,
+          Email: usuario.Email,
+          token,
+        });
       }
     }
+
     res.status(401).send({ message: "Email o contraseña incorrectos" });
   } catch (error) {
     handleError(error, res);
   }
 });
 
-const verifyEmailUsuarios = expressAsyncHandler(async (req, res) => {
+const verifyUsuarios = expressAsyncHandler(async (req, res) => {
   try {
-    const { Email, verifyToken } = req.body;
-    const usuario = await Usuarios.findOne({ where: { Email } });
+    const { idUsuarios, verifyToken } = req.body;
+    const usuario = await Usuarios.findByPk(idUsuarios);
     if (usuario) {
       if (Date.now() > usuario.expireToken) {
         res.status(401).send({
@@ -148,29 +148,31 @@ const sendMail = expressAsyncHandler(async (req, verifyToken) => {
   });
   return;
 });
-const verifySms = expressAsyncHandler(async( req, res) => {
+const verifySms = expressAsyncHandler(async (req, res) => {
   try {
-      const {idUsuarios} = req.body;
-      const usuario = await Usuarios.findByPk(idUsuarios);
-      console.log(usuario.Telefono);
+    const { idUsuarios } = req.body;
+    const usuario = await Usuarios.findByPk(idUsuarios);
+    console.log(usuario.Telefono);
 
-      const formattedPhoneNumber = usuario.Telefono.startsWith('+') ? usuario.Telefono : `+${usuario.Telefono}`;
-      const codeVerify = Math.random().toString().substring(2,6) //cuatro digitos
-      const params = {
-        Message: "Tu codigo Dumont es: " + `${codeVerify}`, 
-        PhoneNumber: formattedPhoneNumber //usuario.CelPhone
-      }
+    const formattedPhoneNumber = usuario.Telefono.startsWith("+")
+      ? usuario.Telefono
+      : `+${usuario.Telefono}`;
+    const codeVerify = Math.random().toString().substring(2, 6); //cuatro digitos
+    usuario.verifyToken = codeVerify;
+    usuario.expireToken = Date.now() + 2 * 60;
+    const params = {
+      Message: "Tu codigo Dumont es: " + `${codeVerify}`,
+      PhoneNumber: formattedPhoneNumber, //usuario.CelPhone
+    };
 
-      const command = new PublishCommand(params);
-      const data = await snsClient.send(command);
-      console.log(data);
-      
-      res.status(200).send(codeVerify)
-      
+    const command = new PublishCommand(params);
+    const data = await snsClient.send(command);
+    console.log(data);
+
+    res.status(200).send(codeVerify);
   } catch (err) {
-      res.status(500)(`Falló el envío del mensaje :${err.message}`)
+    res.status(500)(`Falló el envío del mensaje :${err.message}`);
   }
-  
 });
 
 const UsuariosController = {
@@ -180,7 +182,7 @@ const UsuariosController = {
   updateUsuario,
   deleteUsuario,
   loginUsuario,
-  verifyEmailUsuarios,
+  verifyUsuarios,
   verifySms,
 };
 
