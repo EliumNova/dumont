@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+
 export const verifyToken = async (token) => {
   try {
     console.log(process.env.JWT_SECRET);

@@ -41,6 +41,18 @@ export const Usuarios = sequelize.define(
         this.setDataValue("Password", bcrypt.hashSync(value, 10));
       },
     },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    verifyToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    expireToken: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     timestamps: false,

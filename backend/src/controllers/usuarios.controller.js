@@ -3,6 +3,8 @@ import { Usuarios } from "../models/Usuarios.js";
 import { generateToken } from "../../utils/utilsUsuarios.js";
 import { handleError } from "../../utils/utilsErrors.js";
 import bcrypt from "bcryptjs";
+import { transporter } from "../../utils/mailer.js";
+import { verifyEmailTemplate } from "../../utils/htmlEmails.js";
 import { PublishCommand } from '@aws-sdk/client-sns';
 import { snsClient } from "../../utils/utilsVerify.js";
 
@@ -16,8 +18,11 @@ const createUsuarios = expressAsyncHandler(async (req, res) => {
       isAdmin,
       DNI,
       Password,
+      verifyToken: Math.random().toString().substring(2, 6),
+      expireToken: Date.now() + 2 * 60,
     });
     const user = await newUser.save();
+    await sendMail(req, user.verifyToken);
     const token = generateToken(newUser);
     res.send({ user, token });
   } catch (error) {
@@ -84,14 +89,21 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
     const usuario = await Usuarios.findOne({ where: { Email } });
     console.log(usuario.Password);
     if (usuario) {
-      if (bcrypt.compareSync(Password, usuario.Password)) {
-        const token = generateToken(usuario);
-        res.status(400).send({
-          id: usuario.idUsuarios,
-          Name: usuario.Name,
-          Email: usuario.Email,
-          token,
+      if (!usuario.isVerified) {
+        await sendMail(req, res);
+        res.status(401).send({
+          message: "Usuario no verificado, enviando mail de verificacion",
         });
+      } else {
+        if (bcrypt.compareSync(Password, usuario.Password)) {
+          const token = generateToken(usuario);
+          res.status(400).send({
+            id: usuario.idUsuarios,
+            Name: usuario.Name,
+            Email: usuario.Email,
+            token,
+          });
+        }
       }
     }
     res.status(401).send({ message: "Email o contraseña incorrectos" });
@@ -100,6 +112,42 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const verifyEmailUsuarios = expressAsyncHandler(async (req, res) => {
+  try {
+    const { Email, verifyToken } = req.body;
+    const usuario = await Usuarios.findOne({ where: { Email } });
+    if (usuario) {
+      if (Date.now() > usuario.expireToken) {
+        res.status(401).send({
+          message: "Token de verificación expirado",
+        });
+      }
+      if (usuario.verifyToken === verifyToken) {
+        usuario.isVerified = true;
+        usuario.verifyToken = "";
+        usuario.expireToken = "";
+        await usuario.save();
+        res.status(400).send({
+          usuario,
+          message: "Usuario verificado",
+        });
+      }
+    }
+    res.status(401).send({ message: "Token de verificación incorrecto" });
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+const sendMail = expressAsyncHandler(async (req, verifyToken) => {
+  await transporter.sendMail({
+    from: process.env.MAIL_USER,
+    to: req.body.Email,
+    subject: "Verificación de correo",
+    html: verifyEmailTemplate(req, req.body, verifyToken),
+  });
+  return;
+});
 const verifySms = expressAsyncHandler(async( req, res) => {
   try {
       const {idUsuarios} = req.body;
@@ -132,6 +180,7 @@ const UsuariosController = {
   updateUsuario,
   deleteUsuario,
   loginUsuario,
+  verifyEmailUsuarios,
   verifySms,
 };
 
