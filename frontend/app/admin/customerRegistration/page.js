@@ -24,28 +24,28 @@ function CustomerRegistration() {
   let URL = `http://localhost:4000/api/clientes/create`;
 
   let response = '';
-  // const handleSubmit = (e) => {
-  //   if (inPrincipales) {
-  //     setInUbication(true);
-  //     setProgress(66);
-  //     setInPrincipales(false);
-  //   } else if (inUbication) {
-  //     setInUbication(false);
-  //     setInHorus(true);
-  //     setProgress(100);
-  //   } else if (inHorus) {
-  //     e.preventDefault();
-  //     console.log('store completa: ', newCustomerStore);
-  //     response = axios.post(URL, newCustomerStore);
-  //     console.log('reponse:', response);
-  //     /**  setShowModal(true)
-  //    setTimeout(() => {
-  //     router.push("/admin/customerMenu");
-  //   }, 2500); */
-  //   }
-  //   console.log('submit');
-  // };
-  // console.log('reponse out:', response);
+  const handleSubmit = (e) => {
+    if (inPrincipales) {
+      setInUbication(true);
+      setProgress(66);
+      setInPrincipales(false);
+    } else if (inUbication) {
+      setInUbication(false);
+      setInHorus(true);
+      setProgress(100);
+    } else if (inHorus) {
+      e.preventDefault();
+      console.log('store completa: ', newCustomerStore);
+      response = axios.post(URL, newCustomerStore);
+      console.log('reponse:', response);
+      /**  setShowModal(true)
+     setTimeout(() => {
+      router.push("/admin/customerMenu");
+    }, 2500); */
+    }
+    console.log('submit');
+  };
+  console.log('reponse out:', response);
 
   const handleBack = () => {
     if (inPrincipales) {
@@ -111,7 +111,7 @@ function CustomerRegistration() {
           />
         )}
 
-        {/* <div className="flex flex-row gap-4 justify-center items-center p-4">
+        <div className="flex flex-row gap-4 justify-center items-center p-4">
           <button
             onClick={handleBack}
             className="w-[15rem] h-14 relative top-11
@@ -126,7 +126,7 @@ function CustomerRegistration() {
           >
             {inHorus ? <>Registrar Cliente</> : <> Siguiente</>}
           </button>
-        </div> */}
+        </div>
       </form>
       {showModal && (
         <>

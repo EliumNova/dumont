@@ -55,13 +55,15 @@ function CustomerMenu() {
             key={index}
           >
             <div>
-              <Image
-                width={200}
-                height={200}
-                src={user.photo}
-                alt={'user avatar profile'}
-                className="rounded-full"
-              />
+              <Link href={'/admin/customerMenu/DispositivosMenu'}>
+                <Image
+                  width={200}
+                  height={200}
+                  src={user.photo}
+                  alt={'user avatar profile'}
+                  className="rounded-full"
+                />
+              </Link>
             </div>
 
             <h3 className="font-bold text-xl">{user.name}</h3>

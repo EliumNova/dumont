@@ -1,20 +1,14 @@
+'use client';
 import Image from 'next/image';
-import Link from 'next/link';
 
+import { useState } from 'react';
+import NewDeviceModal from './newDeviceModal';
 export default function DevicesTable({ devices }) {
+  const [newDevice, SetNewDevice] = useState(false);
+  const [devicesList, SetdevicesList] = useState(false);
   return (
     <div className="grid items-center gap-5">
-      <div className="flex gap-5 items-center">
-        <Image
-          width={100}
-          height={100}
-          src={'/UserIcon1.jpeg'}
-          alt="DuMont Logo"
-          className="rounded-full w-15 md:w-20 transition-all duration-150"
-        />
-        <h2 className="text-2xl">Jacob Jones</h2>
-      </div>
-
+      {newDevice && <NewDeviceModal />}
       <div className="rounded-xl overflow-hidden border border-black border-slate-400">
         <table className="min-w-full border-collapse">
           <thead className="font-medium text-gray-600">
@@ -84,13 +78,6 @@ export default function DevicesTable({ devices }) {
           </tbody>
         </table>
       </div>
-      <Link
-        href="/admin/userRegistration"
-        className="p-1 text-blue-500 flex items-center text-xl"
-      >
-        <imhhg src="/svg/addNewUser.svg" className="h-20"></imhhg>
-        Agregar nuevo dispositivo
-      </Link>
     </div>
   );
 }
