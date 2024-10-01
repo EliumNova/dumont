@@ -22,6 +22,7 @@ export const Usuarios = sequelize.define(
     },
     Telefono: {
       type: DataTypes.STRING(15),
+      unique: true,
       allowNull: false,
     },
     isAdmin: {

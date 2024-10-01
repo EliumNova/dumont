@@ -64,7 +64,7 @@ const updateFile = expressAsyncHandler(async (req, res) => {
     }
     createFile(req, res);
     console.log(file);
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       message: "File uploaded successfully",
       fileName: file.filename,
