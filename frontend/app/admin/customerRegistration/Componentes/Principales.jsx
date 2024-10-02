@@ -1,179 +1,201 @@
-import { setPrincipales } from "@/lib/slices/newCustomerSlice";
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { setPrincipales } from '@/lib/slices/newCustomerSlice';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Link from 'next/link';
+import InputField from './InputField';
+import SelectField from './SelectedField';
 
-function Principales() {
+function Principales({ setInUbication, setProgress, setInPrincipales }) {
   const storePrincipales = useSelector(
     (state) => state.newCustomer.principales
   );
   const dispatch = useDispatch();
-  console.log("store principales", storePrincipales);
+
   const [principalesInfo, setPrincipalesInfo] = useState({
-    customerCode: storePrincipales?.customerCode || "",
-    segmentacion: storePrincipales?.segmentacion || "",
-    codeDistribuidor: storePrincipales?.codeDistribuidor || "",
-    email: storePrincipales?.email || "",
-    webPage: storePrincipales?.webPage || "",
-    alcoholAccess: storePrincipales?.alcoholAccess || "",
-    phone: storePrincipales?.phone || "",
+    customerCode: storePrincipales?.customerCode || '',
+    segmentacion: storePrincipales?.segmentacion || '',
+    codeDistribuidor: storePrincipales?.codeDistribuidor || '',
+    email: storePrincipales?.email || '',
+    webPage: storePrincipales?.webPage || '',
+    alcoholAccess: storePrincipales?.alcoholAccess || '',
+    phone: storePrincipales?.phone || '',
   });
 
-  const [errorMessage, setErrorMessage] = useState({ error: "" });
+  const [errorMessage, setErrorMessage] = useState('');
 
-  // Función para validar el input (asegúrate de definir esta función)
-  const validateInput = (value) => {
-    // Ejemplo de validación simple
-    return /^[a-zA-Z0-9@.]+$/.test(value);
-  };
+  const validateEmail = (email) =>
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 
-  // Función handleChange modificada
+  const validateURL = (value) => /^www\.[a-zA-Z0-9]+\.com$/.test(value);
+
+  const validateInput = (value) => /^[a-zA-Z0-9@.\s]*$/.test(value);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Validar el input antes de actualizar el estado
-    if (validateInput(value)) {
-      // Actualizar el estado del objeto formState
-      setPrincipalesInfo((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-      dispatch(setPrincipales(principalesInfo));
-    } else {
-      setErrorMessage({ error: "Caracteres inválidos en el campo." });
-
-      // Limpiar el mensaje de error después de 3 segundos
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000);
+    if (
+      !validateInput(value) &&
+      name !== 'alcoholAccess' &&
+      name !== 'segmentacion'
+    ) {
+      setErrorMessage('Caracteres inválidos en el campo.');
+      return;
     }
 
+    setPrincipalesInfo((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+
+    if (name === 'webPage' && value && !validateURL(value)) {
+      setErrorMessage('La URL debe empezar con www y terminar con .com');
+    } else {
+      setErrorMessage('');
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const {
+      customerCode,
+      segmentacion,
+      codeDistribuidor,
+      email,
+      webPage,
+      alcoholAccess,
+    } = principalesInfo;
+
+    // Validar campos requeridos
+    if (
+      !customerCode ||
+      !segmentacion ||
+      !codeDistribuidor ||
+      !email ||
+      !webPage ||
+      !alcoholAccess
+    ) {
+      setErrorMessage('Todos los campos son obligatorios.');
+      return;
+    }
+
+    // Validar email
+    if (!validateEmail(email)) {
+      setErrorMessage('El email debe tener un formato válido.');
+      return;
+    }
+
+    // Validar URL
+    if (!validateURL(webPage)) {
+      setErrorMessage('La URL debe empezar con www y terminar con .com');
+      return;
+    }
+
+    // // Si todas las validaciones pasan, enviar datos
+    dispatch(setPrincipales(principalesInfo));
+    console.log(principalesInfo);
+    setInUbication(true);
+    setProgress(66);
+    setInPrincipales(false);
   };
 
   return (
-    <div
-      className="w-4/5 h-auto flex flex-row gap-x-8 flex-wrap justify-start items-center 
-"
-    >
-      {/**código del cliente */}
-      <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-        <label htmlFor="email" className="text-sm font-semibold">
-          Código del cliente
-        </label>
-        <input
-          type="number"
+    <div className="container mx-auto flex flex-col items-center">
+      <div className="w-10/12 h-auto grid grid-rows-2 grid-cols-1 xl:grid-cols-2 w-full justify-items-center">
+        {/* Código del cliente */}
+        <InputField
+          label="Código del cliente"
           name="customerCode"
-          placeholder="Ingresa tu numero de cliente"
-          value={principalesInfo?.customerCode}
-          required
-          className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+          value={principalesInfo.customerCode}
           onChange={handleChange}
+          placeholder="Ingresa tu numero de cliente"
         />
-      </div>
-
-      {/**Segmentacion */}
-      <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-        <label htmlFor="email" className="text-sm font-semibold">
-          Segmentación
-        </label>
-        <select
-          id="admin"
-          className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
-          required
+        {/* Segmentación */}
+        <SelectField
+          label="Segmentación"
           name="segmentacion"
-          value={principalesInfo?.segmentacion}
+          value={principalesInfo.segmentacion}
           onChange={handleChange}
-        >
-          <option value="kiosco">Kiosco</option>
-          <option value="no">No</option>
-        </select>
-      </div>
-      {/**código del distribuidor */}
-      <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-        <label htmlFor="email" className="text-sm font-semibold">
-          Código del distribuidor
-        </label>
-        <input
-          type="text"
-          name="codeDistribuidor"
-          value={principalesInfo?.codeDistribuidor}
-          placeholder="Ingresa tu numero de cliente"
-          onChange={handleChange}
-          required
-          className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+          options={[
+            { value: '', label: 'Selecciona...' },
+            { value: 'kiosco', label: 'Kiosco' },
+            { value: 'no', label: 'No' },
+          ]}
         />
-      </div>
-      {/**Correo electrónico */}
-      <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-        <label htmlFor="email" className="text-sm font-semibold">
-          Correo electrónico
-        </label>
-        <input
-          type="email"
+        {/* Código del distribuidor */}
+        <InputField
+          label="Código del distribuidor"
+          name="codeDistribuidor"
+          value={principalesInfo.codeDistribuidor}
+          onChange={handleChange}
+          placeholder="Ingresa tu código de distribuidor"
+        />
+        {/* Correo electrónico */}
+        <InputField
+          label="Correo electrónico"
           name="email"
-          value={principalesInfo?.email}
+          type="email"
+          value={principalesInfo.email}
           onChange={handleChange}
           placeholder="Ingresa tu correo electrónico"
-          required
-          className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
         />
-      </div>
-      {/**Pagina web */}
-      <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-        <label htmlFor="email" className="text-sm font-semibold">
-          Página Web
-        </label>
-        <input
-          type="text"
+        {/* Página web */}
+        <InputField
+          label="Página Web"
           name="webPage"
-          value={principalesInfo?.webPage}
+          value={principalesInfo.webPage}
           onChange={handleChange}
           placeholder="Ingresa tu página web"
-          required
-          className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
         />
-      </div>
-      {/**Permiso de venta de alcohol*/}
-      <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-        <label htmlFor="email" className="text-sm font-semibold">
-          Permiso Venta Alchohol
-        </label>
-        <select
+        {/* Permiso de venta de alcohol */}
+        <SelectField
+          label="Permiso Venta Alcohol"
           name="alcoholAccess"
-          value={principalesInfo?.alcoholAccess}
-          className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
-          required
+          value={principalesInfo.alcoholAccess}
           onChange={handleChange}
-        >
-          <option value="si">Si</option>
-          <option value="no">No</option>
-        </select>
-      </div>
-      {/**Teléfono */}
-      <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-        <label htmlFor="email" className="text-sm font-semibold">
-          Teléfono
-        </label>
-        <input
-          type="number"
-          id="name"
-          name="phone"
-          onChange={handleChange}
+          options={[
+            { value: '', label: 'Selecciona...' },
+            { value: 'si', label: 'Sí' },
+            { value: 'no', label: 'No' },
+          ]}
+        />
+        {/* Teléfono */}
 
-          value={principalesInfo?.phone}
-          placeholder="Ingresa tu numero de  teléfono"
-          required
-          className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+        <InputField
+          label="Teléfono"
+          name="phone"
+          value={principalesInfo.phone}
+          onChange={handleChange}
+          placeholder="Ingresa tu número de teléfono"
         />
       </div>
 
-      {errorMessage.error && (
-        <div
-          className="p-2 h-8 text-xs rounded flex justify-center  
-          items-center bg-red-700 text-white font-medium -top-8 relative "
-        >
-          {errorMessage.error}{" "}
+      <div>
+        {/* Mensaje de error */}
+        {errorMessage && (
+          <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium ">
+            {errorMessage}
+          </div>
+        )}
+        <div className="flex gap-5 flex-col xl:flex-row">
+          <Link href={'/admin/customerMenu'}>
+            <button
+              // onClick={handleBack}
+              className="w-[15rem] h-14 relative top-11
+          bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
+            >
+              Cancelar
+            </button>
+          </Link>
+
+          <button
+            onClick={handleSubmit}
+            className="w-[15rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+          >
+            Siguiente
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
