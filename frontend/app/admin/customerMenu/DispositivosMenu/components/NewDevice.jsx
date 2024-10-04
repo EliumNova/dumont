@@ -1,8 +1,11 @@
 import InputField from '@/app/admin/components/InputField';
+import ModalWindow from '@/app/admin/components/ModalWindow';
+import Joi from 'joi';
 import { useState } from 'react';
 
-export default function NewDeviceModal() {
+export default function NewDevice({ onFormularioEnviado }) {
   const [errorMessage, setErrorMessage] = useState('');
+
   const [datos, setDatos] = useState({
     marca: '',
     modelo: '',
@@ -10,16 +13,43 @@ export default function NewDeviceModal() {
     serie: '',
   });
 
+  // Definir el esquema de validación con Joi
+  const schema = Joi.object({
+    marca: Joi.string().min(2).required().messages({
+      'string.empty': 'La marca es obligatoria.',
+      'string.min': 'La marca debe tener al menos 2 caracteres.',
+    }),
+    modelo: Joi.string().min(2).required().messages({
+      'string.empty': 'El modelo es obligatorio.',
+      'string.min': 'El modelo debe tener al menos 2 caracteres.',
+    }),
+    pulgadas: Joi.number().positive().required().messages({
+      'number.base': 'Las pulgadas deben ser un número.',
+      'number.positive': 'Las pulgadas deben ser un número positivo.',
+      'any.required': 'Las pulgadas son obligatorias.',
+    }),
+    serie: Joi.string().min(5).required().messages({
+      'string.empty': 'El número de serie es obligatorio.',
+      'string.min': 'El número de serie debe tener al menos 5 caracteres.',
+    }),
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const { marca, modelo, pulgadas, serie } = datos;
+    // Validar los datos usando el esquema de Joi
+    const { error } = schema.validate(datos, { abortEarly: true });
 
-    if (!marca || !modelo || !pulgadas || !serie) {
-      setErrorMessage('Todos los campos son obligatorios.');
+    if (error) {
+      // Si hay errores de validación, mostramos el primer mensaje de error
+      const errorMessages = error.details.map((err) => err.message).join(', ');
+
+      setErrorMessage(errorMessages);
       return;
     } else {
       setErrorMessage('');
+      onFormularioEnviado();
+
       // Aquí puedes manejar la lógica para registrar el dispositivo
     }
   };
@@ -43,10 +73,11 @@ export default function NewDeviceModal() {
         <form className="flex flex-col gap-5 mt-10" onSubmit={handleSubmit}>
           <InputField
             label={'Marca del dispositivo'}
-            id={'marca'} // Cambié esto para que coincida con el nombre del campo
+            id={'marca'}
+            name={'marca'}
             value={datos.marca}
             onChange={handleChange}
-            placeholder={'Ingrese el dispositivo'}
+            placeholder={'Ingrese la marca del dispositivo'}
             type="text"
             className="gap-2"
             inputClassName="rounded-xl"
@@ -54,6 +85,7 @@ export default function NewDeviceModal() {
           <InputField
             label={'Modelo'}
             id={'modelo'}
+            name={'modelo'}
             value={datos.modelo}
             onChange={handleChange}
             placeholder={'Ingrese el modelo del dispositivo'}
@@ -63,6 +95,7 @@ export default function NewDeviceModal() {
           <InputField
             label={'Cantidad de pulgadas'}
             id={'pulgadas'}
+            name={'pulgadas'}
             value={datos.pulgadas}
             onChange={handleChange}
             placeholder={'Ingrese la cantidad de pulgadas del dispositivo'}
@@ -72,6 +105,7 @@ export default function NewDeviceModal() {
           <InputField
             label={'Número de serie'}
             id={'serie'}
+            name={'serie'}
             value={datos.serie}
             onChange={handleChange}
             placeholder={'Ingrese el número de serie del dispositivo'}

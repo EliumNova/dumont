@@ -126,7 +126,11 @@ function UserRegistration() {
 
   return (
     <div className="container mx-auto flex flex-col justify-center items-center justify-center my-5">
-      {modal ? <ModalWindow /> : <div></div>}
+      {modal ? (
+        <ModalWindow text={'¡Usuario creado con èxito!'} />
+      ) : (
+        <div></div>
+      )}
 
       <h2 className="text-3xl md:text-5xl font-semibold my-10 place-self-center xl:place-self-start xl:pl-[11%] 2xl:pl-[14%]">
         Crear una cuenta

@@ -2,13 +2,13 @@
 import Image from 'next/image';
 
 import { useState } from 'react';
-import NewDeviceModal from './newDeviceModal';
+import NewDevice from './NewDevice';
 export default function DevicesTable({ devices }) {
   const [newDevice, SetNewDevice] = useState(false);
   const [devicesList, SetdevicesList] = useState(false);
   return (
     <div className="grid items-center gap-5">
-      {newDevice && <NewDeviceModal />}
+      {newDevice && <NewDevice />}
       <div className="rounded-xl overflow-hidden border border-black border-slate-400">
         <table className="min-w-full border-collapse">
           <thead className="font-medium text-gray-600">
