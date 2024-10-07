@@ -1,0 +1,27 @@
+#version: "3.7"
+#MySQL con PHPMyAdmin
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "EliumNova"
+      MYSQL_DATABASE: dumont
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 1234567
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    depends_on:
+      - db

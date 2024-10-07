@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+<<<<<<< HEAD
     "build": "npm install && cd backend && npm install && cd ../frontend && npm install && npm run build",
     "start": "concurrently \"cd backend && npm start\" \"cd frontend && npm start\"",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +12,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+=======
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "dev:linux": "concurrently \"cd backend && npm run dev:linux\" \"cd frontend && npm run dev\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+>>>>>>> main
     "concurrently": "^9.0.0"
   }
 }

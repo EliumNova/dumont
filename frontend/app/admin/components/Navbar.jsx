@@ -18,6 +18,11 @@ function Navbar() {
 
   // Ejemplo de ruta específica "/admin/userRegistration"
   let userRegisterUrl = pathname === "/admin/userRegistration";
+<<<<<<< HEAD
+=======
+
+  let customerRegisterUrl = pathname === "/admin/customerRegistration";
+>>>>>>> main
   return (
     <div
       className={`z-40 text-black flex flex-row justify-between px-8 p-4 shadow-black shadow-2xl  border-b-2  border
@@ -25,9 +30,18 @@ function Navbar() {
     `}
     >
       <div className="flex flex-row gap-4 justify-center items-center  ">
+<<<<<<< HEAD
         {isAdminSubroute && (<Link href={"/admin"}>
           <IoIosArrowForward className="rotate-180 h-10 w-12 m-0 cursor-pointer transition-all duration-150 hover:scale-110  " />
           </Link>)}
+=======
+        {isAdminSubroute && (
+          <Link href={customerRegisterUrl ? "/admin/customerMenu" : "/admin"}>
+            <IoIosArrowForward className="rotate-180 h-10 w-12 m-0 cursor-pointer transition-all duration-150 hover:scale-110  " />
+          </Link>
+        )}
+
+>>>>>>> main
         <Image
           width={50}
           height={50}

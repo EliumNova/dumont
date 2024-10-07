@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import Image from "next/image";
 import React from "react";
 import { TbUserEdit } from "react-icons/tb";
@@ -117,9 +118,27 @@ function UserMenu() {
       <IoIosArrowForward className="rotate-180 h-8 w-8 m-0 cursor-pointer transition-all duration-150 hover:scale-110  " />
       <p className="text-text-icon text-xl font-bold">0 - 5</p>
       <IoIosArrowForward className=" h-8 w-8 m-0 cursor-pointer transition-all duration-150 hover:scale-110  " />
+=======
+import Table from "./Componentes/Table";
+
+function CustomerMenu() {
+
+
+  return (
+    <div className="" >
+
+      <h3 className="text-3xl font-bold ">Jacob Jall</h3>
+
+      <div className="flex flex-col justify-center items-center ">
+      <Table />
+>>>>>>> main
       </div>
     </div>
   );
 }
 
+<<<<<<< HEAD
 export default UserMenu;
+=======
+export default CustomerMenu;
+>>>>>>> main

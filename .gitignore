@@ -2,4 +2,9 @@ backend/node_modules
 backend/.env
 backend/docker/mysql
 backend/public
+<<<<<<< HEAD
 /node_modules
+=======
+frontend/.env
+/node_modules
+>>>>>>> main
