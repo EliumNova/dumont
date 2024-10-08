@@ -3,7 +3,7 @@ import ModalWindow from '@/app/admin/components/ModalWindow';
 import Joi from 'joi';
 import { useState } from 'react';
 
-export default function NewDevice({ onFormularioEnviado }) {
+export default function NewDevice({ onFormularioEnviado, showAllDevices }) {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [datos, setDatos] = useState({
@@ -47,6 +47,7 @@ export default function NewDevice({ onFormularioEnviado }) {
       setErrorMessage(errorMessages);
       return;
     } else {
+      showAllDevices();
       setErrorMessage('');
       onFormularioEnviado();
 

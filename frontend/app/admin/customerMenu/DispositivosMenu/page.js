@@ -52,6 +52,7 @@ function DispositivosMenu() {
       ubicacion: 'Si',
     },
   ]);
+  const [showAllDevices, setShowAllDevices] = useState(false);
 
   return (
     <div className="container mx-auto py-10">
@@ -67,14 +68,17 @@ function DispositivosMenu() {
       </div>
 
       {newDevice && (
-        <NewDevice onFormularioEnviado={manejarFormularioEnviado} />
+        <NewDevice
+          onFormularioEnviado={manejarFormularioEnviado}
+          showAllDevices={() => setShowAllDevices(true)}
+        />
       )}
       {mostrarModal && (
         <ModalWindow text={'¡Dispositivo registrado con èxito!'} />
       )}
       {/* NO MOSTRAR SI EL ClIENTE NO TIENE DISPOSITIVOS */}
-      {/* {devices && <DevicesTable devices={devices}></DevicesTable>} */}
-      {/* <button
+      {showAllDevices && <DevicesTable devices={devices}></DevicesTable>}
+      <button
         href="/admin/userRegistration"
         onClick={() => {
           setNewDevice(true), setDevices(false);
@@ -83,7 +87,7 @@ function DispositivosMenu() {
       >
         <img src="/svg/addNewUser.svg" className="h-20"></img>
         Agregar nuevo dispositivo
-      </button> */}
+      </button>
     </div>
   );
 }
