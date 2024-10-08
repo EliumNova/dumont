@@ -31,11 +31,8 @@ function Login() {
   const [emailMethod, setEmailMethod] = useState(false);
   const [method, setMethod] = useState(false);
   const [ableNewPassword, setAbleNewPassword] = useState(false);
-<<<<<<< HEAD
-=======
 
   let URL = `/usuarios/login`;
->>>>>>> main
   const dispatch = useDispatch();
   // llevar token a cookie
   function storeTokenInCookie(token) {
@@ -58,11 +55,7 @@ function Login() {
     try {
       console.log("log 2", loginUser);
 
-<<<<<<< HEAD
-      const response = await axios.post("/api/usuarios/login", loginUser);
-=======
       const response = await axios.post(URL, loginUser);
->>>>>>> main
       console.log("response:  ", response);
       if (response) {
         const { token } = response.data;
