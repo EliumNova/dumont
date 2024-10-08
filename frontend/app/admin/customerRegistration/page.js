@@ -15,7 +15,6 @@ function CustomerRegistration() {
   console.log('store newCustomerStore', newCustomerStore);
   const [progress, setProgress] = useState(33);
   const [inPrincipales, setInPrincipales] = useState(true);
-
   const [inUbication, setInUbication] = useState(false);
   const [inHorus, setInHorus] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -84,12 +83,32 @@ function CustomerRegistration() {
         </div>
       </div>
       <form
-        onSubmit={handleSubmit}
+        // onSubmit={handleSubmit}
         className=" flex items-center flex-col  w-full  "
       >
-        {inPrincipales && <Principales />}
-        {inUbication && <Ubicacion />}
-        {inHorus && <Horus />}
+        {inPrincipales && (
+          <Principales
+            setInUbication={setInUbication}
+            setProgress={setProgress}
+            setInPrincipales={setInPrincipales}
+          />
+        )}
+        {inUbication && (
+          <Ubicacion
+            setInUbication={setInUbication}
+            setProgress={setProgress}
+            setInHorus={setInHorus}
+            setInPrincipales={setInPrincipales}
+          />
+        )}
+        {inHorus && (
+          <Horus
+            setInUbication={setInUbication}
+            setProgress={setProgress}
+            setInHorus={setInHorus}
+            setShowModal={setShowModal}
+          />
+        )}
 
         <div className="flex flex-row gap-4 justify-center items-center p-4">
           <button
@@ -100,7 +119,7 @@ function CustomerRegistration() {
             {inPrincipales ? <> Cancelar</> : <>Atras</>}
           </button>
           <button
-            onClick={handleSubmit}
+            // onClick={}
             className="w-[15rem] h-14 relative top-11
           bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
           >
