@@ -1,35 +1,35 @@
 'use client';
 import Image from 'next/image';
 import React, { useState } from 'react';
-import { TbUserEdit } from 'react-icons/tb';
+import { TbUserEdit, TbPlus } from 'react-icons/tb';
 import { IoIosArrowForward } from 'react-icons/io';
 import Link from 'next/link';
 
 function CustomerMenu() {
   const [user, setUsers] = useState([
     {
-      name: "Heineken",
-      photo: "/svg/Heineken_logo.svg",
+      name: 'Heineken',
+      photo: '/svg/Heineken_logo.svg',
       clients: [],
     },
     {
-      name: "Brahma",
-      photo: "/svg/Logo-cerveza-brahma.svg",
+      name: 'Brahma',
+      photo: '/svg/Logo-cerveza-brahma.svg',
       clients: [],
     },
     {
-      name: "Manaos",
-      photo: "/svg/Manaos_logo.svg",
+      name: 'Manaos',
+      photo: '/svg/Manaos_logo.svg',
       clients: [],
     },
     {
-      name: "Arcor",
-      photo: "/svg/Arcor_logo.svg",
+      name: 'Arcor',
+      photo: '/svg/Arcor_logo.svg',
       clients: [],
     },
     {
-      name: "Nestle",
-      photo: "/svg/Nestle_textlogo_blue.svg",
+      name: 'Nestle',
+      photo: '/svg/Nestle_textlogo_blue.svg',
       clients: [],
     },
   ]);
@@ -54,13 +54,13 @@ function CustomerMenu() {
         p-4 w-52 h-72 hover:scale-110 transition-all duration-150"
             key={index}
           >
-            <div>
+            <div className="w-[150px] h-[150px] rounded-full overflow-hidden flex justify-center items-center">
               <Image
                 width={150}
                 height={150}
                 src={user.photo}
-                alt={"user avatar profile"}
-                className="rounded-full"
+                alt={'user avatar profile'}
+                className="object-cover"
               />
             </div>
 
@@ -72,12 +72,13 @@ function CustomerMenu() {
             />
           </li>
         ))}
-        
-        <li className=" flex items-center justify-start mt-14 ml-5">
-         <Link  href={"/admin/customerRegistration"}>
-         <button className="rounded-full bg-principal text-white font-bold text-3xl w-10 h-10 hover:scale-125 transition-all duration-300" >
-            +
-          </button></Link>
+
+        <li className="flex items-center justify-center ">
+          <Link href={'/admin/customerRegistration'}>
+            <button className="rounded-full bg-principal text-white font-bold text-2xl w-12 h-12 flex justify-center items-center hover:scale-125 transition-all duration-300">
+              <TbPlus className="text-[1.25rem]" />
+            </button>
+          </Link>
         </li>
       </ul>
 
