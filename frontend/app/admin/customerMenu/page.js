@@ -1,43 +1,43 @@
-"use client";
-import Image from "next/image";
-import React, { useState } from "react";
-import { TbUserEdit } from "react-icons/tb";
-import { IoIosArrowForward } from "react-icons/io";
-import Link from "next/link";
+'use client';
+import Image from 'next/image';
+import React, { useState } from 'react';
+import { TbUserEdit } from 'react-icons/tb';
+import { IoIosArrowForward } from 'react-icons/io';
+import Link from 'next/link';
 
 function CustomerMenu() {
   const [user, setUsers] = useState([
     {
-      name: "Heineken",
-      photo: "/svg/Heineken_logo.svg",
+      name: 'Jacob Jones',
+      photo: '/UserIcon1.jpeg',
       clients: [],
     },
     {
-      name: "Brahma",
-      photo: "/svg/Logo-cerveza-brahma.svg",
+      name: 'Maria Jones',
+      photo: '/UserIcon2.jpeg',
       clients: [],
     },
     {
-      name: "Manaos",
-      photo: "/svg/Manaos_logo.svg",
+      name: 'Pamela Jones',
+      photo: '/UserIcon3.jpeg',
       clients: [],
     },
     {
-      name: "Arcor",
-      photo: "/svg/Arcor_logo.svg",
+      name: 'Roberta Jones',
+      photo: '/UserIcon4.jpeg',
       clients: [],
     },
     {
-      name: "Nestle",
-      photo: "/svg/Nestle_textlogo_blue.svg",
+      name: 'Carlos Jones',
+      photo: '/UserIcon5.jpeg',
       clients: [],
     },
   ]);
 
   return (
     <div
-      className=" flex flex-col gap-12 md:justify-center 
-    items-center h-[100%] w-3/4 p-12 m-auto"
+      className="flex flex-col gap-12 md:justify-center 
+    items-center h-[100%] w-3/4 p-12 m-auto flex-wrap"
     >
       <input
         type="text"
@@ -55,26 +55,32 @@ function CustomerMenu() {
             key={index}
           >
             <div>
-              <Image
-                width={150}
-                height={150}
-                src={user.photo}
-                alt={"user avatar profile"}
-                className="rounded-full"
-              />
+              <Link href={'/admin/customerMenu/DispositivosMenu'}>
+                <Image
+                  width={200}
+                  height={200}
+                  src={user.photo}
+                  alt={'user avatar profile'}
+                  className="rounded-full"
+                />
+              </Link>
             </div>
 
             <h3 className="font-bold text-xs text-white">{user.name}</h3>
 
-            <TbUserEdit className="text-text-icon cursor-pointer w-10 h-10 left-3 relative" />
+            <TbUserEdit
+              className="text-text-icon cursor-pointer w-10 h-10 left-3 relative"
+              onClick={() => console.log('1')}
+            />
           </li>
         ))}
-        
-        <li className=" flex items-center justify-start mt-14 ml-5">
-         <Link  href={"/admin/customerRegistration"}>
-         <button className="rounded-full bg-principal text-white font-bold text-3xl w-10 h-10 hover:scale-125 transition-all duration-300" >
-            +
-          </button></Link>
+
+        <li className=" flex items-start justify-start mt-14 ml-5">
+          <Link href={'/admin/customerRegistration'}>
+            <button className="rounded-full bg-principal text-white font-bold text-3xl w-20 h-20 hover:scale-125 transition-all duration-300">
+              +
+            </button>
+          </Link>
         </li>
       </ul>
 
