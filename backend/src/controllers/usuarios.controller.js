@@ -1,8 +1,8 @@
-import expressAsyncHandler from "express-async-handler";
-import { Usuarios } from "../models/Usuarios.js";
-import { generateToken } from "../../utils/utilsUsuarios.js";
-import { handleError } from "../../utils/utilsErrors.js";
-import bcrypt from "bcryptjs";
+import expressAsyncHandler from 'express-async-handler';
+import { Usuarios } from '../models/Usuarios.js';
+import { generateToken } from '../../utils/utilsUsuarios.js';
+import { handleError } from '../../utils/utilsErrors.js';
+import bcrypt from 'bcryptjs';
 
 const createUsuarios = expressAsyncHandler(async (req, res) => {
   try {
@@ -51,7 +51,7 @@ const updateUsuario = expressAsyncHandler(async (req, res) => {
       const updatedUsuario = await usuario.save();
       res.send(updatedUsuario);
     } else {
-      res.status(404).send({ message: "Usuario no encontrado" });
+      res.status(404).send({ message: 'Usuario no encontrado' });
     }
   } catch (error) {
     handleError(error, res);
@@ -65,8 +65,8 @@ const deleteUsuario = expressAsyncHandler(async (req, res) => {
         idUsuarios: req.params.id,
       },
     });
-    res.send({ message: "Usuario eliminado" });
-    res.status(404).send({ message: "Usuario no encontrado" });
+    res.send({ message: 'Usuario eliminado' });
+    res.status(404).send({ message: 'Usuario no encontrado' });
   } catch (error) {
     handleError(error, res);
   }
@@ -78,7 +78,7 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
     const usuario = await Usuarios.findOne({ where: { Email } });
     console.log(usuario.Password);
     if (usuario) {
-      if (bcrypt.compareSync(Password, usuario.Password)) {
+      if (Password == usuario.Password) {
         const token = generateToken(usuario);
         res.send({
           id: usuario.idUsuarios,
@@ -89,7 +89,7 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
         return;
       }
     }
-    res.status(401).send({ message: "Email o contraseña incorrectos" });
+    res.status(401).send({ message: 'Email o contraseña incorrectos' });
   } catch (error) {
     handleError(error, res);
   }
