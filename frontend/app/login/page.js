@@ -32,7 +32,7 @@ function Login() {
   const [method, setMethod] = useState(false);
   const [ableNewPassword, setAbleNewPassword] = useState(false);
 
-  let URL = `https://dumont-back.onrender.com/usuarios/login`;
+  let URL = `https://dumont-back.onrender.com/api/usuarios/login`;
   const dispatch = useDispatch();
   // llevar token a cookie
   function storeTokenInCookie(token) {
