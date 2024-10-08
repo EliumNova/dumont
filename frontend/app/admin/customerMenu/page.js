@@ -8,36 +8,36 @@ import Link from 'next/link';
 function CustomerMenu() {
   const [user, setUsers] = useState([
     {
-      name: 'Jacob Jones',
-      photo: '/UserIcon1.jpeg',
+      name: "Heineken",
+      photo: "/svg/Heineken_logo.svg",
       clients: [],
     },
     {
-      name: 'Maria Jones',
-      photo: '/UserIcon2.jpeg',
+      name: "Brahma",
+      photo: "/svg/Logo-cerveza-brahma.svg",
       clients: [],
     },
     {
-      name: 'Pamela Jones',
-      photo: '/UserIcon3.jpeg',
+      name: "Manaos",
+      photo: "/svg/Manaos_logo.svg",
       clients: [],
     },
     {
-      name: 'Roberta Jones',
-      photo: '/UserIcon4.jpeg',
+      name: "Arcor",
+      photo: "/svg/Arcor_logo.svg",
       clients: [],
     },
     {
-      name: 'Carlos Jones',
-      photo: '/UserIcon5.jpeg',
+      name: "Nestle",
+      photo: "/svg/Nestle_textlogo_blue.svg",
       clients: [],
     },
   ]);
 
   return (
     <div
-      className="flex flex-col gap-12 md:justify-center 
-    items-center h-[100%] w-3/4 p-12 m-auto flex-wrap"
+      className=" flex flex-col gap-12 md:justify-center 
+    items-center h-[100%] w-3/4 p-12 m-auto"
     >
       <input
         type="text"
@@ -55,15 +55,13 @@ function CustomerMenu() {
             key={index}
           >
             <div>
-              <Link href={'/admin/customerMenu/DispositivosMenu'}>
-                <Image
-                  width={200}
-                  height={200}
-                  src={user.photo}
-                  alt={'user avatar profile'}
-                  className="rounded-full"
-                />
-              </Link>
+              <Image
+                width={150}
+                height={150}
+                src={user.photo}
+                alt={"user avatar profile"}
+                className="rounded-full"
+              />
             </div>
 
             <h3 className="font-bold text-xs text-white">{user.name}</h3>
@@ -74,13 +72,12 @@ function CustomerMenu() {
             />
           </li>
         ))}
-
-        <li className=" flex items-start justify-start mt-14 ml-5">
-          <Link href={'/admin/customerRegistration'}>
-            <button className="rounded-full bg-principal text-white font-bold text-3xl w-20 h-20 hover:scale-125 transition-all duration-300">
-              +
-            </button>
-          </Link>
+        
+        <li className=" flex items-center justify-start mt-14 ml-5">
+         <Link  href={"/admin/customerRegistration"}>
+         <button className="rounded-full bg-principal text-white font-bold text-3xl w-10 h-10 hover:scale-125 transition-all duration-300" >
+            +
+          </button></Link>
         </li>
       </ul>
 
