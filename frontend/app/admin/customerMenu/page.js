@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import { TbUserEdit, TbPlus } from 'react-icons/tb';
 import { IoIosArrowForward } from 'react-icons/io';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'; // Importar useRouter
 
 function CustomerMenu() {
+  const router = useRouter(); // Usar useRouter para redirección
   const [user, setUsers] = useState([
     {
       name: 'Heineken',
@@ -36,7 +38,7 @@ function CustomerMenu() {
 
   return (
     <div
-      className=" flex flex-col gap-12 md:justify-center 
+      className="flex flex-col gap-12 md:justify-center 
     items-center h-[100%] w-3/4 p-12 m-auto"
     >
       <input
@@ -53,6 +55,7 @@ function CustomerMenu() {
             className="flex flex-col gap-2 justify-center items-center mx-auto
         p-4 w-52 h-72 hover:scale-110 transition-all duration-150"
             key={index}
+            onClick={() => router.push('/admin/customerMenu/distribuitorMenu')} // Redirigir al hacer clic en el cliente
           >
             <div className="w-[150px] h-[150px] rounded-full overflow-hidden flex justify-center items-center">
               <Image
@@ -68,7 +71,7 @@ function CustomerMenu() {
 
             <TbUserEdit
               className="text-text-icon cursor-pointer w-10 h-10 left-3 relative"
-              onClick={() => console.log('1')}
+              onClick={() => router.push('/admin/distribuitorMenu')} // Redirigir al hacer clic en el ícono de edición
             />
           </li>
         ))}

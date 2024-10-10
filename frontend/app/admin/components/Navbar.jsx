@@ -14,16 +14,22 @@ function Navbar() {
   let userRegisterUrl = pathname === '/admin/userRegistration';
   let customerRegisterUrl = pathname === '/admin/customerRegistration';
   let customerMenu = pathname === '/admin/customerMenu';
+  let distribuitorMenu = pathname === '/admin/customerMenu/distribuitorMenu';
+
+  const getBackUrl = () => {
+    if (distribuitorMenu) return '/admin/customerMenu';
+    if (customerRegisterUrl) return '/admin/customerMenu';
+    return '/admin';
+  };
 
   return (
     <div
       className={`z-40 text-white flex flex-col md:flex-row justify-between px-4 md:px-8 p-3 shadow-[#35334426] shadow-sm border-b-2 border-[#12141D]
-      ${isAdminSubroute ? 'bg-[#12141D]' : 'bg-[#12141D]'}
-    `}
+      ${isAdminSubroute ? 'bg-[#12141D]' : 'bg-[#12141D]'}`}
     >
       <div className="flex flex-row gap-2 md:gap-4 justify-center items-center">
         {isAdminSubroute && (
-          <Link href={customerRegisterUrl ? '/admin/customerMenu' : '/admin'}>
+          <Link href={getBackUrl()}>
             <IoIosArrowForward className="rotate-180 h-8 w-10 cursor-pointer transition-all duration-150 hover:scale-110" />
           </Link>
         )}
@@ -49,6 +55,11 @@ function Navbar() {
         {customerMenu && (
           <h2 className="font-bold text-sm md:text-base transition-all duration-150">
             Menú Clientes
+          </h2>
+        )}
+        {distribuitorMenu && (
+          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
+            Lista Distribuidores
           </h2>
         )}
       </div>
