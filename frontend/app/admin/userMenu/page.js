@@ -5,8 +5,6 @@ import Link from 'next/link';
 function CustomerMenu() {
   return (
     <div className="">
-      <h3 className="text-3xl font-bold text-center">Jacob Jall</h3>
-
       <div className="flex flex-col justify-center items-center ">
         <Table />
         <Link
