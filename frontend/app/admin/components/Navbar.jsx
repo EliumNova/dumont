@@ -15,6 +15,8 @@ function Navbar() {
   let customerRegisterUrl = pathname === '/admin/customerRegistration';
   let customerMenu = pathname === '/admin/customerMenu';
   let distribuitorMenu = pathname === '/admin/customerMenu/distribuitorMenu';
+  let userMenu = pathname === '/admin/userMenu';
+  let devicesMenu = pathname === '/admin/devicesMenu';
 
   const getBackUrl = () => {
     if (distribuitorMenu) return '/admin/customerMenu';
@@ -60,6 +62,16 @@ function Navbar() {
         {distribuitorMenu && (
           <h2 className="font-bold text-sm md:text-base transition-all duration-150">
             Lista Distribuidores
+          </h2>
+        )}
+        {userMenu && (
+          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
+            Menú de Usuarios
+          </h2>
+        )}
+        {devicesMenu && (
+          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
+            Menú de Dispositivos
           </h2>
         )}
       </div>
