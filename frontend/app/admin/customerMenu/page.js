@@ -57,7 +57,7 @@ function CustomerMenu() {
             key={index}
             onClick={() => router.push('/admin/customerMenu/distribuitorMenu')} // Redirigir al hacer clic en el cliente
           >
-            <div className="w-[150px] h-[150px] rounded-full overflow-hidden flex justify-center items-center">
+            <div className="w-[150px] h-[150px] rounded-full overflow-hidden flex justify-center items-center cursor-pointer">
               <Image
                 width={150}
                 height={150}
