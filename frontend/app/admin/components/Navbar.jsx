@@ -1,13 +1,23 @@
 'use client';
 import Image from 'next/image';
 import React from 'react';
+import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { useSelector, useDispatch } from 'react-redux';
 import { IoIosArrowForward } from 'react-icons/io';
 import Link from 'next/link';
+import { setUser } from '@/lib/slices/authSlice';
+
 
 function Navbar() {
   const pathname = usePathname();
   console.log('ruta: ', pathname);
+  const user = useSelector(state => state.auth.user)
+  console.log(user);
+
+    
+  
+  
 
   let isAdminRoot = pathname === '/admin';
   let isAdminSubroute = pathname.startsWith('/admin/');
@@ -65,8 +75,8 @@ function Navbar() {
       </div>
       <div className="flex flex-row gap-2 md:gap-3 mt-2 md:mt-0">
         <div className="text-right">
-          <p className="text-xs md:text-base font-semibold">Jerome Bell</p>
-          <p className="text-xs text-white opacity-60">jeromebell@gmail.com</p>
+          <p className="text-xs md:text-base font-semibold">{user.Name}</p>
+          <p className="text-xs text-white opacity-60">{user.Email}</p>
         </div>
         <Image
           width={40}

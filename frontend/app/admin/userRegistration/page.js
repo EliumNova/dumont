@@ -1,43 +1,46 @@
 'use client';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import ReactInputMask from 'react-input-mask';
 import InputField from '../components/InputField';
 import PasswordField from '../components/PasswordField';
 import ModalWindow from '../components/ModalWindow';
 import { Griffy } from 'next/font/google';
+import { userCreate } from '@/lib/slices/users/userAction';
 
 function UserRegistration() {
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState({
     first: false,
     second: false,
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [registerUser, setRegisterUser] = useState({
-    name: '',
-    email: '',
-    password: '',
-    validatePassword: '',
-    admin: false,
-    dni: '',
-    phone: '',
+    Name: '',
+    Email: '',
+    Password: '',
+    ValidatePassword: '',
+    isAdmin: false,
+    DNI: '',
+    Telefono: '',
   });
   const [modal, setModal] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const { name, email, password, validatePassword, dni, phone } =
+    const { Name, Email, Password, ValidatePassword, DNI, Telefono } =
       registerUser;
 
     // Validar que todos los campos están llenos
-    if (!name || !email || !password || !validatePassword || !dni || !phone) {
+    if (!Name || !Email || !Password || !ValidatePassword || !DNI || !Telefono) {
       setErrorMessage('Todos los campos son obligatorios.');
       setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
 
     // Validar que las contraseñas coincidan
-    if (password !== validatePassword) {
+    if (Password !== ValidatePassword) {
       setErrorMessage('Las contraseñas no coinciden.');
       setTimeout(() => setErrorMessage(''), 3000);
       return;
@@ -46,7 +49,7 @@ function UserRegistration() {
     // Validar la contraseña
     const passwordRegex =
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{10,}$/;
-    if (!passwordRegex.test(password)) {
+    if (!passwordRegex.test(Password)) {
       setErrorMessage(
         'La contraseña debe tener al menos 10 caracteres, una letra, un número y un símbolo.'
       );
@@ -56,22 +59,24 @@ function UserRegistration() {
 
     // Validar el formato del teléfono
     const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
-    if (!phoneRegex.test(phone)) {
+    if (!phoneRegex.test(Telefono)) {
       setErrorMessage('Número de teléfono inválido.');
       setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
     console.log(JSON.stringify(registerUser, null, 2));
 
+    dispatch(userCreate(registerUser))
+
     // Resetear el formulario
     setRegisterUser({
-      name: '',
-      email: '',
-      password: '',
-      validatePassword: '',
-      admin: false,
-      dni: '',
-      phone: '',
+      Name: '',
+      Email: '',
+      Password: '',
+      ValidatePassword: '',
+      isAdmin: false,
+      DNI: '',
+      Telefono: '',
     });
 
     setModal(true);
@@ -86,15 +91,15 @@ function UserRegistration() {
     const processedValue = name === 'admin' ? value === 'true' : value;
 
     const validations = {
-      dni: /^[0-9]*$/,
-      phone: /^[0-9\s()]*$/,
-      name: /^[a-zA-Z\s]*$/,
-      email: /^[a-zA-Z@.\s]*$/,
-      password: /^[A-Za-z\d\W_]*$/,
-      validatePassword: /^[A-Za-z\d\W_]*$/,
+      DNI: /^[0-9]*$/,
+      Telefono: /^[0-9\s()]*$/,
+      Name: /^[a-zA-Z\s]*$/,
+      Email: /^[a-zA-Z@.\s]*$/,
+      Password: /^[A-Za-z\d\W_]*$/,
+      ValidatePassword: /^[A-Za-z\d\W_]*$/,
     };
 
-    if (name === 'phone') {
+    if (name === 'Telefono') {
       const maskedValue = e.target.inputElement
         ? e.target.inputElement.value
         : value;
@@ -125,7 +130,7 @@ function UserRegistration() {
   };
 
   return (
-    <div className="container mx-auto flex flex-col justify-center items-center justify-center my-5">
+    <div className="container mx-auto flex flex-col items-center justify-center my-5">
       {modal ? (
         <ModalWindow text={'¡Usuario creado con èxito!'} />
       ) : (
@@ -140,37 +145,37 @@ function UserRegistration() {
         onSubmit={handleSubmit}
         className="flex flex-col items-center w-full lg:w-9/12 xl:w-10/12  my-2 px-4 text-white"
       >
-        <div className="container mx-auto grid grid-cols-1 w-full  items-center xl:grid-cols-2 justify-items-center xl:items-center">
+        <div className="container mx-auto grid grid-cols-1 w-full  items-center xl:grid-cols-2 justify-items-center xl:items-center ">
           <InputField
             label="Nombre Completo"
-            id="name"
-            value={registerUser.name}
+            id="Name"
+            value={registerUser.Name}
             onChange={handleChange}
             placeholder="Ingresa tu nombre completo"
             required
-            className="col-span-1 xl:col-start-1 row-start-1 lg:w-[32rem] gap-3 font-semibold px-4 "
-            inputClassName="font-light"
+            className="col-span-1 xl:col-start-1 row-start-1 lg:w-[32rem] gap-3 font-semibold px-4"
+            inputClassName="font-light text-black"
           />
           <InputField
             label="DNI"
-            id="dni"
-            value={registerUser.dni}
+            id="DNI"
+            value={registerUser.DNI}
             onChange={handleChange}
             placeholder="Ingresa tu documento"
             required
             className="col-span-1 xl:col-start-2 xl:row-start-1 lg:w-[32rem] gap-3 font-semibold px-4"
-            inputClassName="font-light"
+            inputClassName="font-light text-black"
           />
           <InputField
             label="Email"
-            id="email"
-            value={registerUser.email}
+            id="Email"
+            value={registerUser.Email}
             onChange={handleChange}
             placeholder="Ingresa tu email"
             type="email"
             required
             className="col-span-1 xl:col-start-1 xl:row-start-2 lg:w-[32rem] gap-3 font-semibold px-4"
-            inputClassName="font-light"
+            inputClassName="font-light text-black"
           />
           <div className="col-span-1 xl:col-start-2 xl:row-start-2 flex flex-col gap-3 w-full lg:w-[32rem] px-4">
             <label htmlFor="phone" className="text-sm font-semibold">
@@ -178,30 +183,30 @@ function UserRegistration() {
             </label>
             <ReactInputMask
               mask="(999) 999-9999"
-              name="phone"
-              value={registerUser.phone}
+              name="Telefono"
+              value={registerUser.Telefono}
               onChange={handleChange}
               placeholder="Ingresa tu número de teléfono"
-              className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base  text-black"
             />
           </div>
 
           <PasswordField
             label="Password"
-            name="password"
-            value={registerUser.password}
+            name="Password"
+            value={registerUser.Password}
             showPassword={showPassword.first}
             togglePassword={() =>
               setShowPassword((prev) => ({ ...prev, first: !prev.first }))
             }
             onChange={handleChange}
             required
-            className="col-span-1 xl:col-start-1 xl:row-start-3"
+            className="col-span-1 xl:col-start-1 xl:row-start-3"            
           />
           <PasswordField
             label="Repetir Password"
-            name="validatePassword"
-            value={registerUser.validatePassword}
+            name="ValidatePassword"
+            value={registerUser.ValidatePassword}
             showPassword={showPassword.second}
             togglePassword={() =>
               setShowPassword((prev) => ({ ...prev, second: !prev.second }))
@@ -216,10 +221,10 @@ function UserRegistration() {
             </label>
             <select
               id="admin"
-              name="admin"
-              value={registerUser.admin.toString()}
+              name="isAdmin"
+              value={registerUser.isAdmin.toString()}
               onChange={handleChange}
-              className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
               required
             >
               <option value="true">Sí</option>

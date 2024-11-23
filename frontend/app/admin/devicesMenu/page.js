@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import DevicesTable from './components/DevicesTable';
 import NewDevice from './components/NewDevice';
-import ModalWindow from '../../components/ModalWindow';
+import ModalWindow from '../components/ModalWindow';
 import Image from 'next/image';
 
 function DispositivosMenu() {

@@ -14,9 +14,13 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, action) {
-      state.user = action.payload;
+      console.log("SetUser", action.payload);
+      
+      state.user = action.payload;      
     },
     setToken(state, action) {
+      console.log("SetToken", action.payload);
+      
       state.token = action.payload;
     },
     setAuthenticated(state, action) {
@@ -40,11 +44,14 @@ const authSlice = createSlice({
   },
 });
 
+console.log(initialState.user);
+
+
 export const {
   setUser,
-  setName,
-  setDNI,
-  setEmail,
+  // setName,
+  // setDNI,
+  // setEmail,
   setToken,
   setAuthenticated,
   setLoading,
