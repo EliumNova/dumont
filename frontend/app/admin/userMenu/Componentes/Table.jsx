@@ -37,26 +37,26 @@ function Table() {
     },
   ]);
   return (
-    <div className="flex flex-col border border-[#12141D] rounded w-9/12 bg-[#12141D]">
+    <div className="flex flex-col border border-[#12141D] rounded bg-[#12141D] text-center">
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
           <div className="overflow-hidden">
             <table className="min-w-full text-left text-sm font-light">
               <thead className="border-b font-medium dark:border-neutral-500">
                 <tr className="text-white">
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3">
                     Nombre completo
                   </th>
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3">
                     Correo Electronico
                   </th>
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3">
                     DNI
                   </th>
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3">
                     Rol Administrador
                   </th>
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3">
                     Acciones
                   </th>
                 </tr>
@@ -67,19 +67,17 @@ function Table() {
                     className="border-b transition duration-300 ease-in-out text-white hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
                     key={index}
                   >
-                    <td className="whitespace-nowrap px-10 py-6 font-medium">
+                    <td className="whitespace-nowrap px-6 py-3 font-medium">
                       {users.name}
                     </td>
-                    <td className="whitespace-nowrap px-10 py-1">
+                    <td className="whitespace-nowrap px-6 py-3">
                       {users.email}
                     </td>
-                    <td className="whitespace-nowrap px-10 py-1">
-                      {users.dni}
-                    </td>
-                    <td className="whitespace-nowrap px-10 py-1">
+                    <td className="whitespace-nowrap px-6 py-3">{users.dni}</td>
+                    <td className="whitespace-nowrap px-6 py-3">
                       {users.rolAdmin}
                     </td>
-                    <td className="whitespace-nowrap px-10 py-1">
+                    <td className="whitespace-nowrap px-6 py-3">
                       {users.icon}
                       {<EditUserBtn datos={users} />}
                     </td>

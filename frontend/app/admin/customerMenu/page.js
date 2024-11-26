@@ -38,7 +38,7 @@ function CustomerMenu() {
 
   return (
     <div
-      className="flex flex-col gap-12 md:justify-center 
+      className="flex flex-col gap-2 md:justify-center 
     items-center h-[100%] w-3/4 p-12 m-auto"
     >
       <input
@@ -53,14 +53,14 @@ function CustomerMenu() {
         {user.map((user, index) => (
           <li
             className="flex flex-col gap-2 justify-center items-center mx-auto
-        p-4 w-52 h-72 hover:scale-110 transition-all duration-150"
+        p-4 w-40 h-72 hover:scale-110 transition-all duration-150"
             key={index}
             onClick={() => router.push('/admin/customerMenu/distribuitorMenu')} // Redirigir al hacer clic en el cliente
           >
             <div className="w-[150px] h-[150px] rounded-full overflow-hidden flex justify-center items-center cursor-pointer">
               <Image
-                width={150}
-                height={150}
+                width={120}
+                height={120}
                 src={user.photo}
                 alt={'user avatar profile'}
                 className="object-cover"

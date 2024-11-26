@@ -1,137 +1,139 @@
 'use client';
+
 import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import UserMenu from './userMenu/page.js';
+import CustomerMenu from './customerMenu/page.js';
+import DevicesMenu from './devicesMenu/page.js';
 
 function AdminMenu() {
   const usuarioIniciado = useSelector((state) => state.auth.user);
-  console.log('user:', usuarioIniciado);
+  const [activeMenu, setActiveMenu] = useState(null);
 
   return (
     <div
-      className="w-full h-full p-4 flex flex-col items-center justify-center bg-cover bg-center"
+      className="w-full h-screen p-4 flex flex-col items-center justify-center bg-cover bg-center"
       style={{
-        backgroundImage: "url('/path/to/your/background-image.jpg')", // Reemplaza con la ruta de tu imagen
+        backgroundImage: "url('/path/to/your/background-image.jpg')",
       }}
     >
-      {/* Barra de iconos en la parte superior */}
-      <div className="w-auto flex items-center justify-center bg-[#F2F5F6] p-2 pr-4 pl-4 rounded-sm shadow-md backdrop-blur-md">
-        <ul className="flex gap-8">
-          <Link href={'/admin/customerMenu'}>
-            <li className="flex flex-col items-center cursor-pointer hover:scale-105 transition-all duration-200">
-              <div className="flex items-center justify-center w-[50px] h-[50px]">
-                <Image
-                  width={35}
-                  height={35}
-                  src={'/svg/clientMenu.svg'}
-                  alt="Clientes"
-                  className="rounded-sm"
-                />
+      {/* Barra de iconos */}
+      <div className="w-full max-w-sm flex flex-wrap items-center justify-center bg-[#F2F5F6] p-2 rounded-full shadow-md backdrop-blur-md">
+        <ul className="flex flex-wrap gap-4 justify-center">
+          {/* Botones del menú */}
+          {[
+            { name: 'Usuarios', icon: '/svg/userMenu.svg', id: 'user' },
+            { name: 'Clientes', icon: '/svg/clientMenu.svg', id: 'customer' },
+            {
+              name: 'Dispositivos',
+              icon: '/svg/devicesMenu.svg',
+              id: 'devices',
+            },
+            {
+              name: 'Comunicación',
+              icon: '/svg/communicationMenu.svg',
+              id: 'communication',
+            },
+            {
+              name: 'Distribuidores',
+              icon: '/svg/distributorsMenu.svg',
+              id: 'distributors',
+            },
+            {
+              name: 'Geolocalización',
+              icon: '/svg/geolocationMenu.svg',
+              id: 'geolocation',
+            },
+          ].map((menu) => (
+            <li
+              key={menu.id}
+              className="relative flex flex-col items-center cursor-pointer group"
+              onClick={() => setActiveMenu(menu.id)}
+            >
+              {/* Ícono */}
+              <div className="flex items-center justify-center w-[40px] h-[40px] p-2 hover:scale-105 transition-all duration-200 bg-white rounded-full">
+                <Image width={30} height={30} src={menu.icon} alt={menu.name} />
               </div>
-              <h3 className="text-center text-[#191920] text-sm mt-2">
-                Clientes
-              </h3>
-            </li>
-          </Link>
 
-          <Link href={'/admin/userMenu'}>
-            <li className="flex flex-col items-center cursor-pointer hover:scale-105 transition-all duration-200">
-              <div className="flex items-center justify-center w-[50px] h-[50px]">
-                <Image
-                  width={35}
-                  height={35}
-                  src={'/svg/userMenu.svg'}
-                  alt="Usuarios"
-                  className="rounded-sm"
-                />
-              </div>
-              <h3 className="text-center text-[#191920] text-sm mt-2">
-                Usuarios
-              </h3>
+              {/* Nombre fuera del menú (visible con hover) */}
+              <span className="absolute top-12 text-sm text-[#191920] bg-white p-1 rounded-md shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {menu.name}
+              </span>
             </li>
-          </Link>
-
-          <Link href={'/admin/devicesMenu'}>
-            <li className="flex flex-col items-center cursor-pointer hover:scale-105 transition-all duration-200">
-              <div className="flex items-center justify-center w-[50px] h-[50px]">
-                <Image
-                  width={35}
-                  height={35}
-                  src={'/svg/devicesMenu.svg'}
-                  alt="Dispositivos"
-                  className="rounded-sm"
-                />
-              </div>
-              <h3 className="text-center text-[#191920] text-sm mt-2">
-                Dispositivos
-              </h3>
-            </li>
-          </Link>
-
-          <Link href={'/admin/communicationMenu'}>
-            <li className="flex flex-col items-center cursor-pointer hover:scale-105 transition-all duration-200">
-              <div className="flex items-center justify-center w-[50px] h-[50px]">
-                <Image
-                  width={35}
-                  height={35}
-                  src={'/svg/communicationMenu.svg'}
-                  alt="Comunicación"
-                  className="rounded-sm"
-                />
-              </div>
-              <h3 className="text-center text-[#191920] text-sm mt-2">
-                Comunicación
-              </h3>
-            </li>
-          </Link>
-
-          <Link href={'/admin/communicationMenu'}>
-            <li className="flex flex-col items-center cursor-pointer hover:scale-105 transition-all duration-200">
-              <div className="flex items-center justify-center w-[50px] h-[50px]">
-                <Image
-                  width={35}
-                  height={35}
-                  src={'/svg/distributorsMenu.svg'}
-                  alt="Distribuidores"
-                  className="rounded-sm"
-                />
-              </div>
-              <h3 className="text-center text-[#191920] text-sm mt-2">
-                Distribuidores
-              </h3>
-            </li>
-          </Link>
-
-          <Link href={'/admin/communicationMenu'}>
-            <li className="flex flex-col items-center cursor-pointer hover:scale-105 transition-all duration-200">
-              <div className="flex items-center justify-center w-[50px] h-[50px]">
-                <Image
-                  width={35}
-                  height={35}
-                  src={'/svg/geolocationMenu.svg'}
-                  alt="Geolocalización"
-                  className="rounded-sm"
-                />
-              </div>
-              <h3 className="text-center text-[#191920] text-sm mt-2">
-                Geolocalización
-              </h3>
-            </li>
-          </Link>
+          ))}
         </ul>
       </div>
 
-      {/* Contenido principal en el centro de la pantalla */}
-      <div className="opacity-0 flex flex-col items-center justify-center w-full max-w-4xl h-full p-10 shadow-lg rounded-sm mt-4 backdrop-blur-md">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">
-          Panel de Administración
-        </h1>
-        <p className="text-center text-gray-600">
-          Selecciona una opción del menú superior para comenzar a administrar el
-          sistema.
-        </p>
-      </div>
+      {/* Ventana modal */}
+      {activeMenu && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pt-5">
+          {/* Fondo blurreado */}
+          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm pt-10"></div>
+
+          {/* Contenido del modal */}
+          <div className="relative w-full max-w-lg md:max-w-2xl lg:max-w-5xl bg-white rounded-md shadow-lg p-6 z-10 mt-10">
+            {/* Botón de cerrar */}
+            <button
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
+              onClick={() => setActiveMenu(null)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {/* Contenido dinámico del modal */}
+            <div className="overflow-y-auto">
+              {activeMenu === 'user' && <UserMenu />}
+              {activeMenu === 'customer' && <CustomerMenu />}
+              {activeMenu === 'devices' && <DevicesMenu />}
+              {activeMenu === 'communication' && (
+                <div>
+                  <h1 className="text-2xl">Menú de Comunicación</h1>
+                  {/* Contenido adicional aquí */}
+                </div>
+              )}
+              {activeMenu === 'distributors' && (
+                <div>
+                  <h1 className="text-2xl">Menú de Distribuidores</h1>
+                  {/* Contenido adicional aquí */}
+                </div>
+              )}
+              {activeMenu === 'geolocation' && (
+                <div>
+                  <h1 className="text-2xl">Menú de Geolocalización</h1>
+                  {/* Contenido adicional aquí */}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contenido principal si no hay menú activo */}
+      {!activeMenu && (
+        <div className="opacity-0 flex flex-col items-center justify-center w-full max-w-4xl h-full p-10 shadow-lg rounded-sm mt-4 backdrop-blur-md">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+            Panel de Administración
+          </h1>
+          <p className="text-center text-gray-600">
+            Selecciona una opción del menú superior para comenzar a administrar
+            el sistema.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

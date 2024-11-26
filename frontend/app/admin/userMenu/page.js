@@ -2,14 +2,14 @@ import Table from './Componentes/Table';
 import EditUserBtn from './Componentes/EditUserBtn';
 import Link from 'next/link';
 
-function CustomerMenu() {
+function UserMenu() {
   return (
     <div className="">
       <div className="flex flex-col justify-center items-center ">
         <Table />
         <Link
           href="/admin/userRegistration"
-          className="p-1 text-blue-500 flex items-center my-5"
+          className="p-1 text-blue-500 flex items-center mt-4"
         >
           <img src="/svg/addNewUser.svg" className="h-20"></img>
           Agregar nuevo usuario
@@ -19,4 +19,4 @@ function CustomerMenu() {
   );
 }
 
-export default CustomerMenu;
+export default UserMenu;
