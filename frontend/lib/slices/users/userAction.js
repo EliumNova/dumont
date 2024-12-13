@@ -25,8 +25,8 @@ export const getAllUsers = () => {
 export const userUpdate = (id, payload) => {
     console.log(id, payload);
 
-    return(dispatch) => {
-        axios.put(`${USERS}/update/${id}`, payload)
+    return async (dispatch) => {
+        await axios.put(`${USERS}/update/${id}`, payload)
         .then(res => dispatch(updateUser(res.data)))
         .catch(err => console.log(err))
     }    

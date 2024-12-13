@@ -101,8 +101,10 @@ function EditUserBtn({ datos, onCloseModal }) {
   }
 
   const handleCloseModal = () => {
-    setEditUser(false);
-    onCloseModal();
+    setTimeout(() => {
+      setEditUser(false);
+      onCloseModal();      
+    }, '500');
   }
 
   return (

@@ -40,19 +40,22 @@ function Table() {
   //   },
   // ]);
   const users = useSelector(state => state.users.allUsers)
+  const userLogueado = useSelector(state => state.auth.user)
   const [refresh, setRefresh] = useState(false);
 
-  useEffect(() => {
-    if(refresh === true) {
-      dispatch(getAllUsers())
-      setRefresh(false)
-    } else { dispatch(getAllUsers())}        
+  useEffect(() => {   
+      dispatch(getAllUsers())        
   }, [dispatch, refresh]);
 
   const forceRender = () => {
     setRefresh(!refresh)
   }
   console.log(refresh);
+  console.log(userLogueado);
+
+  const filterUsers = users.filter(e => e.idUsuarios !== userLogueado.id)   //sacamos el usuario logueado
+  console.log(filterUsers);
+  
   
 
   console.log("aca tienen que estar todos los usuarios", users);
@@ -83,7 +86,7 @@ function Table() {
                 </tr>
               </thead>
               <tbody>
-                {users && users.map((user, index) => (
+                {filterUsers && filterUsers.map((user, index) => (
                   <tr
                     className="border-b transition duration-300 ease-in-out text-white hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
                     key={index}
