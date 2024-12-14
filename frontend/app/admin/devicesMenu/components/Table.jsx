@@ -47,25 +47,25 @@ function Table() {
             <table className="min-w-full text-left text-sm font-light">
               <thead className="border-b font-medium dark:border-neutral-500">
                 <tr className="text-white">
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3 text-center">
                     Número de serie
                   </th>
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3 text-center">
                     Marca
                   </th>
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3 text-center">
                     Modelo
                   </th>
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3 text-center">
                     Pulgadas
                   </th>
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3 text-center">
                     Estado
                   </th>
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3 text-center">
                     Localización a tiempo real
                   </th>
-                  <th scope="col" className="px-10 py-6">
+                  <th scope="col" className="px-6 py-3 text-center">
                     Editar
                   </th>
                 </tr>
@@ -76,19 +76,19 @@ function Table() {
                     key={index}
                     className="border-t border-slate-400 text-gray-600 font-light"
                   >
-                    <td className="whitespace-nowrap px-10 py-6 text-center">
+                    <td className="whitespace-nowrap px-6 py-3 text-center">
                       {device.numSerie}
                     </td>
-                    <td className="whitespace-nowrap px-10 py-6 text-center">
+                    <td className="whitespace-nowrap px-6 py-3 text-center">
                       {device.marca}
                     </td>
-                    <td className="whitespace-nowrap px-10 py-6 text-center">
+                    <td className="whitespace-nowrap px-6 py-3 text-center">
                       {device.modelo}
                     </td>
-                    <td className="whitespace-nowrap px-10 py-6 text-center">
+                    <td className="whitespace-nowrap px-6 py-3 text-center">
                       {device.pulgadas}
                     </td>
-                    <td className="whitespace-nowrap px-10 py-6 text-center flex justify-center gap-2 items-center">
+                    <td className="whitespace-nowrap px-6 py-3 text-center flex justify-center gap-2 items-center">
                       <div
                         className={`w-4 h-4 rounded-full ${
                           device.estado === 'true'
@@ -98,10 +98,10 @@ function Table() {
                       ></div>
                       {device.estado === 'true' ? 'En línea' : 'Desconectado'}
                     </td>
-                    <td className="whitespace-nowrap px-10 py-6 text-center">
+                    <td className="whitespace-nowrap px-6 py-3 text-center">
                       {device.ubicacion}
                     </td>
-                    <td className="whitespace-nowrap px-10 py-6 text-center">
+                    <td className="whitespace-nowrap px-6 py-3 text-center">
                       <Image
                         alt=""
                         src="/svg/deviceIcon.svg"

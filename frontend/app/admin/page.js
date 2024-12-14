@@ -72,7 +72,7 @@ function AdminMenu() {
           <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm pt-10"></div>
 
           {/* Contenido del modal */}
-          <div className="relative w-full max-w-lg md:max-w-2xl lg:max-w-5xl bg-white rounded-md shadow-lg p-6 z-10 mt-10">
+          <div className="relative w-full max-w-lg md:max-w-2xl lg:max-w-6xl bg-white rounded-md shadow-lg p-6 z-10 mt-10">
             {/* Botón de cerrar */}
             <button
               className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
