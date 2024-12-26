@@ -50,7 +50,7 @@ function CustomerMenu() {
       ></input>
       {/* Falta trackear valor y usarlos */}
 
-      <ul className="flex flex-row gap-4 justify-center">
+      <ul className="flex flex-wrap gap-4 justify-center">
         {user.map((user, index) => (
           <li
             className="flex flex-col gap-2 justify-center items-center mx-auto
@@ -60,18 +60,18 @@ function CustomerMenu() {
           >
             <div className="w-[150px] h-[150px] rounded-full overflow-hidden flex justify-center items-center cursor-pointer">
               <Image
+                src={user.photo}
+                alt="user avatar profile"
                 width={150}
                 height={150}
-                src={user.photo}
-                alt={'user avatar profile'}
-                className="object-cover"
+                className="object-cover w-auto h-auto"
               />
             </div>
 
             <h3 className="font-bold text-xs text-white">{user.name}</h3>
 
             <TbUserEdit
-              className="text-text-icon cursor-pointer w-10 h-10 left-3 relative"
+              className="text-text-icon cursor-pointer w-10 h-10 left-3  text-white"
               onClick={() => router.push('/admin/distribuitorMenu')} // Redirigir al hacer clic en el ícono de edición
             />
           </li>
@@ -87,9 +87,9 @@ function CustomerMenu() {
       </ul>
 
       <div className="flex flex-row justify-center items-center text-text-icon">
-        <IoIosArrowForward className="rotate-180 h-8 w-8 m-0 cursor-pointer transition-all duration-150 hover:scale-110  " />
-        <p className="text-text-icon text-xl font-bold">0 - 5</p>
-        <IoIosArrowForward className=" h-8 w-8 m-0 cursor-pointer transition-all duration-150 hover:scale-110  " />
+        <IoIosArrowForward className="rotate-180 h-8 w-8 m-0 cursor-pointer transition-all duration-150 hover:scale-110 text-white  " />
+        <p className="text-text-icon text-xl font-bold text-white">0 - 5</p>
+        <IoIosArrowForward className=" h-8 w-8 m-0 cursor-pointer transition-all duration-150 hover:scale-110   text-white" />
       </div>
     </div>
   );
