@@ -1,20 +1,38 @@
 import Navbar from './components/Navbar';
 
+const BackgroundImage = ({ src, style }) => {
+  return (
+    <div
+      className="absolute inset-0 bg-cover bg-no-repeat bg-center opacity-10"
+      style={{
+        backgroundImage: `url(${src})`,
+        ...style,
+      }}
+    ></div>
+  );
+};
+
 export default function Layout({ children }) {
   return (
-    <div className="flex flex-col w-full h-screen relative bg-[#060627] overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-no-repeat bg-center opacity-10"
-        style={{ backgroundImage: 'url(/logodumont.png)', backgroundSize: 'contain' }}
-      ></div>
-      <div
-        className="absolute inset-0 bg-cover bg-no-repeat bg-center"
-        style={{ backgroundImage: 'url(/background.png)', backgroundSize: 'cover' }}
-      ></div>
-      <div className="relative z-10 flex-grow flex flex-col">
+    <div className="relative min-h-screen flex flex-col w-full bg-[#060627] overflow-hidden">
+      {/* Fondo dinámico */}
+      <BackgroundImage
+        src="/logodumont.png"
+        style={{ backgroundSize: 'contain' }}
+      />
+
+      {/* Header y navbar */}
+      <header className="relative z-10">
         <Navbar />
-        <div className="relative z-20 flex-grow">{children}</div>
-      </div>
+      </header>
+
+      {/* Contenido principal */}
+      <main className="relative z-10 flex-grow h-screen">{children}</main>
+
+      {/* Pie de página (opcional) */}
+      <footer className="relative z-10 text-center text-white py-4">
+        © 2024 Tu Empresa. Todos los derechos reservados.
+      </footer>
     </div>
   );
 }

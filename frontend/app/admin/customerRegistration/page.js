@@ -110,7 +110,7 @@ function CustomerRegistration() {
             setShowModal={setShowModal}
           />
         )}
-
+        {/* 
         <div className="flex flex-row gap-4 justify-center items-center p-4">
           <button
             onClick={handleBack}
@@ -126,7 +126,7 @@ function CustomerRegistration() {
           >
             {inHorus ? <>Registrar Cliente</> : <> Siguiente</>}
           </button>
-        </div>
+        </div> */}
       </form>
       {showModal && (
         <>

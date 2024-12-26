@@ -8,7 +8,7 @@ function AdminMenu() {
   const usuarioIniciado = useSelector((state) => state.auth.user);
   console.log('user:', usuarioIniciado);
   return (
-    <div className="w-full p-6 flex items-center justify-center">
+    <div className="w-full p-6 flex items-center justify-center ">
       <ul className="flex flex-wrap items-center justify-center gap-x-56 gap-y-10 w-full max-w-[60rem] p-4 text-black">
         <Link href={'/admin/customerMenu'}>
           <li className="hover:scale-110 transition-all duration-200">
