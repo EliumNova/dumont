@@ -48,6 +48,7 @@ function CustomerMenu() {
         className="bg-white rounded-md p-6 shadow-lg  w-3/4"
         autoComplete="off"
       ></input>
+      {/* Falta trackear valor y usarlos */}
 
       <ul className="flex flex-row gap-4 justify-center">
         {user.map((user, index) => (
