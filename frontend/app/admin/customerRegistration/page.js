@@ -61,13 +61,12 @@ function CustomerRegistration() {
     }
   };
   return (
-    <div className="flex flex-col gap-4 md:justify-center items-start h-[100%] w-3/4 p-12 m-auto flex-wrap ">
-      <div className="left-0 md:left-[9.5rem] relative flex flex-col gap-6 ">
-        <h2 className="text-3xl md:text-5xl font-semibold ">
-          Registro de Clientes
-        </h2>
-      </div>
-      <div className=" w-3/4 mx-auto">
+    <main className="flex flex-col gap-4 md:justify-center items-center w-3/4 xl:p-12 p-3 m-auto flex-wrap">
+      <h2 className="text-4xl md:text-5xl font-semibold">
+        Registro de Clientes
+      </h2>
+
+      <div className="w-3/4 mx-auto">
         {inPrincipales && (
           <h3 className="text-3xl font-bold my-2">Datos Principales</h3>
         )}
@@ -133,7 +132,7 @@ function CustomerRegistration() {
           <CompleteModal setShowModal={setShowModal} />
         </>
       )}
-    </div>
+    </main>
   );
 }
 

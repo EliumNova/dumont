@@ -21,6 +21,7 @@ function AdminMenu() {
                 className="rounded-lg"
               />
             </div>
+            <div></div>
             <h3 className="text-center text-white">Clientes</h3>
           </li>
         </Link>

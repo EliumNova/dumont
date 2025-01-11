@@ -27,7 +27,7 @@ export default function Layout({ children }) {
       </header>
 
       {/* Contenido principal */}
-      <main className="relative z-10 flex-grow h-screen">{children}</main>
+      <main className="z-10 flex-grow h-full">{children}</main>
 
       {/* Pie de página (opcional) */}
       <footer className="relative z-10 text-center text-white py-4">
