@@ -104,7 +104,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
 
   return (
     <div className="container mx-auto flex flex-col items-center">
-      <div className="w-10/12 h-auto grid grid-rows-2 grid-cols-1 xl:grid-cols-2 w-full justify-items-center">
+      <div className="w-10/12 h-auto grid grid-rows-2 grid-cols-1 xl:grid-cols-1 w-full">
         {/* Código del cliente */}
 
         <InputField

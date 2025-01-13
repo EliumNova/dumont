@@ -62,12 +62,12 @@ function CustomerRegistration() {
     }
   };
   return (
-    <main className="flex flex-col gap-4 md:justify-center items-center xl:w-3/4 xl:p-12 p-3 m-auto flex-wrap">
+    <main className="flex flex-col gap-4 md:justify-center items-center w-full xl:w-8/12 xl:p-12 p-3 m-auto flex-wrap ">
       <h2 className="text-4xl md:text-5xl font-semibold text-center">
         Registro de Clientes
       </h2>
 
-      <div className="w-full mx-auto">
+      <div className="xl:w-full mx-auto w-full ">
         {inPrincipales && (
           <h3 className="text-3xl font-bold my-2">Datos Principales</h3>
         )}
