@@ -6,9 +6,12 @@ import InputField from './InputField';
 import SelectField from './SelectedField';
 
 function Principales({ setInUbication, setProgress, setInPrincipales }) {
+  //Estado global de principales
   const storePrincipales = useSelector(
     (state) => state.newCustomer.principales
+    // console.log(`STORE PRINCIPALES: ${storePrincipales}`);
   );
+
   const dispatch = useDispatch();
 
   const [principalesInfo, setPrincipalesInfo] = useState({
@@ -103,13 +106,16 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
     <div className="container mx-auto flex flex-col items-center">
       <div className="w-10/12 h-auto grid grid-rows-2 grid-cols-1 xl:grid-cols-2 w-full justify-items-center">
         {/* Código del cliente */}
+
         <InputField
           label="Código del cliente"
           name="customerCode"
           value={principalesInfo.customerCode}
           onChange={handleChange}
           placeholder="Ingresa tu numero de cliente"
+          inputClassName="justify-self-start w-full"
         />
+
         {/* Segmentación */}
         <SelectField
           label="Segmentación"
@@ -121,6 +127,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
             { value: 'kiosco', label: 'Kiosco' },
             { value: 'no', label: 'No' },
           ]}
+          inputClassName="justify-self-end w-full"
         />
         {/* Código del distribuidor */}
         <InputField
@@ -129,6 +136,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.codeDistribuidor}
           onChange={handleChange}
           placeholder="Ingresa tu código de distribuidor"
+          inputClassName="justify-self-start w-full"
         />
         {/* Correo electrónico */}
         <InputField
@@ -138,6 +146,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.email}
           onChange={handleChange}
           placeholder="Ingresa tu correo electrónico"
+          inputClassName="justify-self-end w-full"
         />
         {/* Página web */}
         <InputField
@@ -146,6 +155,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.webPage}
           onChange={handleChange}
           placeholder="Ingresa tu página web"
+          inputClassName="justify-self-start w-full"
         />
         {/* Permiso de venta de alcohol */}
         <SelectField
@@ -158,6 +168,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
             { value: 'si', label: 'Sí' },
             { value: 'no', label: 'No' },
           ]}
+          inputClassName="justify-self-end w-full"
         />
         {/* Teléfono */}
 
@@ -167,6 +178,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.phone}
           onChange={handleChange}
           placeholder="Ingresa tu número de teléfono"
+          inputClassName="justify-self-start w-full"
         />
       </div>
 

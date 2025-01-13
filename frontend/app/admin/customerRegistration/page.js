@@ -24,6 +24,7 @@ function CustomerRegistration() {
   let URL = `http://localhost:4000/api/clientes/create`;
 
   let response = '';
+
   const handleSubmit = (e) => {
     if (inPrincipales) {
       setInUbication(true);
@@ -61,12 +62,12 @@ function CustomerRegistration() {
     }
   };
   return (
-    <main className="flex flex-col gap-4 md:justify-center items-center w-3/4 xl:p-12 p-3 m-auto flex-wrap">
-      <h2 className="text-4xl md:text-5xl font-semibold">
+    <main className="flex flex-col gap-4 md:justify-center items-center xl:w-3/4 xl:p-12 p-3 m-auto flex-wrap">
+      <h2 className="text-4xl md:text-5xl font-semibold text-center">
         Registro de Clientes
       </h2>
 
-      <div className="w-3/4 mx-auto">
+      <div className="w-full mx-auto">
         {inPrincipales && (
           <h3 className="text-3xl font-bold my-2">Datos Principales</h3>
         )}
@@ -82,6 +83,7 @@ function CustomerRegistration() {
           />
         </div>
       </div>
+
       <form
         // onSubmit={handleSubmit}
         className=" flex items-center flex-col  w-full  "
@@ -109,23 +111,6 @@ function CustomerRegistration() {
             setShowModal={setShowModal}
           />
         )}
-        {/* 
-        <div className="flex flex-row gap-4 justify-center items-center p-4">
-          <button
-            onClick={handleBack}
-            className="w-[15rem] h-14 relative top-11
-          bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
-          >
-            {inPrincipales ? <> Cancelar</> : <>Atras</>}
-          </button>
-          <button
-            // onClick={}
-            className="w-[15rem] h-14 relative top-11
-          bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
-          >
-            {inHorus ? <>Registrar Cliente</> : <> Siguiente</>}
-          </button>
-        </div> */}
       </form>
       {showModal && (
         <>
