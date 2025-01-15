@@ -62,7 +62,7 @@ function CustomerRegistration() {
     }
   };
   return (
-    <main className="flex flex-col gap-4 md:justify-center items-center w-full xl:w-8/12 xl:p-12 p-3 m-auto flex-wrap ">
+    <main className="flex flex-col gap-4 md:justify-center items-center w-full 2xl:w-8/12 xl:p-12 p-3 m-auto flex-wrap xl:w-11/12">
       <h2 className="text-4xl md:text-5xl font-semibold text-center">
         Registro de Clientes
       </h2>

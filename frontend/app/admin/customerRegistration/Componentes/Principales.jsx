@@ -104,16 +104,15 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
 
   return (
     <div className="container mx-auto flex flex-col items-center">
-      <div className="w-10/12 h-auto grid grid-rows-2 grid-cols-1 xl:grid-cols-1 w-full">
+      <div className="grid gap-5 grid-cols-1 sm:grid-cols-2  w-full">
         {/* Código del cliente */}
-
         <InputField
           label="Código del cliente"
           name="customerCode"
           value={principalesInfo.customerCode}
           onChange={handleChange}
           placeholder="Ingresa tu numero de cliente"
-          inputClassName="justify-self-start w-full"
+          inputClassName="w-full"
         />
 
         {/* Segmentación */}
@@ -127,8 +126,9 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
             { value: 'kiosco', label: 'Kiosco' },
             { value: 'no', label: 'No' },
           ]}
-          inputClassName="justify-self-end w-full"
+          inputClassName="w-full"
         />
+
         {/* Código del distribuidor */}
         <InputField
           label="Código del distribuidor"
@@ -136,8 +136,9 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.codeDistribuidor}
           onChange={handleChange}
           placeholder="Ingresa tu código de distribuidor"
-          inputClassName="justify-self-start w-full"
+          inputClassName="w-full"
         />
+
         {/* Correo electrónico */}
         <InputField
           label="Correo electrónico"
@@ -146,8 +147,9 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.email}
           onChange={handleChange}
           placeholder="Ingresa tu correo electrónico"
-          inputClassName="justify-self-end w-full"
+          inputClassName="w-full"
         />
+
         {/* Página web */}
         <InputField
           label="Página Web"
@@ -155,8 +157,9 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.webPage}
           onChange={handleChange}
           placeholder="Ingresa tu página web"
-          inputClassName="justify-self-start w-full"
+          inputClassName="w-full"
         />
+
         {/* Permiso de venta de alcohol */}
         <SelectField
           label="Permiso Venta Alcohol"
@@ -168,41 +171,38 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
             { value: 'si', label: 'Sí' },
             { value: 'no', label: 'No' },
           ]}
-          inputClassName="justify-self-end w-full"
+          inputClassName="w-full"
         />
-        {/* Teléfono */}
 
+        {/* Teléfono */}
         <InputField
           label="Teléfono"
           name="phone"
           value={principalesInfo.phone}
           onChange={handleChange}
           placeholder="Ingresa tu número de teléfono"
-          inputClassName="justify-self-start w-full"
+          inputClassName="w-full"
         />
       </div>
 
-      <div>
+      <div className="mt-8">
         {/* Mensaje de error */}
         {errorMessage && (
           <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium ">
             {errorMessage}
           </div>
         )}
-        <div className="flex gap-5 flex-col xl:flex-row">
+
+        <div className="flex gap-5 flex-col xl:flex-row mt-5">
           <Link href={'/admin/customerMenu'}>
-            <button
-              // onClick={handleBack}
-              className="w-[15rem] h-14 relative top-11
-          bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
-            >
+            <button className="w-[15rem] h-14 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold">
               Cancelar
             </button>
           </Link>
 
           <button
             onClick={handleSubmit}
-            className="w-[15rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+            className="w-[15rem] h-14 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
           >
             Siguiente
           </button>
