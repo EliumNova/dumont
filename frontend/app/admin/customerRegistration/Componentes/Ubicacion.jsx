@@ -17,6 +17,8 @@ function Ubicacion({
     altura: storeUbicacion?.altura || '',
     entreCalle1: storeUbicacion?.entreCalle1 || '',
     entreCalle2: storeUbicacion?.entreCalle2 || '',
+    latitud: storeUbicacion?.latitud || '',
+    longitud: storeUbicacion?.longitud || '',
   });
 
   const [errorMessage, setErrorMessage] = useState({ error: '' });
@@ -58,6 +60,8 @@ function Ubicacion({
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    console.log(ubicacionInfo);
+
     const { localidad, calle, altura, entreCalle1, entreCalle2 } =
       ubicacionInfo;
 
@@ -75,8 +79,8 @@ function Ubicacion({
     // setErrorMessage('');
   };
   return (
-    <div className="container mx-auto flex flex-col items-center gap-5">
-      <div className="w-4/5 h-auto flex flex-row gap-x-8 flex-wrap justify-start items-center ">
+    <div className=" mx-auto flex flex-col items-center w-full">
+      <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 w-full">
         {/**Localidad */}
         <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
           <label htmlFor="email" className="text-sm font-semibold">
@@ -147,6 +151,36 @@ function Ubicacion({
               className=" w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
             />
           </div>
+        </div>
+        {/**Calle */}
+        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+          <label htmlFor="latitud" className="text-sm font-semibold">
+            Latitud
+          </label>
+          <input
+            type="text"
+            name="latitud"
+            onChange={handleChange}
+            value={ubicacionInfo?.latitud}
+            placeholder="Ingresa tu Calle"
+            required
+            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+          />
+        </div>
+        {/**Calle */}
+        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+          <label htmlFor="longitud" className="text-sm font-semibold">
+            Longitud
+          </label>
+          <input
+            type="text"
+            name="longitud"
+            onChange={handleChange}
+            value={ubicacionInfo?.longitud}
+            placeholder="Ingresa tu Calle"
+            required
+            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+          />
         </div>
       </div>
 

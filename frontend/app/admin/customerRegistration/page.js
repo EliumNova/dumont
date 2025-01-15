@@ -15,6 +15,7 @@ function CustomerRegistration() {
   // console.log('store newCustomerStore', newCustomerStore);
 
   const [progress, setProgress] = useState(33);
+  // Cambiar estados para pruebas
   const [inPrincipales, setInPrincipales] = useState(true);
   const [inUbication, setInUbication] = useState(false);
   const [inHorus, setInHorus] = useState(false);
