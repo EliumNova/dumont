@@ -86,7 +86,7 @@ function CustomerRegistration() {
 
       <form
         // onSubmit={handleSubmit}
-        className=" flex items-center flex-col  w-full  "
+        className="flex items-center flex-col w-full"
       >
         {inPrincipales && (
           <Principales

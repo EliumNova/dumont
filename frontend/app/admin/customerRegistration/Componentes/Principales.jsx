@@ -103,8 +103,8 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center">
-      <div className="grid gap-5 grid-cols-1 sm:grid-cols-2  w-full">
+    <div className=" mx-auto flex flex-col items-center w-full">
+      <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 w-full">
         {/* Código del cliente */}
         <InputField
           label="Código del cliente"
@@ -126,7 +126,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
             { value: 'kiosco', label: 'Kiosco' },
             { value: 'no', label: 'No' },
           ]}
-          inputClassName="w-full"
+          inputClassName="w-full justify-self-end"
         />
 
         {/* Código del distribuidor */}
@@ -147,7 +147,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.email}
           onChange={handleChange}
           placeholder="Ingresa tu correo electrónico"
-          inputClassName="w-full"
+          inputClassName="w-full justify-self-end"
         />
 
         {/* Página web */}
@@ -171,7 +171,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
             { value: 'si', label: 'Sí' },
             { value: 'no', label: 'No' },
           ]}
-          inputClassName="w-full"
+          inputClassName="w-full justify-self-end"
         />
 
         {/* Teléfono */}
