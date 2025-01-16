@@ -103,7 +103,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
   };
 
   return (
-    <div className="h-max flex flex-col items-center w-full">
+    <div className="h-full flex flex-col items-center w-full">
       <div className="grid  grid-cols-1 sm:grid-cols-2 w-full gap-5 ">
         {/* Código del cliente */}
         <InputField
@@ -185,7 +185,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
         />
       </div>
 
-      <div className="mt-8">
+      <div className="my-3">
         {/* Mensaje de error */}
         {errorMessage && (
           <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium ">
@@ -193,7 +193,7 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           </div>
         )}
 
-        <div className="flex gap-5 flex-col xl:flex-row my-5">
+        <div className="flex gap-5 flex-col sm:flex-row my-5">
           <Link href={'/admin/customerMenu'}>
             <button className="w-[15rem] h-14 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold">
               Cancelar
