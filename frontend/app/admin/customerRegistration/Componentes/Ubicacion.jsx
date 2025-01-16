@@ -79,10 +79,10 @@ function Ubicacion({
     // setErrorMessage('');
   };
   return (
-    <div className=" mx-auto flex flex-col items-center w-full">
+    <div className="h-screen mx-auto flex flex-col items-center w-full">
       <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 w-full">
         {/**Localidad */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
           <label htmlFor="email" className="text-sm font-semibold">
             Localidad
           </label>
@@ -98,7 +98,7 @@ function Ubicacion({
         </div>
 
         {/**Calle */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
           <label htmlFor="email" className="text-sm font-semibold">
             Calle
           </label>
@@ -113,7 +113,7 @@ function Ubicacion({
           />
         </div>
         {/**Altura */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
           <label className="text-sm font-semibold">Altura</label>
           <input
             onChange={handleChange}
@@ -126,7 +126,7 @@ function Ubicacion({
           />
         </div>
         {/**   Entre Calles */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
           <label htmlFor="email" className="text-sm font-semibold">
             Entre Calles
           </label>
@@ -153,7 +153,7 @@ function Ubicacion({
           </div>
         </div>
         {/**Calle */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
           <label htmlFor="latitud" className="text-sm font-semibold">
             Latitud
           </label>
@@ -168,7 +168,7 @@ function Ubicacion({
           />
         </div>
         {/**Calle */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
           <label htmlFor="longitud" className="text-sm font-semibold">
             Longitud
           </label>
@@ -184,7 +184,7 @@ function Ubicacion({
         </div>
       </div>
 
-      <div>
+      <div className="">
         {/* Mensaje de error */}
         {errorMessage.error && (
           <div
@@ -194,17 +194,17 @@ function Ubicacion({
             {errorMessage.error}{' '}
           </div>
         )}
-        <div className="flex gap-5">
+        <div className="flex flex-col md:flex-row gap-5">
           <button
             onClick={handleBack}
-            className="w-[15rem] h-14 relative top-11
+            className="w-[15rem] h-14
           bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
           >
             Atras
           </button>
           <button
             onClick={handleSubmit}
-            className="w-[15rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+            className="w-[15rem] h-14 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
           >
             Enviar
           </button>
