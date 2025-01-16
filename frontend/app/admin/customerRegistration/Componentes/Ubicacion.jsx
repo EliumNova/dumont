@@ -79,11 +79,11 @@ function Ubicacion({
     // setErrorMessage('');
   };
   return (
-    <div className="h-screen mx-auto flex flex-col items-center w-full">
+    <div className="h-full mx-auto flex flex-col items-center w-full">
       <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 w-full">
-        {/**Localidad */}
-        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
-          <label htmlFor="email" className="text-sm font-semibold">
+        {/** Localidad */}
+        <div className="flex flex-col gap-3 w-full my-2">
+          <label htmlFor="localidad" className="text-sm font-semibold">
             Localidad
           </label>
           <input
@@ -93,13 +93,13 @@ function Ubicacion({
             value={ubicacionInfo?.localidad}
             required
             onChange={handleChange}
-            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
           />
         </div>
 
-        {/**Calle */}
-        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
-          <label htmlFor="email" className="text-sm font-semibold">
+        {/** Calle */}
+        <div className="flex flex-col gap-3 w-full my-2">
+          <label htmlFor="calle" className="text-sm font-semibold">
             Calle
           </label>
           <input
@@ -109,11 +109,12 @@ function Ubicacion({
             value={ubicacionInfo?.calle}
             placeholder="Ingresa tu Calle"
             required
-            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
           />
         </div>
-        {/**Altura */}
-        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
+
+        {/** Altura */}
+        <div className="flex flex-col gap-3 w-full my-2">
           <label className="text-sm font-semibold">Altura</label>
           <input
             onChange={handleChange}
@@ -122,15 +123,16 @@ function Ubicacion({
             name="altura"
             placeholder="Ingresa tu Altura"
             required
-            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
           />
         </div>
-        {/**   Entre Calles */}
-        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
-          <label htmlFor="email" className="text-sm font-semibold">
+
+        {/** Entre Calles */}
+        <div className="flex flex-col gap-3 w-full my-2">
+          <label htmlFor="entreCalle" className="text-sm font-semibold">
             Entre Calles
           </label>
-          <div className="flex flex-row  items-center gap-2">
+          <div className="flex flex-row items-center gap-2">
             <input
               onChange={handleChange}
               value={ubicacionInfo?.entreCalle1}
@@ -138,7 +140,7 @@ function Ubicacion({
               name="entreCalle1"
               placeholder="Calle 1"
               required
-              className=" w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
             />
 
             <input
@@ -148,12 +150,13 @@ function Ubicacion({
               value={ubicacionInfo?.entreCalle2}
               placeholder="Calle 2"
               required
-              className=" w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
             />
           </div>
         </div>
-        {/**Calle */}
-        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
+
+        {/** Latitud */}
+        <div className="flex flex-col gap-3 w-full my-2">
           <label htmlFor="latitud" className="text-sm font-semibold">
             Latitud
           </label>
@@ -162,13 +165,14 @@ function Ubicacion({
             name="latitud"
             onChange={handleChange}
             value={ubicacionInfo?.latitud}
-            placeholder="Ingresa tu Calle"
+            placeholder="Ingresa la Latitud"
             required
-            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
           />
         </div>
-        {/**Calle */}
-        <div className=" flex flex-col gap-3 w-[32rem] w-full  my-2">
+
+        {/** Longitud */}
+        <div className="flex flex-col gap-3 w-full my-2">
           <label htmlFor="longitud" className="text-sm font-semibold">
             Longitud
           </label>
@@ -177,30 +181,27 @@ function Ubicacion({
             name="longitud"
             onChange={handleChange}
             value={ubicacionInfo?.longitud}
-            placeholder="Ingresa tu Calle"
+            placeholder="Ingresa la Longitud"
             required
-            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
           />
         </div>
       </div>
 
-      <div className="">
+      <div className="mt-8">
         {/* Mensaje de error */}
         {errorMessage.error && (
-          <div
-            className="p-2 h-8 text-xs rounded flex justify-center  
-          items-center bg-red-700 text-white font-medium -top-8 relative "
-          >
-            {errorMessage.error}{' '}
+          <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium my-4">
+            {errorMessage.error}
           </div>
         )}
-        <div className="flex flex-col md:flex-row gap-5">
+
+        <div className="flex flex-col md:flex-row gap-5  w-full justify-items-center">
           <button
             onClick={handleBack}
-            className="w-[15rem] h-14
-          bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
+            className="w-[15rem] h-14 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
           >
-            Atras
+            Atrás
           </button>
           <button
             onClick={handleSubmit}
