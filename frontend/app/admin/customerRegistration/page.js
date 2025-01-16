@@ -16,8 +16,8 @@ function CustomerRegistration() {
 
   const [progress, setProgress] = useState(33);
   // Cambiar estados para pruebas
-  const [inPrincipales, setInPrincipales] = useState(true);
-  const [inUbication, setInUbication] = useState(false);
+  const [inPrincipales, setInPrincipales] = useState(false);
+  const [inUbication, setInUbication] = useState(true);
   const [inHorus, setInHorus] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -63,7 +63,7 @@ function CustomerRegistration() {
     }
   };
   return (
-    <main className="flex flex-col gap-4 md:justify-center items-center w-full 2xl:w-8/12 xl:p-12 p-3 m-auto flex-wrap xl:w-11/12">
+    <main className="h-full flex flex-col gap-4 md:justify-center items-center w-full lg:w-9/12 2xl:w-8/12 xl:p-12 p-3 m-auto flex-wrap xl:w-11/12">
       <h2 className="text-4xl md:text-5xl font-semibold text-center">
         Registro de Clientes
       </h2>

@@ -7,7 +7,7 @@ const SelectField = ({
   inputClassName,
 }) => (
   <div
-    className={`flex flex-col gap-3 w-full lg:w-[32rem] my-2 ${inputClassName}`}
+    className={`flex flex-col gap-3 w-full  2xl:w-full my-2 ${inputClassName}`}
   >
     <label htmlFor={name} className="text-sm font-semibold">
       {label}
