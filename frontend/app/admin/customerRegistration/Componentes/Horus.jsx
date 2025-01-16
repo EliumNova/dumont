@@ -105,7 +105,7 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
           <label htmlFor="email" className="text-sm font-semibold">
             Horario de venta:
           </label>
-          <div className="">
+          <div className="md:flex">
             <div className="bg-[#E2E5E5] rounded  h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
@@ -117,7 +117,7 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
               <span className="ml-2">hs</span>{' '}
               {/* Texto "HS" al lado del input */}
             </div>
-            <span>Hasta:</span>
+            <span className="md:mx-5 ">Hasta:</span>
             <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
@@ -137,7 +137,7 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
           <label htmlFor="email" className="text-sm font-semibold">
             Horario Publicitario:
           </label>
-          <div className="">
+          <div className="md:flex">
             <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
@@ -149,7 +149,7 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
               <span className="ml-2">hs</span>{' '}
               {/* Texto "HS" al lado del input */}
             </div>
-            <span>Hasta:</span>
+            <span className="md:mx-5 ">Hasta:</span>
             <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
@@ -168,7 +168,7 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
           <label className="text-sm font-semibold">
             Horario On-Off de Dispositivos:
           </label>
-          <div className="grid grid-cols-1  w-full">
+          <div className="grid grid-cols-1 w-full md:flex">
             <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
@@ -180,7 +180,7 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
               <span className="ml-2">hs</span>{' '}
               {/* Texto "HS" al lado del input */}
             </div>
-            <span>Hasta:</span>
+            <span className="md:mx-5 ">Hasta:</span>
             <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
@@ -215,12 +215,12 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
         {errorMessage.error && (
           <div
             className="p-2 h-8 text-xs rounded flex justify-center
-          items-center bg-red-700 text-white font-medium -top-8 relative "
+          items-center bg-red-700 text-white font-medium my-4 "
           >
             {errorMessage.error}{' '}
           </div>
         )}
-        <div className="flex gap-5 flex-col">
+        <div className="flex gap-5 flex-col md:flex-row">
           <button
             onClick={handleBack}
             className="w-[15rem] h-14
