@@ -1,5 +1,14 @@
-const SelectField = ({ label, name, value, onChange, options }) => (
-  <div className="flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2">
+const SelectField = ({
+  label,
+  name,
+  value,
+  onChange,
+  options,
+  inputClassName,
+}) => (
+  <div
+    className={`flex flex-col gap-3 w-full  2xl:w-full my-2 ${inputClassName}`}
+  >
     <label htmlFor={name} className="text-sm font-semibold">
       {label}
     </label>

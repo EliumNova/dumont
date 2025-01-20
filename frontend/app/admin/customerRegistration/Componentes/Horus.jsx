@@ -98,27 +98,27 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center gap-5">
-      <div className="w-4/5 h-auto flex flex-row gap-x-8 flex-wrap justify-start items-center">
+    <div className="h-full flex flex-col items-center w-full">
+      <div className="grid grid-cols-1 w-full gap-5 ">
         {/**Horario de venta */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className="grid gap-3 w-full p-4 my-2">
           <label htmlFor="email" className="text-sm font-semibold">
-            Horario de venta
+            Horario de venta:
           </label>
-          <div className="flex flex-row justify-between items-center  w-11/12">
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
+          <div className="md:flex">
+            <div className="bg-[#E2E5E5] rounded  h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
                 name="saleHorusFrom"
                 value={horusInfo?.saleHorusFrom}
                 onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1  "
+                className="bg-[#E2E5E5] rounded px-2 py-1 "
               />
               <span className="ml-2">hs</span>{' '}
               {/* Texto "HS" al lado del input */}
             </div>
-            <span>hasta</span>
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
+            <span className="md:mx-5 ">Hasta:</span>
+            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
                 name="saleHorusTo"
@@ -133,12 +133,12 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
         </div>
 
         {/**Horario Publicitario */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className="grid grid-cols-1 gap-3 w-full p-4 my-2">
           <label htmlFor="email" className="text-sm font-semibold">
-            Horario Publicitario
+            Horario Publicitario:
           </label>
-          <div className="flex flex-row justify-between items-center  w-11/12">
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
+          <div className="md:flex">
+            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
                 name="marketingHorusFrom"
@@ -149,8 +149,8 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
               <span className="ml-2">hs</span>{' '}
               {/* Texto "HS" al lado del input */}
             </div>
-            <span>hasta</span>
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
+            <span className="md:mx-5 ">Hasta:</span>
+            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
                 name="marketingHorusTo"
@@ -164,12 +164,12 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
           </div>
         </div>
         {/**Horario On-Off de Dispositivos */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className="flex flex-col gap-3 w-full p-4 my-2">
           <label className="text-sm font-semibold">
-            Horario On-Off de Dispositivos
+            Horario On-Off de Dispositivos:
           </label>
-          <div className="flex flex-row justify-between items-center  w-11/12">
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
+          <div className="grid grid-cols-1 w-full md:flex">
+            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
                 name="onOffHorusFrom"
@@ -180,8 +180,8 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
               <span className="ml-2">hs</span>{' '}
               {/* Texto "HS" al lado del input */}
             </div>
-            <span>hasta</span>
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
+            <span className="md:mx-5 ">Hasta:</span>
+            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex w-full">
               <input
                 type="time"
                 name="onOffHorusTo"
@@ -195,9 +195,9 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
           </div>
         </div>
         {/**  Atención al Cliente */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className=" flex flex-col gap-3 w-full p-4 my-2">
           <label htmlFor="email" className="text-sm font-semibold">
-            Atención al Cliente
+            Atención al Cliente:
           </label>
           <input
             type="text"
@@ -210,27 +210,27 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
           />
         </div>
       </div>
-      <div>
+      <div className="">
         {/* Mensaje de error */}
         {errorMessage.error && (
           <div
             className="p-2 h-8 text-xs rounded flex justify-center
-          items-center bg-red-700 text-white font-medium -top-8 relative "
+          items-center bg-red-700 text-white font-medium my-4 "
           >
             {errorMessage.error}{' '}
           </div>
         )}
-        <div className="flex gap-5">
+        <div className="flex gap-5 flex-col md:flex-row">
           <button
             onClick={handleBack}
-            className="w-[15rem] h-14 relative top-11
+            className="w-[15rem] h-14
           bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
           >
             Atras
           </button>
           <button
             onClick={handleSubmit}
-            className="w-[15rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+            className="w-[15rem] h-14  bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
           >
             Guardas cambios
           </button>

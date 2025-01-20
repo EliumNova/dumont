@@ -15,6 +15,7 @@ function CustomerRegistration() {
   // console.log('store newCustomerStore', newCustomerStore);
 
   const [progress, setProgress] = useState(33);
+  // Cambiar estados para pruebas
   const [inPrincipales, setInPrincipales] = useState(true);
   const [inUbication, setInUbication] = useState(false);
   const [inHorus, setInHorus] = useState(false);
@@ -24,6 +25,7 @@ function CustomerRegistration() {
   let URL = `http://localhost:4000/api/clientes/create`;
 
   let response = '';
+
   const handleSubmit = (e) => {
     if (inPrincipales) {
       setInUbication(true);
@@ -61,13 +63,12 @@ function CustomerRegistration() {
     }
   };
   return (
-    <div className="flex flex-col gap-4 md:justify-center items-start h-[100%] w-3/4 p-12 m-auto flex-wrap ">
-      <div className="left-0 md:left-[9.5rem] relative flex flex-col gap-6 ">
-        <h2 className="text-3xl md:text-5xl font-semibold ">
-          Registro de Clientes
-        </h2>
-      </div>
-      <div className=" w-3/4 mx-auto">
+    <main className="  flex flex-col gap-4 md:justify-center items-center w-full lg:w-9/12 2xl:w-8/12 xl:p-12 p-3 m-auto flex-wrap xl:w-11/12">
+      <h2 className="text-4xl md:text-5xl font-semibold text-center">
+        Registro de Clientes
+      </h2>
+
+      <div className="xl:w-full mx-auto w-full h-fit">
         {inPrincipales && (
           <h3 className="text-3xl font-bold my-2">Datos Principales</h3>
         )}
@@ -83,9 +84,10 @@ function CustomerRegistration() {
           />
         </div>
       </div>
+
       <form
         // onSubmit={handleSubmit}
-        className=" flex items-center flex-col  w-full  "
+        className="flex items-center flex-col w-full"
       >
         {inPrincipales && (
           <Principales
@@ -110,30 +112,13 @@ function CustomerRegistration() {
             setShowModal={setShowModal}
           />
         )}
-
-        <div className="flex flex-row gap-4 justify-center items-center p-4">
-          <button
-            onClick={handleBack}
-            className="w-[15rem] h-14 relative top-11
-          bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
-          >
-            {inPrincipales ? <> Cancelar</> : <>Atras</>}
-          </button>
-          <button
-            // onClick={}
-            className="w-[15rem] h-14 relative top-11
-          bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
-          >
-            {inHorus ? <>Registrar Cliente</> : <> Siguiente</>}
-          </button>
-        </div>
       </form>
       {showModal && (
         <>
           <CompleteModal setShowModal={setShowModal} />
         </>
       )}
-    </div>
+    </main>
   );
 }
 

@@ -7,9 +7,7 @@ const InputField = ({
   type = 'text',
   inputClassName = '',
 }) => (
-  <div
-    className={`flex flex-col gap-3 w-full lg:w-[32rem] p-4 my-2  ${inputClassName}`}
-  >
+  <div className={`flex flex-col gap-3 w-full w-full my-2  ${inputClassName}`}>
     <label htmlFor={name} className="text-sm font-semibold">
       {label}
     </label>
