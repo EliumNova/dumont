@@ -5,22 +5,22 @@ import Image from 'next/image'; // Asegúrate de que esto esté presente
 
 function Table() {
   const [devices, setDevices] = useState([
-    {
-      numSerie: 'F4JM3NOOLPP3',
-      marca: 'Apple',
-      modelo: '11 PRO Max',
-      pulgadas: '6,6',
-      estado: 'true',
-      ubicacion: 'Si',
-    },
-    {
-      numSerie: '8MKJ6UIPL5VC',
-      marca: 'Samsung',
-      modelo: 'Galaxy A23',
-      pulgadas: '6,5',
-      estado: 'false',
-      ubicacion: 'No',
-    },
+    // {
+    //   numSerie: 'F4JM3NOOLPP3',
+    //   marca: 'Apple',
+    //   modelo: '11 PRO Max',
+    //   pulgadas: '6,6',
+    //   estado: 'true',
+    //   ubicacion: 'Si',
+    // },
+    // {
+    //   numSerie: '8MKJ6UIPL5VC',
+    //   marca: 'Samsung',
+    //   modelo: 'Galaxy A23',
+    //   pulgadas: '6,5',
+    //   estado: 'false',
+    //   ubicacion: 'No',
+    // },
     {
       numSerie: '3519J2MSK2KO',
       marca: 'Samsung',
@@ -40,13 +40,13 @@ function Table() {
   ]);
 
   return (
-    <div className="flex flex-col border border-[#12141D] rounded bg-[#12141D]">
+    <div className="flex flex-col border border-[#12141D] rounded bg-[#12141D] w-fit h-fit">
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-          <div className="overflow-hidden">
-            <table className="min-w-full text-left text-sm font-light">
-              <thead className="border-b font-medium dark:border-neutral-500">
-                <tr className="text-white">
+        <div className="sm:px-6 lg:px-8">
+          <div className="w-fit">
+            <table className="font-light flex flex-row w-max">
+              <thead className="border-b font-medium dark:border-neutral-500 ">
+                <tr className="text-white flex flex-col">
                   <th scope="col" className="px-10 py-6">
                     Número de serie
                   </th>
@@ -70,11 +70,11 @@ function Table() {
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className='flex overflow-hidden w-60 overflow-x-auto '>
                 {devices.map((device, index) => (
                   <tr
                     key={index}
-                    className="border-t border-slate-400 text-gray-600 font-light"
+                    className="border-t border-slate-400 text-gray-600 font-light flex flex-col"
                   >
                     <td className="whitespace-nowrap px-10 py-6 text-center">
                       {device.numSerie}

@@ -9,7 +9,7 @@ import Link from 'next/link';
 function DevicesMenu() {
   return (
     <div className="">
-      <div className="flex flex-col justify-center items-center ">
+      <div className="flex flex-col justify-center items-center w-full">
         <Table />
         <Link
           href="/admin/userRegistration"
