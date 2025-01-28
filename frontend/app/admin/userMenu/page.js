@@ -9,7 +9,7 @@ function CustomerMenu() {
         <Table />
         <Link
           href="/admin/userRegistration"
-          className="p-1 text-blue-500 flex items-center my-10"
+          className="p-1 text-blue-500 flex items-center my-5"
         >
           <img src="/svg/addNewUser.svg" className="h-20"></img>
           Agregar nuevo usuario
