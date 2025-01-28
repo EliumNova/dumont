@@ -12,11 +12,11 @@ export const Clientes = sequelize.define(
       allowNull: false,
     },
     CodigoCliente: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     CodigoDistribuidor: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     Segmentacion: {

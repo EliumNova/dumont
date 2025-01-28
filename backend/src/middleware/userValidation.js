@@ -5,6 +5,7 @@ const validateCreateUser = [
   check("Email").isEmail(),
   check("DNI").not().isEmpty().isNumeric(),
   check("Password").not().isEmpty(),
+  check("Telefono").not().isEmpty(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -29,6 +30,7 @@ const validateUpdateUser = [
   check("Name").optional().isString(),
   check("Email").optional().isEmail(),
   check("DNI").optional().isNumeric(),
+  check("Telefono").optional().isString(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

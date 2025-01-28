@@ -11,8 +11,8 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import { Provider, useDispatch } from 'react-redux';
-import { setUser } from '@/lib/slices/authSlice';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { login, setErrorAuth } from '@/lib/slices/authAction';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -31,6 +31,8 @@ function Login() {
   const [emailMethod, setEmailMethod] = useState(false);
   const [method, setMethod] = useState(false);
   const [ableNewPassword, setAbleNewPassword] = useState(false);
+  const errorAuth = useSelector(state => state.auth.error)
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
   let URL = `/usuarios/login`;
   const dispatch = useDispatch();
@@ -47,47 +49,42 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    ({
-      Email: email,
-      Password: password,
-    });
-    console.log('log 1');
-    try {
-      console.log('log 2', loginUser);
-
-      const response = await axios.post(URL, loginUser);
-      console.log('response:  ', response);
-      if (response) {
-        const { token } = response.data;
-        const decodedToken = jwtDecode(token);
-
-        storeTokenInCookie(token);
+    
         setInLogin(true);
-        dispatch(setUser(decodedToken));
+        
+        dispatch(login(loginUser))
 
+        if(isAuthenticated){
         router.push('/admin');
-      }
-    } catch (error) {
-      console.log('Error during Login:', error);
-      setErrorMessage({ error: 'Credenciales Incorrectas' });
-      setTimeout(() => {
-        setErrorMessage({ error: '' });
-      }, 5000);
-    }
+        }   
   };
 
-  // Función para validar el input (asegúrate de definir esta función)
-  const validateInput = (value) => {
+  useEffect(() => {
+    
+    if (isAuthenticated) {
+      router.push('/admin');
+    }
+  }, [isAuthenticated, router]);
+
+  // Función para validar el input mail (asegúrate de definir esta función)
+  const validateInputMail = (value) => {
     // Ejemplo de validación simple
     return /^[a-zA-Z0-9@.]+$/.test(value);
+  };
+
+  const validateInputPass = (value) => {
+    // Ejemplo de validación simple
+    return /^[a-zA-Z0-9!@#$%^&*()_+[\]{};':"\\|,.<>\/?`~-]+$/.test(value);
   };
 
   // Función handleChange modificada
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+    console.log(name);
+    
+    if(name === 'Email'){
     // Validar el input antes de actualizar el estado
-    if (validateInput(value)) {
+    if (validateInputMail(value)) {
       // Actualizar el estado del objeto formState
       setLoginUser((prevState) => ({
         ...prevState,
@@ -101,6 +98,25 @@ function Login() {
         setErrorMessage('');
       }, 3000);
     }
+  }
+
+  if(name === 'Password'){
+    // Validar el input antes de actualizar el estado
+    if (validateInputPass(value)) {
+      // Actualizar el estado del objeto formState
+      setLoginUser((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    } else {
+      setErrorMessage({ error: 'Caracteres inválidos en el campo.' });
+
+      // Limpiar el mensaje de error después de 3 segundos
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+    }
+  }
 
     // Usar el valor actual directamente
     console.log('Current Input:', value);
@@ -109,6 +125,16 @@ function Login() {
   useEffect(() => {
     console.log('showmodal:', showModal);
   }, [showModal]);
+
+  useEffect(() => {
+    if(errorAuth && inLogin === true){
+      setInLogin(false)
+    }
+    
+  }, [inLogin, errorAuth]);
+  console.log(errorAuth);
+  
+ 
   return (
     <div className="w-full h-screen flex flex-row ">
       <div className="flex flex-col gap-4 justify-center items-center bg-[#F2F5F6] text-black h-[100%] w-2/4 p-12 border ">
@@ -184,10 +210,11 @@ function Login() {
             {inLogin ? (
               <p className="animate-pulse">Ingresando...</p>
             ) : (
-              'Iniciar sesión'
+               'Iniciar sesión'
             )}
           </button>
         </form>
+        {errorAuth && <p className='text-red-600'>{errorAuth}</p>}
       </div>
 
       <Image

@@ -12,13 +12,17 @@ const {
   loginUsuario,
   updateUsuario,
   deleteUsuario,
+  verifyUsuarios,
+  verifySms,
 } = UsuariosController;
 const usuariosRouter = Router();
 
 usuariosRouter.get("/", getUsuarios);
 usuariosRouter.get("/:id", getUsuarioById);
 usuariosRouter.post("/create", validateCreateUser, createUsuarios);
+usuariosRouter.post("/confirmVerify", verifyUsuarios);
 usuariosRouter.post("/login", validateLoginUser, loginUsuario);
+usuariosRouter.post("/verifysms", checkAuth, verifySms);
 usuariosRouter.put("/update/:id", checkAuth, validateUpdateUser, updateUsuario);
 usuariosRouter.delete("/delete/:id", checkAuth, deleteUsuario);
 
