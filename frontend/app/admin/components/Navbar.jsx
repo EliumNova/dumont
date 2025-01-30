@@ -158,7 +158,7 @@ function Navbar() {
 
   return (
     <div
-      className={`z-40 text-white flex flex-col md:flex-row justify-between px-4 md:px-8 p-3 shadow-[#35334426] shadow-sm border-b-2 border-[#12141D]
+      className={`z-40 text-white flex flex-col md:flex-row  justify-between px-4 md:px-8 p-3 shadow-[#35334426] shadow-sm border-b-2 border-[#12141D]
       ${isAdminSubroute ? 'bg-[#12141D]' : 'bg-[#12141D]'}`}
     >
       <div className="flex flex-row gap-2 md:gap-4 justify-center items-center">
@@ -207,7 +207,7 @@ function Navbar() {
           </h2>
         )}
       </div>
-      <div className="flex flex-row gap-2 md:gap-3 mt-2 md:mt-0">
+      <div className="flex flex-row gap-2 md:gap-3 mt-2 md:mt-0 justify-end">
         <div className="text-right">
           <p className="text-xs md:text-base font-semibold">{user.Name}</p>
           <p className="text-xs text-white opacity-60">{user.Email}</p>
@@ -220,7 +220,7 @@ function Navbar() {
           height={40}
           src={'/UserIcon5.jpeg'}
           alt="Perfil Image"
-          className="rounded-full"
+          className="rounded-full "
         />
         </div>
         {dropProfile && (

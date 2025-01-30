@@ -4,6 +4,8 @@ import DevicesTable from './components/DevicesTable';
 import NewDevice from './components/NewDevice';
 import ModalWindow from '../components/ModalWindow';
 import Image from 'next/image';
+import { Table } from './components/Table';
+import Link from 'next/link';
 
 function DispositivosMenu() {
   const [newDevice, setNewDevice] = useState(true);
@@ -55,16 +57,16 @@ function DispositivosMenu() {
   const [showAllDevices, setShowAllDevices] = useState(false);
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="flex gap-5 items-center my-5">
-        <Image
-          width={100}
-          height={100}
-          src={'/UserIcon1.jpeg'}
-          alt="DuMont Logo"
-          className="rounded-full w-15 md:w-20 transition-all duration-150"
-        />
-        <h2 className="text-2xl">Jacob Jones</h2>
+    <div className="">
+      <div className="flex flex-col justify-center items-center w-full">
+        <Table />
+        <Link
+          href="/admin/userRegistration"
+          className="p-1 text-blue-500 flex items-center my-5"
+        >
+          <img src="/svg/addNewUser.svg" className="h-20"></img>
+          Agregar nuevo dispositivo
+        </Link>
       </div>
 
       {newDevice && (
