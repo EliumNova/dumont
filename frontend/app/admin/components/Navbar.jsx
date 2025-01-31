@@ -158,8 +158,8 @@ function Navbar() {
 
   return (
     <div
-      className={`z-40 text-white flex flex-col md:flex-row  justify-between px-4 md:px-8 p-3 shadow-[#35334426] shadow-sm border-b-2 border-[#12141D]
-      ${isAdminSubroute ? 'bg-[#12141D]' : 'bg-[#12141D]'}`}
+      className={`z-40 text-[#191920] flex flex-col md:flex-row justify-between px-4 md:px-8 p-3 shadow-[#35334426] shadow-sm border-b-2 border-[#12141D]
+      ${isAdminSubroute ? 'bg-[#F2F5F6]' : 'bg-[#F2F5F6]'}`}
     >
       <div className="flex flex-row gap-2 md:gap-4 justify-center items-center">
         {isAdminSubroute && (

@@ -14,17 +14,22 @@ const BackgroundImage = ({ src, style }) => {
 
 export default function Layout({ children }) {
   return (
-    <div className="relative min-h-screen flex flex-col w-full bg-[#060627] overflow-hidden">
-      {/* Fondo dinámico */}
-      <BackgroundImage
-        src="/logodumont.png"
-        style={{ backgroundSize: 'contain' }}
-      />
-
-      {/* Header y navbar */}
-      <header className="relative z-10">
+    // bg-[#060f3a]
+    <div className="flex flex-col w-full h-screen relative bg-[#060f3a] overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-no-repeat bg-center"
+        style={{
+          backgroundImage: 'url(/logodumont.jpg)',
+          backgroundSize: 'contain',
+        }}
+      ></div>
+      {/* <div
+        className="absolute inset-0 bg-cover bg-no-repeat bg-center"
+        style={{ backgroundImage: 'url(/background.png)', backgroundSize: 'cover' }}
+      ></div> */}
+      <div className="relative z-10 flex-grow flex flex-col">
         <Navbar />
-      </header>
+      </div>
 
       {/* Contenido principal */}
       <main className="z-10 flex-grow h-full">{children}</main>
