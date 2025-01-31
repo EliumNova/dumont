@@ -31,10 +31,10 @@ function Login() {
   const [emailMethod, setEmailMethod] = useState(false);
   const [method, setMethod] = useState(false);
   const [ableNewPassword, setAbleNewPassword] = useState(false);
-  const errorAuth = useSelector(state => state.auth.error)
-  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  const errorAuth = useSelector((state) => state.auth.error);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
-  let URL = `/usuarios/login`;
+  let URL = `http://localhost:3001/api/usuarios/login`;
   const dispatch = useDispatch();
   // llevar token a cookie
   function storeTokenInCookie(token) {
@@ -49,18 +49,17 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
-        setInLogin(true);
-        
-        dispatch(login(loginUser))
 
-        if(isAuthenticated){
-        router.push('/admin');
-        }   
+    setInLogin(true);
+
+    dispatch(login(loginUser));
+
+    if (isAuthenticated) {
+      router.push('/admin');
+    }
   };
 
   useEffect(() => {
-    
     if (isAuthenticated) {
       router.push('/admin');
     }
@@ -81,42 +80,42 @@ function Login() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log(name);
-    
-    if(name === 'Email'){
-    // Validar el input antes de actualizar el estado
-    if (validateInputMail(value)) {
-      // Actualizar el estado del objeto formState
-      setLoginUser((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    } else {
-      setErrorMessage({ error: 'Caracteres inválidos en el campo.' });
 
-      // Limpiar el mensaje de error después de 3 segundos
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
+    if (name === 'Email') {
+      // Validar el input antes de actualizar el estado
+      if (validateInputMail(value)) {
+        // Actualizar el estado del objeto formState
+        setLoginUser((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+      } else {
+        setErrorMessage({ error: 'Caracteres inválidos en el campo.' });
+
+        // Limpiar el mensaje de error después de 3 segundos
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      }
     }
-  }
 
-  if(name === 'Password'){
-    // Validar el input antes de actualizar el estado
-    if (validateInputPass(value)) {
-      // Actualizar el estado del objeto formState
-      setLoginUser((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    } else {
-      setErrorMessage({ error: 'Caracteres inválidos en el campo.' });
+    if (name === 'Password') {
+      // Validar el input antes de actualizar el estado
+      if (validateInputPass(value)) {
+        // Actualizar el estado del objeto formState
+        setLoginUser((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+      } else {
+        setErrorMessage({ error: 'Caracteres inválidos en el campo.' });
 
-      // Limpiar el mensaje de error después de 3 segundos
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
+        // Limpiar el mensaje de error después de 3 segundos
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      }
     }
-  }
 
     // Usar el valor actual directamente
     console.log('Current Input:', value);
@@ -127,14 +126,12 @@ function Login() {
   }, [showModal]);
 
   useEffect(() => {
-    if(errorAuth && inLogin === true){
-      setInLogin(false)
+    if (errorAuth && inLogin === true) {
+      setInLogin(false);
     }
-    
   }, [inLogin, errorAuth]);
   console.log(errorAuth);
-  
- 
+
   return (
     <div className="w-full h-screen flex flex-row ">
       <div className="flex flex-col gap-4 justify-center items-center bg-[#F2F5F6] text-black h-[100%] w-2/4 p-12 border ">
@@ -210,11 +207,11 @@ function Login() {
             {inLogin ? (
               <p className="animate-pulse">Ingresando...</p>
             ) : (
-               'Iniciar sesión'
+              'Iniciar sesión'
             )}
           </button>
         </form>
-        {errorAuth && <p className='text-red-600'>{errorAuth}</p>}
+        {errorAuth && <p className="text-red-600">{errorAuth}</p>}
       </div>
 
       <Image
