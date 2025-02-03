@@ -88,19 +88,6 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
     const { Email, Password } = req.body;
     const usuario = await Usuarios.findOne({ where: { Email } });
     console.log(usuario.Password);
-    if (usuario) {
-      if (Password == usuario.Password) {
-        const token = generateToken(usuario);
-        res.send({
-          id: usuario.idUsuarios,
-          Name: usuario.Name,
-          Email: usuario.Email,
-          token,
-        });
-        return;
-      }
-    }
-    res.status(401).send({ message: 'Email o contraseña incorrectos' });
 
     if (!usuario) {
       return res
@@ -124,12 +111,6 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
         token,
       });
     }
-
-    return res.status(401).send({ message: 'Email o contraseña incorrectos' });
-  } catch (error) {
-    handleError(error, res);
-  }
-});
 
 const verifyUsuarios = expressAsyncHandler(async (req, res) => {
   try {
