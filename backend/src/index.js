@@ -24,7 +24,7 @@ app.use(express.static('./public'));
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: 'https://dumont-back.onrender.com/',
+  origin: 'https://dumont.onrender.com',
   credentials: true,
 };
 app.use(cors(corsOptions));

@@ -9,6 +9,42 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/admin/clientMenu',
+        destination: '/admin/clientMenu/page',
+      },
+      {
+        source: '/admin/clientRegistration',
+        destination: '/admin/clientRegistration/page',
+      },
+      {
+        source: '/admin/communicationMenu',
+        destination: '/admin/communicationMenu/page',
+      },
+      {
+        source: '/admin/devicesMenu',
+        destination: '/admin/devicesMenu/page',
+      },
+      {
+        source: '/admin/distributorMenu',
+        destination: '/admin/distributorMenu/page',
+      },
+      {
+        source: '/admin',
+        destination: '/admin/page',
+      },
+      {
+        source: '/admin/userMenu',
+        destination: '/admin/userMenu/page',
+      },
+      {
+        source: '/admin/userRegistration',
+        destination: '/admin/userRegistration/page',
+      },
+    ];
+  },
   async headers() {
     return [
       {
