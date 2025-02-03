@@ -3,13 +3,10 @@ import { Usuarios } from '../models/Usuarios.js';
 import { generateToken } from '../../utils/utilsUsuarios.js';
 import { handleError } from '../../utils/utilsErrors.js';
 import bcrypt from 'bcryptjs';
-<<<<<<< HEAD
-=======
 import { transporter } from '../../utils/mailer.js';
 import { verifyEmailTemplate } from '../../utils/htmlEmails.js';
 import { PublishCommand } from '@aws-sdk/client-sns';
 import { snsClient } from '../../utils/utilsVerify.js';
->>>>>>> main
 
 const createUsuarios = expressAsyncHandler(async (req, res) => {
   try {
@@ -91,6 +88,19 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
     const { Email, Password } = req.body;
     const usuario = await Usuarios.findOne({ where: { Email } });
     console.log(usuario.Password);
+    if (usuario) {
+      if (Password == usuario.Password) {
+        const token = generateToken(usuario);
+        res.send({
+          id: usuario.idUsuarios,
+          Name: usuario.Name,
+          Email: usuario.Email,
+          token,
+        });
+        return;
+      }
+    }
+    res.status(401).send({ message: 'Email o contraseña incorrectos' });
 
     if (!usuario) {
       return res
