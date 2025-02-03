@@ -112,6 +112,12 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
       });
     }
 
+    return res.status(401).send({ message: 'Email o contraseña incorrectos' });
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
 const verifyUsuarios = expressAsyncHandler(async (req, res) => {
   try {
     const { idUsuarios, verifyToken } = req.body;
