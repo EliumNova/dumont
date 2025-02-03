@@ -21,7 +21,7 @@ function CustomerRegistration() {
   const [inHorus, setInHorus] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  const URL = `http://localhost:3001/api/clientes/create`;
+  const URL = `https://dumont-back.onrender.com/api/clientes/create`;
 
   useEffect(() => {
     console.log('Current Store Data:', newCustomerStore);
