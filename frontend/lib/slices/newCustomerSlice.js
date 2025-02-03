@@ -4,6 +4,8 @@ const initialState = {
   principales: null,
   ubicacion: null,
   horus: null,
+  loading: false,
+  error: null,
 };
 
 const newCustomerSlice = createSlice({
@@ -26,17 +28,21 @@ const newCustomerSlice = createSlice({
       state.error = action.payload;
     },
     cancel(state) {
-      state.Email = null;
-      state.Name = null;
-      state.DNI = null;
-      state.token = null;
-      state.isAuthenticated = false;
+      state.principales = null;
+      state.ubicacion = null;
+      state.horus = null;
       state.loading = false;
       state.error = null;
     },
   },
 });
 
-export const { setPrincipales, setUbicacion, setHorus, cancel } =
-  newCustomerSlice.actions;
+export const {
+  setPrincipales,
+  setUbicacion,
+  setHorus,
+  setLoading,
+  setError,
+  cancel,
+} = newCustomerSlice.actions;
 export default newCustomerSlice.reducer;

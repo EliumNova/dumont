@@ -1,5 +1,6 @@
 // src/app/slices/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+import { updateAuthUser } from "./authAction";
 
 const initialState = {
   user: null,
@@ -14,9 +15,13 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, action) {
-      state.user = action.payload;
+      console.log("SetUser", action.payload);
+      
+      state.user = action.payload;      
     },
     setToken(state, action) {
+      console.log("SetToken", action.payload);
+      
       state.token = action.payload;
     },
     setAuthenticated(state, action) {
@@ -37,14 +42,33 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+    extraReducers: (builder) => {
+      builder
+        .addCase(updateAuthUser.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(updateAuthUser.fulfilled, (state, action) => {
+          state.loading = false;
+          state.user = action.payload;
+          console.log('User updated:', state.user)
+        })
+        .addCase(updateAuthUser.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload;
+        });
+    }
   },
 });
 
+console.log(initialState.user);
+
+
 export const {
   setUser,
-  setName,
-  setDNI,
-  setEmail,
+  // setName,
+  // setDNI,
+  // setEmail,
   setToken,
   setAuthenticated,
   setLoading,

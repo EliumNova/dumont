@@ -20,6 +20,15 @@ export const Usuarios = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    Telefono: {
+      type: DataTypes.STRING(15),
+      allowNull: false,
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     DNI: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -31,6 +40,18 @@ export const Usuarios = sequelize.define(
       set(value) {
         this.setDataValue("Password", bcrypt.hashSync(value, 10));
       },
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    verifyToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    expireToken: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {

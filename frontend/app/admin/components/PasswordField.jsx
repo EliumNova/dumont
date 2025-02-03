@@ -13,7 +13,7 @@ export default function PasswordField({
 }) {
   return (
     <div
-      className={`w-full lg:w-[32rem] my-4 p-4 ${className}`} // Ocupa toda la columna
+      className={`w-full lg:w-[32rem] p-4 ${className}`} // Ocupa toda la columna
     >
       <label htmlFor={name} className="text-sm font-semibold">
         {label}

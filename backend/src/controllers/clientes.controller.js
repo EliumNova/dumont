@@ -1,10 +1,11 @@
-import expressAsyncHandler from "express-async-handler";
-import { Clientes } from "../models/Clientes.js";
-import { Dispositivos } from "../models/Dispositivos.js";
-import { generateToken } from "../../utils/utilsClientes.js";
-import { handleError } from "../../utils/utilsErrors.js";
+import expressAsyncHandler from 'express-async-handler';
+import { Clientes } from '../models/Clientes.js';
+import { Dispositivos } from '../models/Dispositivos.js';
+import { generateToken } from '../../utils/utilsClientes.js';
+import { handleError } from '../../utils/utilsErrors.js';
 
 const createCliente = expressAsyncHandler(async (req, res) => {
+  console.log('Solicitud recibida en /api/clientes/create', req.body);
   try {
     const {
       CodigoCliente,
@@ -21,8 +22,11 @@ const createCliente = expressAsyncHandler(async (req, res) => {
       HorarioOnOffDispositivos,
       HorarioPublicitario,
       AtencionAlCliente,
+      NombreCompleto,
+      CorreoElectronico,
     } = req.body;
-    const newCliente = new Clientes({
+
+    const newCliente = await Clientes.create({
       CodigoCliente,
       CodigoDistribuidor,
       Segmentacion,
@@ -37,12 +41,15 @@ const createCliente = expressAsyncHandler(async (req, res) => {
       HorarioOnOffDispositivos,
       HorarioPublicitario,
       AtencionAlCliente,
+      NombreCompleto,
+      CorreoElectronico,
     });
-    const cliente = await newCliente.save();
+
     const token = generateToken(newCliente);
-    console.log(process.env.JWT_SECRET);
-    res.send({ cliente, token });
+    console.log('Cliente creado:', newCliente);
+    res.send({ cliente: newCliente, token });
   } catch (error) {
+    console.error('Error en createCliente:', error);
     handleError(error, res);
   }
 });
@@ -70,7 +77,7 @@ const getClienteById = expressAsyncHandler(async (req, res) => {
       console.log(dispositivos);
       res.send({ cliente, dispositivos });
     } else {
-      res.status(404).send({ message: "Cliente no encontrado" });
+      res.status(404).send({ message: 'Cliente no encontrado' });
     }
   } catch (error) {
     handleError(error, res);
@@ -112,7 +119,7 @@ const updateCliente = expressAsyncHandler(async (req, res) => {
       const updatedCliente = await cliente.save();
       res.send(updatedCliente);
     } else {
-      res.status(404).send({ message: "Cliente no encontrado" });
+      res.status(404).send({ message: 'Cliente no encontrado' });
     }
   } catch (error) {
     handleError(error, res);
@@ -126,7 +133,7 @@ const deleteCliente = expressAsyncHandler(async (req, res) => {
         idClientes: req.params.id,
       },
     });
-    res.send({ message: "Cliente eliminado" });
+    res.send({ message: 'Cliente eliminado' });
   } catch (error) {
     handleError(error, res);
   }
@@ -150,7 +157,7 @@ const getDispositivosByCliente = expressAsyncHandler(async (req, res) => {
     if (rows) {
       res.send({ count, rows });
     } else {
-      res.status(404).send({ message: "Cliente no encontrado" });
+      res.status(404).send({ message: 'Cliente no encontrado' });
     }
   } catch (error) {
     handleError(error, res);
@@ -180,7 +187,7 @@ const getDispositivosByClienteByParams = expressAsyncHandler(
         console.log(dispositivo);
         res.send(dispositivo);
       } else {
-        res.status(404).send({ message: "Cliente no encontrado" });
+        res.status(404).send({ message: 'Cliente no encontrado' });
       }
     } catch (error) {
       handleError(error, res);

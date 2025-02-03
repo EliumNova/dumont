@@ -6,9 +6,12 @@ import InputField from './InputField';
 import SelectField from './SelectedField';
 
 function Principales({ setInUbication, setProgress, setInPrincipales }) {
+  //Estado global de principales
   const storePrincipales = useSelector(
     (state) => state.newCustomer.principales
+    // console.log(`STORE PRINCIPALES: ${storePrincipales}`);
   );
+
   const dispatch = useDispatch();
 
   const [principalesInfo, setPrincipalesInfo] = useState({
@@ -100,8 +103,8 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center">
-      <div className="w-10/12 h-auto grid grid-rows-2 grid-cols-1 xl:grid-cols-2 w-full justify-items-center">
+    <div className="h-full flex flex-col items-center w-full">
+      <div className="grid  grid-cols-1 sm:grid-cols-2 w-full gap-5 ">
         {/* Código del cliente */}
         <InputField
           label="Código del cliente"
@@ -109,7 +112,9 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.customerCode}
           onChange={handleChange}
           placeholder="Ingresa tu numero de cliente"
+          inputClassName="w-full"
         />
+
         {/* Segmentación */}
         <SelectField
           label="Segmentación"
@@ -121,7 +126,9 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
             { value: 'kiosco', label: 'Kiosco' },
             { value: 'no', label: 'No' },
           ]}
+          inputClassName="w-full justify-self-end"
         />
+
         {/* Código del distribuidor */}
         <InputField
           label="Código del distribuidor"
@@ -129,7 +136,9 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.codeDistribuidor}
           onChange={handleChange}
           placeholder="Ingresa tu código de distribuidor"
+          inputClassName="w-full"
         />
+
         {/* Correo electrónico */}
         <InputField
           label="Correo electrónico"
@@ -138,7 +147,9 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.email}
           onChange={handleChange}
           placeholder="Ingresa tu correo electrónico"
+          inputClassName="w-full justify-self-end"
         />
+
         {/* Página web */}
         <InputField
           label="Página Web"
@@ -146,7 +157,9 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
           value={principalesInfo.webPage}
           onChange={handleChange}
           placeholder="Ingresa tu página web"
+          inputClassName="w-full"
         />
+
         {/* Permiso de venta de alcohol */}
         <SelectField
           label="Permiso Venta Alcohol"
@@ -158,39 +171,38 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
             { value: 'si', label: 'Sí' },
             { value: 'no', label: 'No' },
           ]}
+          inputClassName="w-full justify-self-end"
         />
-        {/* Teléfono */}
 
+        {/* Teléfono */}
         <InputField
           label="Teléfono"
           name="phone"
           value={principalesInfo.phone}
           onChange={handleChange}
           placeholder="Ingresa tu número de teléfono"
+          inputClassName="w-full"
         />
       </div>
 
-      <div>
+      <div className="my-3">
         {/* Mensaje de error */}
         {errorMessage && (
           <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium ">
             {errorMessage}
           </div>
         )}
-        <div className="flex gap-5 flex-col xl:flex-row">
-          <Link href={'/admin/customerMenu'}>
-            <button
-              // onClick={handleBack}
-              className="w-[15rem] h-14 relative top-11
-          bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
-            >
+
+        <div className="flex gap-5 flex-col sm:flex-row my-5">
+          <Link href={'/admin'}>
+            <button className="w-[15rem] h-12 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold">
               Cancelar
             </button>
           </Link>
 
           <button
             onClick={handleSubmit}
-            className="w-[15rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+            className="w-[15rem] h-12 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
           >
             Siguiente
           </button>

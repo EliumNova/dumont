@@ -29,7 +29,7 @@ const getDispositivoById = expressAsyncHandler(async (req, res) => {
 
 const createDispositivo = expressAsyncHandler(async (req, res) => {
   try {
-    const { Marca, Modelo, Numero, NumSerie, idClientes } = req.body;
+    const { Marca, Modelo, NumPulgadas, NumSerie, idClientes } = req.body;
     const cliente = await Clientes.findByPk(idClientes);
     if (!cliente) {
       return res.status(404).send({ message: "Cliente no encontrado" });
@@ -37,7 +37,7 @@ const createDispositivo = expressAsyncHandler(async (req, res) => {
     const newDispositivo = new Dispositivos({
       Marca,
       Modelo,
-      Numero,
+      NumPulgadas,
       NumSerie,
       idClientes: cliente.id,
     });
@@ -52,11 +52,11 @@ const updateDispositivo = expressAsyncHandler(async (req, res) => {
   try {
     const dispositivo = await Dispositivos.findByPk(req.params.id);
     if (dispositivo) {
-      const { Marca, Modelo, Numero, NumSerie, idClientes } = req.body;
+      const { Marca, Modelo, NumPulgadas, NumSerie, idClientes } = req.body;
 
       dispositivo.Marca = Marca ?? dispositivo.Marca;
       dispositivo.Modelo = Modelo ?? dispositivo.Modelo;
-      dispositivo.Numero = Numero ?? dispositivo.Numero;
+      dispositivo.NumPulgadas = NumPulgadas ?? dispositivo.NumPulgadas;
       dispositivo.NumSerie = NumSerie ?? dispositivo.NumSerie;
       dispositivo.idClientes = idClientes ?? dispositivo.Client;
       await dispositivo.save();
