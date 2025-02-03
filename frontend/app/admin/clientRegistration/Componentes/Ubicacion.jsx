@@ -17,6 +17,8 @@ function Ubicacion({
     altura: storeUbicacion?.altura || '',
     entreCalle1: storeUbicacion?.entreCalle1 || '',
     entreCalle2: storeUbicacion?.entreCalle2 || '',
+    latitud: storeUbicacion?.latitud || '',
+    longitud: storeUbicacion?.longitud || '',
   });
 
   const [errorMessage, setErrorMessage] = useState({ error: '' });
@@ -24,7 +26,7 @@ function Ubicacion({
   // Función para validar el input (asegúrate de definir esta función)
   const validateInput = (value) => {
     // Ejemplo de validación simple
-    return /^[a-zA-Z0-9@.]+$/.test(value);
+    return /^[a-zA-Z0-9@.\s-]+$/.test(value);
   };
 
   // Función handleChange modificada
@@ -58,6 +60,8 @@ function Ubicacion({
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    console.log(ubicacionInfo);
+
     const { localidad, calle, altura, entreCalle1, entreCalle2 } =
       ubicacionInfo;
 
@@ -75,11 +79,11 @@ function Ubicacion({
     // setErrorMessage('');
   };
   return (
-    <div className="container mx-auto flex flex-col items-center gap-5">
-      <div className="w-4/5 h-auto flex flex-row gap-x-8 flex-wrap justify-start items-center ">
-        {/**Localidad */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-          <label htmlFor="email" className="text-sm font-semibold">
+    <div className="h-full mx-auto flex flex-col items-center w-full">
+      <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 w-full">
+        {/** Localidad */}
+        <div className="flex flex-col  w-full">
+          <label htmlFor="localidad" className="text-sm font-semibold">
             Localidad
           </label>
           <input
@@ -89,13 +93,13 @@ function Ubicacion({
             value={ubicacionInfo?.localidad}
             required
             onChange={handleChange}
-            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
           />
         </div>
 
-        {/**Calle */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-          <label htmlFor="email" className="text-sm font-semibold">
+        {/** Calle */}
+        <div className="flex flex-col  w-full">
+          <label htmlFor="calle" className="text-sm font-semibold">
             Calle
           </label>
           <input
@@ -105,11 +109,12 @@ function Ubicacion({
             value={ubicacionInfo?.calle}
             placeholder="Ingresa tu Calle"
             required
-            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
           />
         </div>
-        {/**Altura */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+
+        {/** Altura */}
+        <div className="flex flex-col  w-full">
           <label className="text-sm font-semibold">Altura</label>
           <input
             onChange={handleChange}
@@ -118,15 +123,16 @@ function Ubicacion({
             name="altura"
             placeholder="Ingresa tu Altura"
             required
-            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
           />
         </div>
-        {/**   Entre Calles */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-          <label htmlFor="email" className="text-sm font-semibold">
+
+        {/** Entre Calles */}
+        <div className="flex flex-col  w-full">
+          <label htmlFor="entreCalle" className="text-sm font-semibold">
             Entre Calles
           </label>
-          <div className="flex flex-row  items-center gap-2">
+          <div className="flex flex-row items-center gap-2">
             <input
               onChange={handleChange}
               value={ubicacionInfo?.entreCalle1}
@@ -134,7 +140,7 @@ function Ubicacion({
               name="entreCalle1"
               placeholder="Calle 1"
               required
-              className=" w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
             />
 
             <input
@@ -144,33 +150,62 @@ function Ubicacion({
               value={ubicacionInfo?.entreCalle2}
               placeholder="Calle 2"
               required
-              className=" w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
             />
           </div>
         </div>
+
+        {/** Latitud */}
+        <div className="flex flex-col  w-full">
+          <label htmlFor="latitud" className="text-sm font-semibold">
+            Latitud
+          </label>
+          <input
+            type="text"
+            name="latitud"
+            onChange={handleChange}
+            value={ubicacionInfo?.latitud}
+            placeholder="Ingresa la Latitud"
+            required
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
+          />
+        </div>
+
+        {/** Longitud */}
+        <div className="flex flex-col  w-full">
+          <label htmlFor="longitud" className="text-sm font-semibold">
+            Longitud
+          </label>
+          <input
+            type="text"
+            name="longitud"
+            onChange={handleChange}
+            value={ubicacionInfo?.longitud}
+            placeholder="Ingresa la Longitud"
+            required
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
+          />
+        </div>
       </div>
 
-      <div>
+      <div className="mt-8">
         {/* Mensaje de error */}
         {errorMessage.error && (
-          <div
-            className="p-2 h-8 text-xs rounded flex justify-center  
-          items-center bg-red-700 text-white font-medium -top-8 relative "
-          >
-            {errorMessage.error}{' '}
+          <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium my-4">
+            {errorMessage.error}
           </div>
         )}
-        <div className="flex gap-5">
+
+        <div className="flex flex-col md:flex-row gap-5  w-full justify-items-center">
           <button
             onClick={handleBack}
-            className="w-[15rem] h-14 relative top-11
-          bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
+            className="w-[15rem] h-14 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
           >
-            Atras
+            Atrás
           </button>
           <button
             onClick={handleSubmit}
-            className="w-[15rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+            className="w-[15rem] h-14 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
           >
             Enviar
           </button>

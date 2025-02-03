@@ -18,7 +18,7 @@ export const Dispositivos = sequelize.define(
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    Numero: {
+    NumPulgadas: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

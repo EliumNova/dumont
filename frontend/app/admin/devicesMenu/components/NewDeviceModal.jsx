@@ -43,10 +43,11 @@ export default function NewDeviceModal() {
         <form className="flex flex-col gap-5 mt-10" onSubmit={handleSubmit}>
           <InputField
             label={'Marca del dispositivo'}
-            id={'marca'} // Cambié esto para que coincida con el nombre del campo
+            id={'marca'}
+            name={'marca'}
             value={datos.marca}
             onChange={handleChange}
-            placeholder={'Ingrese el dispositivo'}
+            placeholder={'Ingrese la marca del dispositivo'}
             type="text"
             className="gap-2"
             inputClassName="rounded-xl"
@@ -54,6 +55,7 @@ export default function NewDeviceModal() {
           <InputField
             label={'Modelo'}
             id={'modelo'}
+            name={'modelo'}
             value={datos.modelo}
             onChange={handleChange}
             placeholder={'Ingrese el modelo del dispositivo'}
@@ -63,6 +65,7 @@ export default function NewDeviceModal() {
           <InputField
             label={'Cantidad de pulgadas'}
             id={'pulgadas'}
+            name={'pulgadas'}
             value={datos.pulgadas}
             onChange={handleChange}
             placeholder={'Ingrese la cantidad de pulgadas del dispositivo'}
@@ -72,6 +75,7 @@ export default function NewDeviceModal() {
           <InputField
             label={'Número de serie'}
             id={'serie'}
+            name={'serie'}
             value={datos.serie}
             onChange={handleChange}
             placeholder={'Ingrese el número de serie del dispositivo'}

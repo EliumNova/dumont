@@ -35,25 +35,10 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const {
-      saleHorusFrom,
-      saleHorusTo,
-      marketingHorusFrom,
-      marketingHorusTo,
-      onOffHorusFrom,
-      onOffHorusTo,
-      customerAttention,
-    } = horusInfo;
+    const { saleHorusFrom, saleHorusTo, onOffHorusFrom, onOffHorusTo } =
+      horusInfo;
 
-    if (
-      !saleHorusFrom ||
-      !saleHorusTo ||
-      !marketingHorusFrom ||
-      !marketingHorusTo ||
-      !onOffHorusFrom ||
-      !onOffHorusTo ||
-      !customerAttention
-    ) {
+    if (!saleHorusFrom || !saleHorusTo || !onOffHorusFrom || !onOffHorusTo) {
       setErrorMessage({ error: 'Todos los campos son obligatorios.' });
       return;
     }
@@ -98,139 +83,92 @@ function Horus({ setInHorus, setProgress, setInUbication, setShowModal }) {
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center gap-5">
-      <div className="w-4/5 h-auto flex flex-row gap-x-8 flex-wrap justify-start items-center">
+    <div className="h-full flex flex-col items-center w-full">
+      <div className="flex flex-row w-full gap-5 ">
         {/**Horario de venta */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className="flex flex-col gap-3 w-full p-4">
           <label htmlFor="email" className="text-sm font-semibold">
-            Horario de venta
+            Horario de venta:
           </label>
-          <div className="flex flex-row justify-between items-center  w-11/12">
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
+          <div className="md:flex">
+            <div className="bg-[#E2E5E5] rounded h-14 items-center  justify-center flex w-[60%]">
               <input
                 type="time"
                 name="saleHorusFrom"
                 value={horusInfo?.saleHorusFrom}
                 onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1  "
+                className="bg-[#E2E5E5] rounded px-2 py-1 text-black"
               />
-              <span className="ml-2">hs</span>{' '}
+              <span className="ml-2 text-black">hs</span>{' '}
               {/* Texto "HS" al lado del input */}
             </div>
-            <span>hasta</span>
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
+            <span className="md:mx-5 ">Hasta:</span>
+            <div className="bg-[#E2E5E5] rounded h-14 items-center  justify-center flex w-[60%]">
               <input
                 type="time"
                 name="saleHorusTo"
                 value={horusInfo?.saleHorusTo}
                 onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1  "
+                className="bg-[#E2E5E5] rounded px-2 py-1 text-black"
               />
-              <span className="ml-2">hs</span>{' '}
-              {/* Texto "HS" al lado del input */}
-            </div>
-          </div>
-        </div>
-
-        {/**Horario Publicitario */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-          <label htmlFor="email" className="text-sm font-semibold">
-            Horario Publicitario
-          </label>
-          <div className="flex flex-row justify-between items-center  w-11/12">
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
-              <input
-                type="time"
-                name="marketingHorusFrom"
-                value={horusInfo?.marketingHorusFrom}
-                onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1  "
-              />
-              <span className="ml-2">hs</span>{' '}
-              {/* Texto "HS" al lado del input */}
-            </div>
-            <span>hasta</span>
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
-              <input
-                type="time"
-                name="marketingHorusTo"
-                value={horusInfo?.marketingHorusTo}
-                onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1  "
-              />
-              <span className="ml-2">hs</span>{' '}
+              <span className="ml-2 text-black">hs</span>{' '}
               {/* Texto "HS" al lado del input */}
             </div>
           </div>
         </div>
         {/**Horario On-Off de Dispositivos */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
+        <div className="flex flex-col gap-3 w-full p-4">
           <label className="text-sm font-semibold">
-            Horario On-Off de Dispositivos
+            Horario On-Off de Dispositivos:
           </label>
-          <div className="flex flex-row justify-between items-center  w-11/12">
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
+          <div className="grid grid-cols-1 w-full md:flex">
+            <div className="bg-[#E2E5E5] rounded h-14 items-center  justify-center flex w-[60%]">
               <input
                 type="time"
                 name="onOffHorusFrom"
                 value={horusInfo?.onOffHorusFrom}
                 onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1  "
+                className="bg-[#E2E5E5] rounded px-2 py-1 text-black"
               />
-              <span className="ml-2">hs</span>{' '}
+              <span className="ml-2 text-black">hs</span>{' '}
               {/* Texto "HS" al lado del input */}
             </div>
-            <span>hasta</span>
-            <div className="bg-[#E2E5E5] rounded w-40 h-14 items-center  justify-center flex">
+            <span className="md:mx-5 ">Hasta:</span>
+            <div className="bg-[#E2E5E5] rounded h-14 items-center  justify-center flex w-[60%]">
               <input
                 type="time"
                 name="onOffHorusTo"
                 value={horusInfo?.onOffHorusTo}
                 onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1  "
+                className="bg-[#E2E5E5] rounded px-2 py-1 text-black"
               />
-              <span className="ml-2">hs</span>{' '}
+              <span className="ml-2 text-black">hs</span>{' '}
               {/* Texto "HS" al lado del input */}
             </div>
           </div>
         </div>
-        {/**  Atención al Cliente */}
-        <div className=" flex flex-col gap-3 w-[32rem] p-4 my-2">
-          <label htmlFor="email" className="text-sm font-semibold">
-            Atención al Cliente
-          </label>
-          <input
-            type="text"
-            name="customerAttention"
-            value={horusInfo?.customerAttention}
-            placeholder="Ingrese el numero de serie del dispositivo"
-            required
-            onChange={handleChange}
-            className=" bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
-          />
-        </div>
       </div>
-      <div>
+      <div className="">
         {/* Mensaje de error */}
         {errorMessage.error && (
           <div
             className="p-2 h-8 text-xs rounded flex justify-center
-          items-center bg-red-700 text-white font-medium -top-8 relative "
+          items-center bg-red-700 text-white font-medium my-4 "
           >
             {errorMessage.error}{' '}
           </div>
         )}
-        <div className="flex gap-5">
+        <div className="flex gap-5 flex-col md:flex-row">
           <button
             onClick={handleBack}
-            className="w-[15rem] h-14 relative top-11
+            className="w-[15rem] h-14
           bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
           >
             Atras
           </button>
           <button
             onClick={handleSubmit}
-            className="w-[15rem] h-14 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+            className="w-[15rem] h-14  bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
           >
             Guardas cambios
           </button>

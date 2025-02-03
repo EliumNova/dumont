@@ -1,9 +1,9 @@
-import { DataTypes } from "sequelize";
-import { sequelize } from "../db/db.js";
-import { Dispositivos } from "./Dispositivos.js";
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/db.js';
+import { Dispositivos } from './Dispositivos.js';
 
 export const Clientes = sequelize.define(
-  "Clientes",
+  'Clientes',
   {
     idClientes: {
       type: DataTypes.UUID,
@@ -12,16 +12,16 @@ export const Clientes = sequelize.define(
       allowNull: false,
     },
     CodigoCliente: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     CodigoDistribuidor: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     Segmentacion: {
       type: DataTypes.ENUM,
-      values: ["Kiosco", "Almacen", "Autoservicio"],
+      values: ['Kiosco', 'Almacen', 'Autoservicio'],
       allowNull: false,
     },
     Localidad: {
@@ -68,6 +68,16 @@ export const Clientes = sequelize.define(
       type: DataTypes.STRING(45),
       allowNull: false,
     },
+    NombreCompleto: {
+      // Agregamos Nombre Completo
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    CorreoElectronico: {
+      // Agregamos Correo Electrónico
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
   },
   {
     timestamps: false,
@@ -75,13 +85,13 @@ export const Clientes = sequelize.define(
 );
 
 Clientes.hasMany(Dispositivos, {
-  foreignKey: "idClientes",
-  sourceKey: "idClientes",
-  as: "Dispositivos",
+  foreignKey: 'idClientes',
+  sourceKey: 'idClientes',
+  as: 'Dispositivos',
 });
 
 Dispositivos.belongsTo(Clientes, {
-  foreignKey: "idClientes",
-  targetKey: "idClientes",
-  as: "Clientes",
+  foreignKey: 'idClientes',
+  targetKey: 'idClientes',
+  as: 'Clientes',
 });
