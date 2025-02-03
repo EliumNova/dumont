@@ -33,11 +33,6 @@ export default function Layout({ children }) {
 
       {/* Contenido principal */}
       <main className="z-10 flex-grow h-full">{children}</main>
-
-      {/* Pie de página (opcional) */}
-      <footer className="relative z-10 text-center text-white py-4">
-        © 2024 Tu Empresa. Todos los derechos reservados.
-      </footer>
     </div>
   );
 }

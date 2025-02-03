@@ -4,22 +4,11 @@ import DevicesTable from './components/DevicesTable';
 import NewDevice from './components/NewDevice';
 import ModalWindow from '../components/ModalWindow';
 import Image from 'next/image';
-import { Table } from './components/Table';
-import Link from 'next/link';
 
 function DispositivosMenu() {
-  const [newDevice, setNewDevice] = useState(true);
+  const [showNewDeviceForm, setShowNewDeviceForm] = useState(false); // Para manejar el formulario
   const [mostrarModal, setMostrarModal] = useState(false);
-  // Callback que el hijo (Formulario) llamará
-  const manejarFormularioEnviado = () => {
-    setNewDevice(false); // Ocultar formulario
-    setMostrarModal(true); // Mostrar modal
-
-    setTimeout(() => {
-      setMostrarModal(false);
-    }, 5000);
-  };
-
+  const [showAllDevices, setShowAllDevices] = useState(true); // Para manejar la tabla de dispositivos
   const [devices, setDevices] = useState([
     {
       numSerie: 'F4JM3NOOLPP3',
@@ -54,42 +43,47 @@ function DispositivosMenu() {
       ubicacion: 'Si',
     },
   ]);
-  const [showAllDevices, setShowAllDevices] = useState(false);
+
+  // Callback que el hijo (Formulario) llamará
+  const manejarFormularioEnviado = () => {
+    setShowNewDeviceForm(false); // Ocultar formulario
+    setShowAllDevices(true); // Mostrar la tabla
+    setMostrarModal(true); // Mostrar modal
+
+    setTimeout(() => {
+      setMostrarModal(false);
+    }, 5000);
+  };
+
+  const handleAddNewDeviceClick = () => {
+    setShowNewDeviceForm(true);
+    setShowAllDevices(false); // Ocultar la tabla de dispositivos cuando se muestra el formulario
+  };
 
   return (
     <div className="">
       <div className="flex flex-col justify-center items-center w-full">
-        <Table />
-        <Link
-          href="/admin/userRegistration"
+        {showAllDevices && <DevicesTable devices={devices} />}{' '}
+        {/* Mostrar la tabla solo si showAllDevices es verdadero */}
+        <button
           className="p-1 text-blue-500 flex items-center my-5"
+          onClick={handleAddNewDeviceClick}
         >
-          <img src="/svg/addNewUser.svg" className="h-20"></img>
+          <img
+            src="/svg/addNewUser.svg"
+            className="h-20"
+            alt="Agregar nuevo dispositivo"
+          />
           Agregar nuevo dispositivo
-        </Link>
+        </button>
       </div>
 
-      {newDevice && (
-        <NewDevice
-          onFormularioEnviado={manejarFormularioEnviado}
-          showAllDevices={() => setShowAllDevices(true)}
-        />
+      {showNewDeviceForm && (
+        <NewDevice onFormularioEnviado={manejarFormularioEnviado} />
       )}
       {mostrarModal && (
-        <ModalWindow text={'¡Dispositivo registrado con èxito!'} />
+        <ModalWindow text={'¡Dispositivo registrado con éxito!'} />
       )}
-      {/* NO MOSTRAR SI EL ClIENTE NO TIENE DISPOSITIVOS */}
-      {showAllDevices && <DevicesTable devices={devices}></DevicesTable>}
-      <button
-        href="/admin/userRegistration"
-        onClick={() => {
-          setNewDevice(true), setDevices(false);
-        }}
-        className="p-1 text-blue-500 flex items-center text-xl"
-      >
-        <img src="/svg/addNewUser.svg" className="h-20"></img>
-        Agregar nuevo dispositivo
-      </button>
     </div>
   );
 }

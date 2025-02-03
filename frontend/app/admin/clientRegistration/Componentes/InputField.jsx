@@ -7,7 +7,7 @@ const InputField = ({
   type = 'text',
   inputClassName = '',
 }) => (
-  <div className={`flex flex-col gap-3 w-full w-full my-2  ${inputClassName}`}>
+  <div className={`flex flex-col w-full w-full  ${inputClassName}`}>
     <label htmlFor={name} className="text-sm font-semibold">
       {label}
     </label>
@@ -18,7 +18,7 @@ const InputField = ({
       onChange={onChange}
       placeholder={placeholder}
       required
-      className={`bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full`}
+      className={`bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black`}
     />
   </div>
 );

@@ -4,9 +4,8 @@ export const metadata = {
 };
 export default function Layout({ children }) {
   return (
-    <div className="">
-      <div className="bg-[#F2F5F6]">{children}</div>
-         
+    <div className="flex flex-col w-full h-full">
+      <div className="bg-[#06062780] mx-4 lg:mx-12 rounded-2xl">{children}</div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Distribuidores de Cliente',
+  title: 'Menú de Clientes',
   description: '...',
 };
 export default function Layout({ children }) {

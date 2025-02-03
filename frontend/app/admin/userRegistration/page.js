@@ -33,7 +33,14 @@ function UserRegistration() {
       registerUser;
 
     // Validar que todos los campos están llenos
-    if (!Name || !Email || !Password || !ValidatePassword || !DNI || !Telefono) {
+    if (
+      !Name ||
+      !Email ||
+      !Password ||
+      !ValidatePassword ||
+      !DNI ||
+      !Telefono
+    ) {
       setErrorMessage('Todos los campos son obligatorios.');
       setTimeout(() => setErrorMessage(''), 3000);
       return;
@@ -58,7 +65,7 @@ function UserRegistration() {
     }
 
     // Validar el formato del teléfono
-    const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+    const phoneRegex = /^\(\d{3}\) \d{4}-\d{4}$/;
     if (!phoneRegex.test(Telefono)) {
       setErrorMessage('Número de teléfono inválido.');
       setTimeout(() => setErrorMessage(''), 3000);
@@ -66,7 +73,7 @@ function UserRegistration() {
     }
     console.log(JSON.stringify(registerUser, null, 2));
 
-    dispatch(userCreate(registerUser))
+    dispatch(userCreate(registerUser));
 
     // Resetear el formulario
     setRegisterUser({
@@ -94,7 +101,7 @@ function UserRegistration() {
       DNI: /^[0-9]*$/,
       Telefono: /^[0-9\s()]*$/,
       Name: /^[a-zA-Z\s]*$/,
-      Email: /^[a-zA-Z@.\s]*$/,
+      Email: /^[a-zA-Z0-9@.\s]*$/,
       Password: /^[A-Za-z\d\W_]*$/,
       ValidatePassword: /^[A-Za-z\d\W_]*$/,
     };
@@ -143,7 +150,7 @@ function UserRegistration() {
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col items-center w-full lg:w-9/12 xl:w-10/12  my-2 px-4 text-white"
+        className="flex flex-col items-center w-full lg:w-9/12 xl:w-10/12 px-4 text-white"
       >
         <div className="container mx-auto grid grid-cols-1 w-full  items-center xl:grid-cols-2 justify-items-center xl:items-center ">
           <InputField
@@ -163,7 +170,7 @@ function UserRegistration() {
             onChange={handleChange}
             placeholder="Ingresa tu documento"
             required
-            className="col-span-1 xl:col-start-2 xl:row-start-1 lg:w-[32rem] gap-3 font-semibold px-4"
+            className="col-span-1 xl:col-start-2 xl:row-start-1 lg:w-[32rem] font-semibold px-4"
             inputClassName="font-light text-black"
           />
           <InputField
@@ -174,15 +181,15 @@ function UserRegistration() {
             placeholder="Ingresa tu email"
             type="email"
             required
-            className="col-span-1 xl:col-start-1 xl:row-start-2 lg:w-[32rem] gap-3 font-semibold px-4"
+            className="col-span-1 xl:col-start-1 xl:row-start-2 lg:w-[32rem] font-semibold px-4"
             inputClassName="font-light text-black"
           />
-          <div className="col-span-1 xl:col-start-2 xl:row-start-2 flex flex-col gap-3 w-full lg:w-[32rem] px-4">
+          <div className="col-span-1 xl:col-start-2 xl:row-start-2 flex flex-col w-full lg:w-[32rem] px-4">
             <label htmlFor="phone" className="text-sm font-semibold">
               Número de teléfono
             </label>
             <ReactInputMask
-              mask="(999) 999-9999"
+              mask="(999) 9999-9999"
               name="Telefono"
               value={registerUser.Telefono}
               onChange={handleChange}
@@ -201,7 +208,7 @@ function UserRegistration() {
             }
             onChange={handleChange}
             required
-            className="col-span-1 xl:col-start-1 xl:row-start-3"            
+            className="col-span-1 xl:col-start-1 xl:row-start-3"
           />
           <PasswordField
             label="Repetir Password"
@@ -215,7 +222,7 @@ function UserRegistration() {
             required
             className="col-span-1 xl:col-start-2 xl:row-start-3"
           />
-          <div className="col-span-1 xl:col-start-1 xl:row-start-4 flex flex-col gap-3 w-full lg:w-[32rem] px-4">
+          <div className="col-span-1 xl:col-start-1 xl:row-start-4 flex flex-col w-full lg:w-[32rem] px-4">
             <label htmlFor="admin" className="text-sm font-semibold">
               Administrador
             </label>

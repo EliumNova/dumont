@@ -1,20 +1,19 @@
 'use client';
 import Image from 'next/image';
 import React from 'react';
-import { useEffect, useState, useRef} from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateAuthUser, logoutUser } from '@/lib/slices/authAction';
 import { IoIosArrowForward } from 'react-icons/io';
 import Link from 'next/link';
-import InputField from '../customerRegistration/Componentes/InputField';
-
+import InputField from '../clientRegistration/Componentes/InputField';
 
 function Navbar() {
   const pathname = usePathname();
   console.log('ruta: ', pathname);
-  const dispatch = useDispatch();  
-  const {user} = useSelector(state => state.auth)
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const [dropProfile, setDropProfile] = useState(false);
   const dropRef = useRef(null);
   const [editUser, setEditUser] = useState(false);
@@ -23,10 +22,10 @@ function Navbar() {
   const [registerUser, setRegisterUser] = useState({
     Name: '',
     Email: '',
-    isAdmin: "",
+    isAdmin: '',
     DNI: '',
   });
-  const [errorMessage, setErrorMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('');
   console.log(user);
   //console.log(editUser);
 
@@ -36,17 +35,18 @@ function Navbar() {
         Name: user.Name,
         Email: user.Email,
         isAdmin: user.isAdmin,
-        DNI: user.DNI
+        DNI: user.DNI,
       });
     }
   }, [user]);
-  
 
-  const handleDropProfile = () => {  //esta funcion desplega el menu        
-    setDropProfile(!dropProfile)      
-  }  
-  
-  const handleClickOutside = (event) => {                               //esta funcion pliega el menu del perfil al hacer click en otro lado
+  const handleDropProfile = () => {
+    //esta funcion desplega el menu
+    setDropProfile(!dropProfile);
+  };
+
+  const handleClickOutside = (event) => {
+    //esta funcion pliega el menu del perfil al hacer click en otro lado
     if (dropRef.current && !dropRef.current.contains(event.target)) {
       setDropProfile(false);
     }
@@ -63,44 +63,44 @@ function Navbar() {
     };
   }, [dropProfile]);
 
-    const handleModalOpen = (e) => {
-      setRegisterUser({
-        Name: user.Name || '',
-        Email: user.Email || '',
-        isAdmin: user.isAdmin || '',
-        DNI: user.DNI || '',
-      });
-      setEditUser(true);
-    };
-    
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      console.log("handleChange", name, value);
-      
-      const processedValue = name === 'admin' ? value === 'true' : value;
-  
-      const validations = {
-        DNI: /^[0-9]*$/,
-        Name: /^[a-zA-Z\s]*$/,
-        Email: /^[a-zA-Z@.\s]*$/,
-      };
-  
-      if (name in validations) {
-        if (value === '' || validateInput(processedValue, validations[name])) {
-          registrar(name, processedValue);
-        } else {
-          errorMessageBox();
-        }
-      } else {
-        registrar(name, processedValue);
-      }
+  const handleModalOpen = (e) => {
+    setRegisterUser({
+      Name: user.Name || '',
+      Email: user.Email || '',
+      isAdmin: user.isAdmin || '',
+      DNI: user.DNI || '',
+    });
+    setEditUser(true);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    console.log('handleChange', name, value);
+
+    const processedValue = name === 'admin' ? value === 'true' : value;
+
+    const validations = {
+      DNI: /^[0-9]*$/,
+      Name: /^[a-zA-Z\s]*$/,
+      Email: /^[a-zA-Z@.\s]*$/,
     };
 
-    const validateInput = (value, regex) => regex.test(value);
+    if (name in validations) {
+      if (value === '' || validateInput(processedValue, validations[name])) {
+        registrar(name, processedValue);
+      } else {
+        errorMessageBox();
+      }
+    } else {
+      registrar(name, processedValue);
+    }
+  };
+
+  const validateInput = (value, regex) => regex.test(value);
 
   const registrar = (name, processedValue) => {
-    console.log("Registrar", name, processedValue);
-    
+    console.log('Registrar', name, processedValue);
+
     return setRegisterUser((prev) => ({
       ...prev,
       [name]: processedValue,
@@ -114,45 +114,47 @@ function Navbar() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Handle Submit");
-    
+    console.log('Handle Submit');
+
     //Validar los campos
-    const { Name, Email, DNI } = registerUser
-    if(!Name || !Email || !DNI){
-      setErrorMessage('Todos los campos son obligatorios')
+    const { Name, Email, DNI } = registerUser;
+    if (!Name || !Email || !DNI) {
+      setErrorMessage('Todos los campos son obligatorios');
       setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
 
-    console.log(registerUser);    
+    console.log(registerUser);
 
-    dispatch(updateAuthUser(user.id, {...registerUser, tokenUser: user.token}))
-    setEditUser(false)
-   
-  } 
+    dispatch(
+      updateAuthUser(user.id, { ...registerUser, tokenUser: user.token })
+    );
+    setEditUser(false);
+  };
 
   const handleLogout = () => {
-    console.log("logout");
-        
-    dispatch(logoutUser())
+    console.log('logout');
+
+    dispatch(logoutUser());
     localStorage.clear();
     setTimeout(() => {
       window.location.href = '/login';
     }, 500);
-  }
+  };
 
   let isAdminRoot = pathname === '/admin';
   let isAdminSubroute = pathname.startsWith('/admin/');
   let userRegisterUrl = pathname === '/admin/userRegistration';
-  let customerRegisterUrl = pathname === '/admin/customerRegistration';
-  let customerMenu = pathname === '/admin/customerMenu';
+  let clientRegisterUrl = pathname === '/admin/clientRegistration';
+  let clientMenu = pathname === '/admin/clientMenu';
   let distribuitorMenu = pathname === '/admin/customerMenu/distribuitorMenu';
   let userMenu = pathname === '/admin/userMenu';
   let devicesMenu = pathname === '/admin/devicesMenu';
 
   const getBackUrl = () => {
-    if (distribuitorMenu) return '/admin/customerMenu';
-    if (customerRegisterUrl) return '/admin/customerMenu';
+    if (distribuitorMenu) return '/admin';
+    if (clientRegisterUrl) return '/admin';
+    if (userRegisterUrl) return '/admin';
     return '/admin';
   };
 
@@ -181,12 +183,17 @@ function Navbar() {
             Registro de Usuarios
           </h2>
         )}
+        {clientRegisterUrl && (
+          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
+            Registro de Clientes
+          </h2>
+        )}
         {isAdminRoot && (
           <h2 className="font-bold text-sm md:text-base transition-all duration-150">
             Menú Administrador
           </h2>
         )}
-        {customerMenu && (
+        {clientMenu && (
           <h2 className="font-bold text-sm md:text-base transition-all duration-150">
             Menú Clientes
           </h2>
@@ -210,37 +217,42 @@ function Navbar() {
       <div className="flex flex-row gap-2 md:gap-3 mt-2 md:mt-0 justify-end">
         <div className="text-right">
           <p className="text-xs md:text-base font-semibold">{user.Name}</p>
-          <p className="text-xs text-white opacity-60">{user.Email}</p>
+          <p className="text-xs opacity-60">{user.Email}</p>
         </div>
-        <div className="relative" ref={dropRef} tabIndex={0}
-              //onBlur={handleBlur}
-              onClick={handleDropProfile}>
-        <Image
-          width={40}
-          height={40}
-          src={'/UserIcon5.jpeg'}
-          alt="Perfil Image"
-          className="rounded-full "
-        />
+        <div
+          className="relative"
+          ref={dropRef}
+          tabIndex={0}
+          //onBlur={handleBlur}
+          onClick={handleDropProfile}
+        >
+          <Image
+            width={40}
+            height={40}
+            src={'/UserIcon5.jpeg'}
+            alt="Perfil Image"
+            className="rounded-full "
+          />
         </div>
         {dropProfile && (
           <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20">
-
-            <div className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+            <div
+              className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
               ref={dropRef}
               onClick={handleModalOpen}
-              >
-                Actualizar Perfil
+            >
+              Actualizar Perfil
             </div>
-            <div className="block px-4 py-2 text-gray-800 hover:bg-gray-200"  
-              onClick={handleLogout}              
+            <div
+              className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+              onClick={handleLogout}
               ref={dropRef}
-              >
-                Logout
-            </div>           
+            >
+              Logout
+            </div>
           </div>
         )}
-        </div>
+      </div>
 
       {editUser && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 p-2 lg:p-10">
@@ -291,13 +303,17 @@ function Navbar() {
               <select
                 id="isAdmin"
                 name="isAdmin"
-                value={registerUser.isAdmin === true ? "Si" : "No"}
+                value={registerUser.isAdmin === true ? 'Si' : 'No'}
                 onChange={handleChange}
                 className="bg-[#E2E5E5] h-14 rounded-2xl p-4 text-base text-black"
                 required
               >
-                <option value="true" className='text-black'>Sí</option>
-                <option value="false" className='text-black'>No</option>
+                <option value="true" className="text-black">
+                  Sí
+                </option>
+                <option value="false" className="text-black">
+                  No
+                </option>
               </select>
             </div>
 
@@ -326,7 +342,7 @@ function Navbar() {
         </div>
       )}
 
-{userDelete && (
+      {userDelete && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
           <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
             <img src="/svg/alertIcon.svg" alt="" />
@@ -340,12 +356,12 @@ function Navbar() {
               </button>
               <button
                 onClick={
-                  handleDelete               
-                //   () => {   
-                //   setUserDelete(!userDelete);
-                //   setEditUser(!editUser);
-                // }
-              }
+                  handleDelete
+                  //   () => {
+                  //   setUserDelete(!userDelete);
+                  //   setEditUser(!editUser);
+                  // }
+                }
                 className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
               >
                 Eliminar
@@ -355,15 +371,17 @@ function Navbar() {
         </div>
       )}
 
-{userSave && (
+      {userSave && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
           <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
             <img src="/svg/alertIcon.svg" alt="" />
-            <p className="text-lg text-black">¿Deseas descartar la edición del usuario?</p>
+            <p className="text-lg text-black">
+              ¿Deseas descartar la edición del usuario?
+            </p>
             <div className="flex gap-5 flex-col lg:flex-row">
               <button
                 onClick={() => {
-                  setUserSave(!userSave)                 
+                  setUserSave(!userSave);
                 }}
                 className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
               >
@@ -382,7 +400,6 @@ function Navbar() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

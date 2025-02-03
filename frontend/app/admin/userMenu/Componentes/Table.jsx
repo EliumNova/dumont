@@ -8,9 +8,9 @@ import EditUserBtn from './EditUserBtn';
 function Table() {
   const dispatch = useDispatch();
   // const [user, setUsers] = useState([
-    //   {
-      //     name: 'Esther Howard',
-      //     email: 'esther.howard@example',
+  //   {
+  //     name: 'Esther Howard',
+  //     email: 'esther.howard@example',
   //     dni: '40146000',
   //     rolAdmin: 'Si',
   //   },
@@ -39,27 +39,25 @@ function Table() {
   //     rolAdmin: 'No',
   //   },
   // ]);
-  const users = useSelector(state => state.users.allUsers)
-  const userLogueado = useSelector(state => state.auth.user)
+  const users = useSelector((state) => state.users.allUsers);
+  const userLogueado = useSelector((state) => state.auth.user);
   const [refresh, setRefresh] = useState(false);
 
-  useEffect(() => {   
-      dispatch(getAllUsers())        
+  useEffect(() => {
+    dispatch(getAllUsers());
   }, [dispatch, refresh]);
 
   const forceRender = () => {
-    setRefresh(!refresh)
-  }
+    setRefresh(!refresh);
+  };
   console.log(refresh);
   console.log(userLogueado);
 
-  const filterUsers = users.filter(e => e.idUsuarios !== userLogueado.id)   //sacamos el usuario logueado
+  const filterUsers = users.filter((e) => e.idUsuarios !== userLogueado.id); //sacamos el usuario logueado
   console.log(filterUsers);
-  
-  
 
-  console.log("aca tienen que estar todos los usuarios", users);
-  
+  console.log('aca tienen que estar todos los usuarios', users);
+
   return (
     <div className="flex flex-col border border-[#12141D] rounded bg-[#12141D] text-center">
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -86,29 +84,35 @@ function Table() {
                 </tr>
               </thead>
               <tbody>
-                {filterUsers && filterUsers.map((user, index) => (
-                  <tr
-                    className="border-b transition duration-300 ease-in-out text-white hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
-                    key={index}
-                  >
-                    <td className="whitespace-nowrap px-10 py-6 font-medium">
-                      {user.Name}
-                    </td>
-                    <td className="whitespace-nowrap px-10 py-1">
-                      {user.Email}
-                    </td>
-                    <td className="whitespace-nowrap px-10 py-1">
-                      {user.DNI}
-                    </td>
-                    <td className="whitespace-nowrap px-10 py-1">
-                      {!user.isAdmin ? "No" : "Si"}
-                    </td>
-                    <td className="whitespace-nowrap px-10 py-1">
-                      {user.icon}
-                      {<EditUserBtn datos={user} onCloseModal={forceRender} />}
-                    </td>
-                  </tr>
-                ))}
+                {filterUsers &&
+                  filterUsers.map((user, index) => (
+                    <tr
+                      className="border-b transition duration-300 ease-in-out text-white hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
+                      key={index}
+                    >
+                      <td className="whitespace-nowrap px-10 py-6 font-medium">
+                        {user.Name}
+                      </td>
+                      <td className="whitespace-nowrap px-10 py-1">
+                        {user.Email}
+                      </td>
+                      <td className="whitespace-nowrap px-10 py-1">
+                        {user.DNI}
+                      </td>
+                      <td className="whitespace-nowrap px-10 py-1">
+                        {!user.isAdmin ? 'No' : 'Si'}
+                      </td>
+                      <td className="whitespace-nowrap px-10 py-1">
+                        {user.icon}
+                        {
+                          <EditUserBtn
+                            datos={user}
+                            onCloseModal={forceRender}
+                          />
+                        }
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

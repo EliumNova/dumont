@@ -5,14 +5,6 @@ import Image from 'next/image'; // Asegúrate de que esto esté presente
 
 function Table() {
   const [devices, setDevices] = useState([
-    // {
-    //   numSerie: 'F4JM3NOOLPP3',
-    //   marca: 'Apple',
-    //   modelo: '11 PRO Max',
-    //   pulgadas: '6,6',
-    //   estado: 'true',
-    //   ubicacion: 'Si',
-    // },
     {
       numSerie: '8MKJ6UIPL5VC',
       marca: 'Samsung',
@@ -70,11 +62,11 @@ function Table() {
                   </th>
                 </tr>
               </thead>
-              <tbody className='flex overflow-hidden w-60 lg:w-full  overflow-x-auto lg:flex-col'>
+              <tbody className="flex overflow-hidden w-full lg:w-full overflow-x-auto lg:flex-col">
                 {devices.map((device, index) => (
                   <tr
                     key={index}
-                    className="border-t border-slate-400 text-gray-600 font-light flex flex-col lg:flex-row "
+                    className="border-t border-slate-400 text-gray-600 font-light flex flex-col lg:flex-row"
                   >
                     <td className="whitespace-nowrap px-6 py-3 text-center">
                       {device.numSerie}
@@ -103,7 +95,7 @@ function Table() {
                     </td>
                     <td className="whitespace-nowrap px-6 py-3 text-center">
                       <Image
-                        alt=""
+                        alt="Icono de dispositivo"
                         src="/svg/deviceIcon.svg"
                         width={30}
                         height={30}

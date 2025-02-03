@@ -194,15 +194,15 @@ function Principales({ setInUbication, setProgress, setInPrincipales }) {
         )}
 
         <div className="flex gap-5 flex-col sm:flex-row my-5">
-          <Link href={'/admin/customerMenu'}>
-            <button className="w-[15rem] h-14 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold">
+          <Link href={'/admin'}>
+            <button className="w-[15rem] h-12 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold">
               Cancelar
             </button>
           </Link>
 
           <button
             onClick={handleSubmit}
-            className="w-[15rem] h-14 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+            className="w-[15rem] h-12 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
           >
             Siguiente
           </button>

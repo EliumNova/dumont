@@ -4,8 +4,9 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import UserMenu from './userMenu/page.js';
-import CustomerMenu from './customerMenu/page.js';
+import ClientMenu from './clientMenu/page.js';
 import DevicesMenu from './devicesMenu/page.js';
+import CommunicationMenu from './communicationMenu/page.js';
 
 function AdminMenu() {
   const usuarioIniciado = useSelector((state) => state.auth.user);
@@ -97,14 +98,9 @@ function AdminMenu() {
             {/* Contenido dinámico del modal */}
             <div className="overflow-y-auto">
               {activeMenu === 'user' && <UserMenu />}
-              {activeMenu === 'customer' && <CustomerMenu />}
+              {activeMenu === 'customer' && <ClientMenu />}
               {activeMenu === 'devices' && <DevicesMenu />}
-              {activeMenu === 'communication' && (
-                <div>
-                  <h1 className="text-2xl">Menú de Comunicación</h1>
-                  {/* Contenido adicional aquí */}
-                </div>
-              )}
+              {activeMenu === 'communication' && <CommunicationMenu />}
               {activeMenu === 'distributors' && (
                 <div>
                   <h1 className="text-2xl">Menú de Distribuidores</h1>

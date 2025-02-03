@@ -26,7 +26,7 @@ function Ubicacion({
   // Función para validar el input (asegúrate de definir esta función)
   const validateInput = (value) => {
     // Ejemplo de validación simple
-    return /^[a-zA-Z0-9@.]+$/.test(value);
+    return /^[a-zA-Z0-9@.\s-]+$/.test(value);
   };
 
   // Función handleChange modificada
@@ -82,7 +82,7 @@ function Ubicacion({
     <div className="h-full mx-auto flex flex-col items-center w-full">
       <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 w-full">
         {/** Localidad */}
-        <div className="flex flex-col gap-3 w-full my-2">
+        <div className="flex flex-col  w-full">
           <label htmlFor="localidad" className="text-sm font-semibold">
             Localidad
           </label>
@@ -93,12 +93,12 @@ function Ubicacion({
             value={ubicacionInfo?.localidad}
             required
             onChange={handleChange}
-            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
           />
         </div>
 
         {/** Calle */}
-        <div className="flex flex-col gap-3 w-full my-2">
+        <div className="flex flex-col  w-full">
           <label htmlFor="calle" className="text-sm font-semibold">
             Calle
           </label>
@@ -109,12 +109,12 @@ function Ubicacion({
             value={ubicacionInfo?.calle}
             placeholder="Ingresa tu Calle"
             required
-            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
           />
         </div>
 
         {/** Altura */}
-        <div className="flex flex-col gap-3 w-full my-2">
+        <div className="flex flex-col  w-full">
           <label className="text-sm font-semibold">Altura</label>
           <input
             onChange={handleChange}
@@ -123,12 +123,12 @@ function Ubicacion({
             name="altura"
             placeholder="Ingresa tu Altura"
             required
-            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
           />
         </div>
 
         {/** Entre Calles */}
-        <div className="flex flex-col gap-3 w-full my-2">
+        <div className="flex flex-col  w-full">
           <label htmlFor="entreCalle" className="text-sm font-semibold">
             Entre Calles
           </label>
@@ -140,7 +140,7 @@ function Ubicacion({
               name="entreCalle1"
               placeholder="Calle 1"
               required
-              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
             />
 
             <input
@@ -150,13 +150,13 @@ function Ubicacion({
               value={ubicacionInfo?.entreCalle2}
               placeholder="Calle 2"
               required
-              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
             />
           </div>
         </div>
 
         {/** Latitud */}
-        <div className="flex flex-col gap-3 w-full my-2">
+        <div className="flex flex-col  w-full">
           <label htmlFor="latitud" className="text-sm font-semibold">
             Latitud
           </label>
@@ -167,12 +167,12 @@ function Ubicacion({
             value={ubicacionInfo?.latitud}
             placeholder="Ingresa la Latitud"
             required
-            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
           />
         </div>
 
         {/** Longitud */}
-        <div className="flex flex-col gap-3 w-full my-2">
+        <div className="flex flex-col  w-full">
           <label htmlFor="longitud" className="text-sm font-semibold">
             Longitud
           </label>
@@ -183,7 +183,7 @@ function Ubicacion({
             value={ubicacionInfo?.longitud}
             placeholder="Ingresa la Longitud"
             required
-            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full"
+            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
           />
         </div>
       </div>

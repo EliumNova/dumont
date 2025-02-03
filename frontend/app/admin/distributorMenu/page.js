@@ -39,7 +39,7 @@ function CustomerMenu() {
   return (
     <div
       className="flex flex-col gap-2 md:justify-center 
-    items-center h-[100%] w-3/4 p-12 m-auto"
+    items-center h-[100%] w-full p-12 m-auto"
     >
       <input
         type="text"
@@ -58,7 +58,7 @@ function CustomerMenu() {
             key={index}
             onClick={() => router.push('/admin/customerMenu/distribuitorMenu')} // Redirigir al hacer clic en el cliente
           >
-            <div className="w-[150px] h-[150px] rounded-full overflow-hidden flex justify-center items-center cursor-pointer">
+            <div className="w-[150px] h-[150px] rounded-full overflow-hidden flex justify-center items-center cursor-pointer bg-[#F2F5F6]">
               <Image
                 width={120}
                 height={120}
@@ -68,7 +68,7 @@ function CustomerMenu() {
               />
             </div>
 
-            <h3 className="font-bold text-xs text-white">{user.name}</h3>
+            <h3 className="font-bold text-xs">{user.name}</h3>
 
             <TbUserEdit
               className="text-text-icon cursor-pointer w-10 h-10 left-3  text-white"
