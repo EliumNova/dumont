@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import { useRef, useState, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { makeStore } from '../lib/store'; // Asegúrate de que la ruta es correcta
@@ -13,7 +13,7 @@ export default function StoreProvider({ children }) {
     // Aquí puedes verificar si el usuario está autenticado.
     // Ejemplo usando localStorage (puedes modificarlo según tu flujo de autenticación)
     const user = JSON.parse(localStorage.getItem('user'));
-
+    
     if (user) {
       setIsAuthenticated(true);
     } else {
