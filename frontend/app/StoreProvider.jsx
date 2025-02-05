@@ -1,34 +1,37 @@
-'use client'
-import { useRef, useState, useEffect } from 'react';
-import { Provider } from 'react-redux';
+'use client';
+import { useRef, useEffect } from 'react';
+import { Provider, useDispatch } from 'react-redux';
 import { makeStore } from '../lib/store'; // Asegúrate de que la ruta es correcta
+import { setUser, setToken, setAuthenticated } from '../lib/slices/authSlice'; // Acciones de Redux
 import { useRouter } from 'next/navigation';
 
 export default function StoreProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const dispatch = useDispatch();
   const storeRef = useRef(null);
   const router = useRouter();
 
   useEffect(() => {
-    // Aquí puedes verificar si el usuario está autenticado.
-    // Ejemplo usando localStorage (puedes modificarlo según tu flujo de autenticación)
+    // Intentamos recuperar los datos del usuario desde localStorage
     const user = JSON.parse(localStorage.getItem('user'));
-    
-    if (user) {
-      setIsAuthenticated(true);
+    const token = localStorage.getItem('token'); // Asumiendo que también almacenas el token
+
+    console.log('user:', user);
+    console.log('token:', token);
+
+    if (user && token) {
+      // Si el usuario está autenticado, despachamos las acciones de Redux
+      dispatch(setUser(user));
+      dispatch(setToken(token));
+      dispatch(setAuthenticated(true));
     } else {
-      // Redirigir a login si no está autenticado
+      // Si no está autenticado, redirigimos al login
+      console.log('Redirigiendo a login');
       router.push('/login');
     }
-  }, [router]);
+  }, [dispatch, router]);
 
   if (!storeRef.current) {
     storeRef.current = makeStore();
-  }
-
-  if (!isAuthenticated) {
-    // Mientras no esté autenticado, podrías mostrar un loading o redirigir
-    return <div>Loading...</div>;
   }
 
   return <Provider store={storeRef.current}>{children}</Provider>;
