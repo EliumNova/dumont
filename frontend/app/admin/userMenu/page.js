@@ -1,3 +1,4 @@
+'use client';
 import Table from './Componentes/Table';
 import Link from 'next/link';
 

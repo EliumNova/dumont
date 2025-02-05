@@ -1,3 +1,4 @@
+'use client';
 import Table from './components/Table';
 import EditUserBtn from './components/EditUserBtn';
 import Link from 'next/link';

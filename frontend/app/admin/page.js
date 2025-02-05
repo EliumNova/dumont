@@ -1,5 +1,4 @@
 'use client';
-
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -7,6 +6,12 @@ import UserMenu from './userMenu/page.js';
 import ClientMenu from './clientMenu/page.js';
 import DevicesMenu from './devicesMenu/page.js';
 import CommunicationMenu from './communicationMenu/page.js';
+
+import dynamic from 'next/dynamic';
+
+const MenuClient = dynamic(() => import('./clientMenu/page.js'), {
+  ssr: false,
+});
 
 function AdminMenu() {
   const usuarioIniciado = useSelector((state) => state.auth.user);
