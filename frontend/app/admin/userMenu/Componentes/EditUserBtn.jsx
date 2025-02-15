@@ -63,9 +63,9 @@ function EditUserBtn({ datos }) {
         <img src="/svg/editUser.svg" alt="" />
       </button>
       {editUser && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 p-2 lg:p-10">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 p-2 lg:p-10 text-black">
           <div className="relative flex flex-col bg-white p-8 rounded-lg shadow-lg xl:w-[600px] w-full max-h-[80vh] overflow-y-auto">
-            <h2 className="text-4xl font-semibold mb-7">Editar Usuario</h2>
+            <h2 className="text-4xl font-semibold mb-7 ">Editar Usuario</h2>
 
             <InputField
               label="Nombre Completo"
@@ -148,7 +148,7 @@ function EditUserBtn({ datos }) {
 
       {userDelete && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
-          <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
+          <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center lg:gap-10 gap-1">
             <img src="/svg/alertIcon.svg" alt="" />
             <p className="">¿Estas seguro que deseas eliminar este usuario?</p>
             <div className="flex gap-5 flex-col lg:flex-row">

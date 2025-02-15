@@ -38,8 +38,8 @@ function Table() {
   ]);
   return (
     <div className="flex flex-col border border-[#12141D] rounded w-9/12 bg-[#12141D]">
-      <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+      <div className="overflow-x-auto  ">
+        <div className="inline-block min-w-full ">
           <div className="overflow-hidden">
             <table className="min-w-full text-left text-sm font-light">
               <thead className="border-b font-medium dark:border-neutral-500">
