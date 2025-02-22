@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../db/db.js';
 import { Dispositivos } from './Dispositivos.js';
+import { Distribuidores } from './Distribuidores.js';
 
 export const Clientes = sequelize.define(
   'Clientes',
@@ -37,7 +38,7 @@ export const Clientes = sequelize.define(
       allowNull: false,
     },
     Telefono: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(45),
       allowNull: false,
     },
     Email: {
@@ -72,12 +73,7 @@ export const Clientes = sequelize.define(
       // Agregamos Nombre Completo
       type: DataTypes.STRING(45),
       allowNull: false,
-    },
-    CorreoElectronico: {
-      // Agregamos Correo Electrónico
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
+    }   
   },
   {
     timestamps: false,
@@ -95,3 +91,8 @@ Dispositivos.belongsTo(Clientes, {
   targetKey: 'idClientes',
   as: 'Clientes',
 });
+
+Clientes.belongsToMany(Distribuidores, { through: 'ClientesDistribuidores', as: 'distribuidor' });
+Distribuidores.belongsToMany(Clientes, { through: 'ClientesDistribuidores', as: 'cliente' });
+
+

@@ -5,11 +5,13 @@ import usuariosRouter from './routes/usuarios.routes.js';
 import clientesRouter from './routes/clientes.routes.js';
 import dispositivosRouter from './routes/dispositivos.routes.js';
 import filesRouter from './routes/files.routes.js';
+import distribuidoresRouter from './routes/distribuidores.routes.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import './models/Usuarios.js';
 import './models/Clientes.js';
 import './models/Dispositivos.js';
+import './models/Distribuidores.js';
 import { sequelize } from './db/db.js';
 import bodyParser from 'body-parser';
 dotenv.config();
@@ -37,6 +39,8 @@ app.use('/api/usuarios', usuariosRouter);
 app.use('/api/clientes', clientesRouter);
 app.use('/api/dispositivos', dispositivosRouter);
 app.use('/api/files', filesRouter);
+app.use('/api/distribuidores', distribuidoresRouter);
+
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
