@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice';
 import newCustomerReducer from './slices/newCustomerSlice';
 import userSlice from './slices/users/userSlice';
 import clientSlice from './slices/clients/clientSlice'; // Importa el reducer de clientes
+import distribuidorSlice from './slices/distribuidores/distribuidorSlice';
 
 export const makeStore = () => {
   return configureStore({
@@ -11,6 +12,7 @@ export const makeStore = () => {
       newCustomer: newCustomerReducer,
       users: userSlice,
       clients: clientSlice, // Agrega el reducer de clientes
+      distribuidores: distribuidorSlice
     },
   });
 };
