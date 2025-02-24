@@ -25,6 +25,15 @@ const connectToDatabase = async () => {
   }
 };
 
+// (async () => {
+//   try {
+//     await sequelize.sync({ alter: true }); // Esto alterará las tablas existentes
+//     console.log('Base de datos sincronizada con éxito.');
+//   } catch (error) {
+//     console.error('Error al sincronizar la base de datos:', error);
+//   }
+// })();
+
 connectToDatabase(); // Llama a la función para conectarte
 
 export { sequelize }; // Exportación nombrada

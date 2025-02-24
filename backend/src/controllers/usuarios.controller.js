@@ -22,7 +22,7 @@ const createUsuarios = expressAsyncHandler(async (req, res) => {
       expireToken: Date.now() + 2 * 60,
     });
     const user = await newUser.save();
-    await sendMail(req, user.verifyToken);
+    await sendMail(req, user.verifyToken);                              //descomentar antes de pushear
     const token = generateToken(newUser);
     res.send({ user, token });
   } catch (error) {
@@ -98,7 +98,7 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
     if (!usuario.isVerified) {
       await sendMail(req, res);
       return res.status(401).send({
-        message: 'Usuario no verificado, enviando mail de verificacion',
+        message: 'Usuario no verificado, enviando mail de verificacion',             //descomentar antes de pushear
       });
     }
 
@@ -145,7 +145,7 @@ const verifyUsuarios = expressAsyncHandler(async (req, res) => {
   }
 });
 
-const sendMail = expressAsyncHandler(async (req, verifyToken) => {
+const sendMail = expressAsyncHandler(async (req, verifyToken) => {   //descomentar antes de pushear
   await transporter.sendMail({
     from: process.env.MAIL_USER,
     to: req.body.Email,

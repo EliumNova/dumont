@@ -56,7 +56,7 @@ function Table() {
   const filterUsers = users.filter((e) => e.idUsuarios !== userLogueado.id); //sacamos el usuario logueado
   console.log(filterUsers);
 
-  console.log('aca tienen que estar todos los usuarios', users);
+  //console.log('aca tienen que estar todos los usuarios', users);
 
   return (
     <div className="flex flex-col border border-[#12141D] rounded bg-[#12141D] text-center">
@@ -103,7 +103,7 @@ function Table() {
                         {!user.isAdmin ? 'No' : 'Si'}
                       </td>
                       <td className="whitespace-nowrap px-10 py-1">
-                        {user.icon}
+                        {/* {user.icon} */}
                         {
                           <EditUserBtn
                             datos={user}

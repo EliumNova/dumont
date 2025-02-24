@@ -6,6 +6,7 @@ import UserMenu from './userMenu/page.js';
 import ClientMenu from './clientMenu/page.js';
 import DevicesMenu from './devicesMenu/page.js';
 import CommunicationMenu from './communicationMenu/page.js';
+import DistribuidorMenu from './distributorMenu/page.js';
 
 import dynamic from 'next/dynamic';
 
@@ -106,12 +107,7 @@ function AdminMenu() {
               {activeMenu === 'customer' && <ClientMenu />}
               {activeMenu === 'devices' && <DevicesMenu />}
               {activeMenu === 'communication' && <CommunicationMenu />}
-              {activeMenu === 'distributors' && (
-                <div>
-                  <h1 className="text-2xl">Menú de Distribuidores</h1>
-                  {/* Contenido adicional aquí */}
-                </div>
-              )}
+              {activeMenu === 'distributors' && <DistribuidorMenu />}
               {activeMenu === 'geolocation' && (
                 <div>
                   <h1 className="text-2xl">Menú de Geolocalización</h1>
