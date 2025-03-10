@@ -54,7 +54,7 @@ function CustomerMenu() {
         {user.map((user, index) => (
           <li
             className="flex flex-col gap-2 justify-center items-center mx-auto
-        p-4 w-52 h-72 hover:scale-110 transition-all duration-150"
+      p-4 w-52 h-72 hover:scale-110 transition-all duration-150"
             key={index}
             onClick={() => router.push('/admin/customerMenu/distribuitorMenu')} // Redirigir al hacer clic en el cliente
           >
@@ -77,7 +77,10 @@ function CustomerMenu() {
           </li>
         ))}
 
-        <li className="flex items-center justify-center ">
+        <li
+          className="flex flex-col gap-2 justify-center items-center mx-auto
+    p-4 w-52 h-72 hover:scale-110 transition-all duration-150"
+        >
           <Link href={'/admin/customerRegistration'}>
             <button className="rounded-full bg-principal text-white font-bold text-2xl w-12 h-12 flex justify-center items-center hover:scale-125 transition-all duration-300">
               <TbPlus className="text-[1.25rem]" />
