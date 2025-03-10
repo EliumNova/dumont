@@ -140,7 +140,7 @@ function UserRegistration() {
         onSubmit={handleSubmit}
         className="flex flex-col items-center w-full lg:w-9/12 xl:w-10/12  my-2 px-4 text-white"
       >
-        <div className="container mx-auto grid grid-cols-1 w-full  items-center xl:grid-cols-2 justify-items-center xl:items-center">
+        <div className="container mx-auto grid grid-cols-1 w-full items-center xl:grid-cols-2 justify-items-center xl:items-center">
           <InputField
             label="Nombre Completo"
             id="name"

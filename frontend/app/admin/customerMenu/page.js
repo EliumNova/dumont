@@ -39,13 +39,13 @@ function CustomerMenu() {
   return (
     <div
       className="flex flex-col gap-12 md:justify-center 
-    items-center h-[100%] w-3/4 p-12 m-auto"
+    items-center h-[100%] w-3/4 lg:p-12 md:p-3 m-auto"
     >
       <input
         type="text"
         name="search"
         placeholder="Buscar"
-        className="bg-white rounded-md p-6 shadow-lg  w-3/4"
+        className="bg-white rounded-md p-6 shadow-lg  w-full md:w-3/4"
         autoComplete="off"
       ></input>
       {/* Falta trackear valor y usarlos */}
