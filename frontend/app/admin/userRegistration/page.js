@@ -182,7 +182,7 @@ function UserRegistration() {
               value={registerUser.phone}
               onChange={handleChange}
               placeholder="Ingresa tu número de teléfono"
-              className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-black"
             />
           </div>
 
@@ -219,7 +219,7 @@ function UserRegistration() {
               name="admin"
               value={registerUser.admin.toString()}
               onChange={handleChange}
-              className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base"
+              className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-black"
               required
             >
               <option value="true">Sí</option>
@@ -228,13 +228,13 @@ function UserRegistration() {
           </div>
         </div>
         {errorMessage && (
-          <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium relative">
+          <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium relative m-5">
             {errorMessage}
           </div>
         )}
         <button
           type="submit"
-          className="w-11/12 lg:w-[30rem] p-4 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+          className="w-11/12 lg:w-[30rem] p-4 relative top-5 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
         >
           Registrarse
         </button>

@@ -13,7 +13,7 @@ export default function PasswordField({
 }) {
   return (
     <div
-      className={`w-full lg:w-[32rem] my-4 p-4 ${className}`} // Ocupa toda la columna
+      className={`w-full lg:w-[32rem] p-4 ${className}`} // Ocupa toda la columna
     >
       <label htmlFor={name} className="text-sm font-semibold">
         {label}
@@ -27,10 +27,10 @@ export default function PasswordField({
           onChange={onChange}
           placeholder="Crear nueva contraseña"
           required={required}
-          className="bg-[#E2E5E5] h-14 rounded-lg p-4 pr-12 text-base w-full"
+          className="bg-[#E2E5E5] h-14 rounded-lg p-4 pr-12 text-base w-full text-black"
         />
         <div
-          className="absolute top-1/2 right-3 transform -translate-y-1/2 flex items-center cursor-pointer"
+          className="absolute top-1/2 right-3 transform -translate-y-1/2 flex items-center cursor-pointer text-black"
           onClick={togglePassword}
         >
           {showPassword ? (

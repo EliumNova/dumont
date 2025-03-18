@@ -45,7 +45,7 @@ function CustomerMenu() {
         type="text"
         name="search"
         placeholder="Buscar"
-        className="bg-white rounded-md p-6 shadow-lg  w-full md:w-3/4"
+        className="bg-white rounded-md p-6 shadow-lg  w-full md:w-3/4 mt-10"
         autoComplete="off"
       ></input>
       {/* Falta trackear valor y usarlos */}

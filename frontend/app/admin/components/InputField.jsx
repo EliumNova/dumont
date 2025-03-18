@@ -23,7 +23,7 @@ export default function InputField({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className={`bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full ${inputClassName}`}
+        className={`bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full ${inputClassName} text-black`}
       />
     </div>
   );
