@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getDistribuidores,
-  deleteDistribuidor,
+  distribuidorDelete,
 } from '@/lib/slices/distribuidores/distribuidorAction';
 import EditDistBtn from './EditDistBtn';
 import { AiOutlineEye, AiOutlineDelete } from 'react-icons/ai';
@@ -59,7 +59,7 @@ export default function DistribuidorTable() {
   };
 
   const handleDelete = (id) => {
-    dispatch(deleteDistribuidor(id)).then(() => {
+    dispatch(distribuidorDelete(id)).then(() => {
       toast.success('Distribuidor eliminado');
       forceRender();
       closeDeleteModal();

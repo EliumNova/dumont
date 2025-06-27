@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 import { DISTRIBUIDORES } from '../constants';
 import {
   allDistribuidores,
@@ -8,8 +8,6 @@ import {
 } from './distribuidorSlice';
 
 export const distribuidorCreate = (payload) => {
-  console.log(payload);
-
   return (dispatch) => {
     axios
       .post(`${DISTRIBUIDORES}/create`, payload)
@@ -21,13 +19,9 @@ export const distribuidorCreate = (payload) => {
 export const getDistribuidores = ({ page = 0, pageSize = 5 } = {}) => {
   return async (dispatch) => {
     try {
-      // Pasa los parámetros en la URL
       const res = await axios.get(
         `${DISTRIBUIDORES}?page=${page}&pageSize=${pageSize}`
       );
-      console.log('getDistribuidores response: ', res.data);
-
-      // Despacha todo el objeto con count y rows
       dispatch(allDistribuidores(res.data));
     } catch (err) {
       console.log(err);
@@ -36,8 +30,6 @@ export const getDistribuidores = ({ page = 0, pageSize = 5 } = {}) => {
 };
 
 export const distribuidorUpdate = (id, payload) => {
-  console.log(id, payload);
-
   return async (dispatch) => {
     await axios
       .put(`${DISTRIBUIDORES}/update/${id}`, payload)
@@ -46,13 +38,11 @@ export const distribuidorUpdate = (id, payload) => {
   };
 };
 
-export const deleteDistribuidor = (id) => {
-  console.log(id);
-
+export const distribuidorDelete = (id) => {
   return (dispatch) => {
     axios
       .delete(`${DISTRIBUIDORES}/delete/${id}`)
-      .then((res) => dispatch(deleteDistribuidorSuccess(res.data)))
+      .then((res) => dispatch(deleteDistribuidor(res.data)))
       .catch((err) => console.log(err));
   };
 };
