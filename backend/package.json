@@ -11,6 +11,7 @@
     "dev:stop-db": "cd docker && docker-compose down",
     "dev:linux:start-db": "cd docker && sudo docker-compose up -d",
     "dev:linux:stop-db": "cd docker && sudo docker-compose down",
+    "start": "node ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
