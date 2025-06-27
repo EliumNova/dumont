@@ -10,11 +10,11 @@ export const Distribuidores = sequelize.define(
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
-    },    
+    },
     CodigoDistribuidor: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    },    
+    },
     Localidad: {
       type: DataTypes.STRING(45),
       allowNull: false,
@@ -34,22 +34,22 @@ export const Distribuidores = sequelize.define(
     Email: {
       type: DataTypes.STRING(45),
       allowNull: false,
-    },    
+    },
     RazonSocial: {
       // Agregamos Razon Social Completo
       type: DataTypes.STRING(45),
       allowNull: false,
     },
     NombreComercial: {
-        // Agregamos Nombre Comercial
-        type: DataTypes.STRING(45),
-        allowNull: false,
-      },   
+      // Agregamos Nombre Comercial
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
     CUIT: {
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    Contacto : {
+    SegundoTelefono: {
       type: DataTypes.STRING(45),
       allowNull: false,
     },

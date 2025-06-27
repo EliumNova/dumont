@@ -5,8 +5,8 @@
   "main": "./src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "cd docker && docker-compose up -d && cd ../ && nodemon /src/index.js",
-    "dev:linux": "cd docker && sudo docker-compose up -d && cd ../ && nodemon /src/index.js",
+    "dev": "cd docker && sudo docker compose up -d && cd ../ && nodemon /src/index.js",
+    "dev:linux": "cd docker && sudo docker compose up -d && cd ../ && nodemon /src/index.js",
     "dev:start-db": "cd docker && docker-compose up -d",
     "dev:stop-db": "cd docker && docker-compose down",
     "dev:linux:start-db": "cd docker && sudo docker-compose up -d",

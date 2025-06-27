@@ -2,6 +2,8 @@ import expressAsyncHandler from 'express-async-handler';
 import { Clientes } from '../models/Clientes.js';
 import { Dispositivos } from '../models/Dispositivos.js';
 import { Distribuidores } from '../models/Distribuidores.js';
+import { ClientesDistribuidores } from '../models/ClientesDistribuidores.js';
+
 // import { generateToken } from '../../utils/utilsClientes.js';
 // import { handleError } from '../../utils/utilsErrors.js';
 
@@ -9,52 +11,56 @@ const createCliente = expressAsyncHandler(async (req, res) => {
   console.log('Solicitud recibida en /api/clientes/create', req.body);
   try {
     const {
-      CodigoCliente,
-      CodigoDistribuidor,
-      Segmentacion,
-      Localidad,
-      Calle,
-      EntreCalles,
-      Telefono,
-      Email,
-      VentaAlcohol,
-      WebPage,
-      HorarioVenta,
-      HorarioOnOffDispositivos,
-      HorarioPublicitario,
-      AtencionAlCliente,
       NombreCompleto,
-      idDistribuidor   
+      CodigoCliente,
+      Segmentacion,
+      CondicionFiscal,
+      CodigoDistribuidor,
+      CodigoDumont,
+      CorreoElectronico,
+      VentaAlcohol,
+      Telefono,
+      localidad,
+      calle,
+      altura,
+      entreCalle1,
+      entreCalle2,
+      latitud,
+      longitud,
+      HorarioVenta,
     } = req.body;
 
     const newCliente = await Clientes.create({
+      NombreCompleto,
       CodigoCliente,
-      CodigoDistribuidor,
       Segmentacion,
-      Localidad,
-      Calle,
-      EntreCalles,
-      Telefono,
-      Email,
+      CondicionFiscal,
+      CodigoDistribuidor,
+      CodigoDumont,
+      CorreoElectronico,
       VentaAlcohol,
-      WebPage,
+      Telefono,
+      localidad,
+      calle,
+      altura,
+      entreCalle1,
+      entreCalle2,
+      latitud,
+      longitud,
       HorarioVenta,
-      HorarioOnOffDispositivos,
-      HorarioPublicitario,
-      AtencionAlCliente,
-      NombreCompleto,    
-      idDistribuidor  
     });
 
-    const distribuidorRelacion = await Distribuidores.findByPk(idDistribuidor) //{
-        await distribuidorRelacion.addCliente(newCliente); 
-          
-    //const token = generateToken(newCliente);
+    await ClientesDistribuidores.create({
+      ClienteIdClientes: CodigoCliente,
+      DistribuidorIdDistribuidores: CodigoDistribuidor,
+      CodigoDumont,
+    });
+
     console.log('Cliente creado:', newCliente);
-    res.send({ cliente: newCliente }); //, token
+    res.send({ cliente: newCliente });
   } catch (error) {
     console.error('Error en createCliente:', error);
-    //handleError(error, res);
+    res.status(500).send({ error: 'Error al crear el cliente' });
   }
 });
 
@@ -68,7 +74,7 @@ const getClientes = expressAsyncHandler(async (req, res) => {
       include: [
         {
           model: Distribuidores, // nombre modelo de distribuidores
-          as: 'distribuidor', //nombre alias en tu modelo de clientes
+          as: 'Distribuidores', //nombre alias en tu modelo de clientes
           attributes: ['NombreComercial'], // atributos a mostrar de los distribuidores
         },
       ],
@@ -77,32 +83,41 @@ const getClientes = expressAsyncHandler(async (req, res) => {
     res.send({ count, rows });
   } catch (error) {
     console.log(error);
-    
+
     //handleError(error, res);
   }
 });
 
 const getClienteById = expressAsyncHandler(async (req, res) => {
   try {
-    const cliente = await Clientes.findByPk(req.params.id, {
-      include: [
-        {
-          model: Distribuidores,
-          as: 'distribuidor',
-          attributes: ['NombreComercial'],
-        },
-      ],
-    });
+    const cliente = await Clientes.findByPk(req.params.id);
+
     if (cliente) {
-      const dispositivos = await cliente.getDispositivos();
-      console.log(dispositivos);
-      res.send({ cliente, dispositivos });
+      // Enviar solo los datos del cliente
+      res.send(cliente);
     } else {
       res.status(404).send({ message: 'Cliente no encontrado' });
     }
   } catch (error) {
     console.log(error);
-    //handleError(error, res);
+    res.status(500).send({ message: 'Error al obtener el cliente', error });
+  }
+});
+
+const getClienteByCodigoDumont = expressAsyncHandler(async (req, res) => {
+  try {
+    const cliente = await Clientes.findOne({
+      where: { CodigoCliente: req.params.codigoDumont },
+    });
+
+    if (cliente) {
+      res.send(cliente);
+    } else {
+      res.status(404).send({ message: 'Cliente no encontrado' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: 'Error al obtener el cliente', error });
   }
 });
 
@@ -112,24 +127,24 @@ const updateCliente = expressAsyncHandler(async (req, res) => {
       CodigoCliente,
       CodigoDistribuidor,
       Segmentacion,
+      CondicionFiscal,
       Localidad,
       Calle,
       EntreCalles,
       Telefono,
       Email,
       VentaAlcohol,
-      WebPage,
       HorarioVenta,
-      HorarioOnOffDispositivos,
-      idDistribuidor
+      idDistribuidor,
     } = req.body;
-        
+
     const cliente = await Clientes.findByPk(req.params.id);
     console.log(cliente);
-    
+
     if (cliente) {
       cliente.CodigoCliente = CodigoCliente ?? cliente.CodigoCliente;
-      cliente.CodigoDistribuidor = CodigoDistribuidor ?? cliente.CodigoDistribuidor;
+      cliente.CodigoDistribuidor =
+        CodigoDistribuidor ?? cliente.CodigoDistribuidor;
       cliente.Segmentacion = Segmentacion ?? cliente.Segmentacion;
       cliente.Localidad = Localidad ?? cliente.Localidad;
       cliente.Calle = Calle ?? cliente.Calle;
@@ -137,15 +152,15 @@ const updateCliente = expressAsyncHandler(async (req, res) => {
       cliente.Telefono = Telefono ?? cliente.Telefono;
       cliente.Email = Email ?? cliente.Email;
       cliente.VentaAlcohol = VentaAlcohol ?? cliente.VentaAlcohol;
-      cliente.WebPage = WebPage ?? cliente.WebPage;
       cliente.HorarioVenta = HorarioVenta ?? cliente.HorarioVenta;
-      cliente.HorarioOnOffDispositivos = HorarioOnOffDispositivos ?? cliente.HorarioOnOffDispositivos;
 
-      if(idDistribuidor){
-        const distribuidorRelacion = await Distribuidores.findByPk(idDistribuidor) //{
-          await distribuidorRelacion.addCliente(cliente);
-        }
-      
+      if (idDistribuidor) {
+        const distribuidorRelacion = await Distribuidores.findByPk(
+          idDistribuidor
+        ); //{
+        await distribuidorRelacion.addCliente(cliente);
+      }
+
       const updatedCliente = await cliente.save();
       res.send(updatedCliente);
     } else {
@@ -153,7 +168,7 @@ const updateCliente = expressAsyncHandler(async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    
+
     //handleError(error, res);
   }
 });
@@ -168,9 +183,9 @@ const deleteCliente = expressAsyncHandler(async (req, res) => {
     res.send({ message: 'Cliente eliminado' });
   } catch (error) {
     console.log(error);
-    
+
     //handleError(error, res);
-  }  
+  }
 });
 
 const getDispositivosByCliente = expressAsyncHandler(async (req, res) => {
@@ -195,7 +210,7 @@ const getDispositivosByCliente = expressAsyncHandler(async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    
+
     //handleError(error, res);
   }
 });
@@ -232,14 +247,28 @@ const getDispositivosByClienteByParams = expressAsyncHandler(
   }
 );
 
+const getDistribuidores = async (req, res) => {
+  try {
+    const distribuidores = await Distribuidores.findAll({
+      attributes: ['CodigoDistribuidor', 'NombreComercial'], // Selecciona solo los campos necesarios
+    });
+    res.json(distribuidores); // Envía la lista de distribuidores como respuesta
+  } catch (error) {
+    console.error('Error al obtener los distribuidores:', error);
+    res.status(500).json({ error: 'Error al obtener los distribuidores' });
+  }
+};
+
 const clientesController = {
-  createCliente,
   getClientes,
   getClienteById,
-  updateCliente,
-  deleteCliente,
+  getClienteByCodigoDumont,
   getDispositivosByCliente,
   getDispositivosByClienteByParams,
+  createCliente,
+  updateCliente,
+  deleteCliente,
+  getDistribuidores,
 };
 
 export default clientesController;

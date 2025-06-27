@@ -27,7 +27,6 @@ function Navbar() {
   });
   const [errorMessage, setErrorMessage] = useState('');
   console.log(user);
-  //console.log(editUser);
 
   useEffect(() => {
     if (user) {
@@ -41,12 +40,10 @@ function Navbar() {
   }, [user]);
 
   const handleDropProfile = () => {
-    //esta funcion desplega el menu
     setDropProfile(!dropProfile);
   };
 
   const handleClickOutside = (event) => {
-    //esta funcion pliega el menu del perfil al hacer click en otro lado
     if (dropRef.current && !dropRef.current.contains(event.target)) {
       setDropProfile(false);
     }
@@ -116,7 +113,6 @@ function Navbar() {
     e.preventDefault();
     console.log('Handle Submit');
 
-    //Validar los campos
     const { Name, Email, DNI } = registerUser;
     if (!Name || !Email || !DNI) {
       setErrorMessage('Todos los campos son obligatorios');
@@ -148,8 +144,11 @@ function Navbar() {
   let clientRegisterUrl = pathname === '/admin/clientRegistration';
   let clientMenu = pathname === '/admin/clientMenu';
   let distribuitorMenu = pathname === '/admin/customerMenu/distribuitorMenu';
+  let distribuitorRegister = pathname === '/admin/distributorRegistration';
   let userMenu = pathname === '/admin/userMenu';
   let devicesMenu = pathname === '/admin/devicesMenu';
+  let devicesRegistration = pathname === '/admin/devicesRegistration';
+  let clientUpdateUrl = pathname === '/admin/clientMenu/Pages/EditClient';
 
   const getBackUrl = () => {
     if (distribuitorMenu) return '/admin';
@@ -169,14 +168,6 @@ function Navbar() {
             <IoIosArrowForward className="rotate-180 h-8 w-10 cursor-pointer transition-all duration-150 hover:scale-110" />
           </Link>
         )}
-
-        {/* <Image
-          width={40}
-          height={40}
-          src={"/DuMontLogo.jpeg"}
-          alt="DuMont Logo"
-          className="rounded-lg w-8 md:w-10 transition-all duration-150"
-        /> */}
 
         {userRegisterUrl && (
           <h2 className="font-bold text-sm md:text-base transition-all duration-150">
@@ -203,6 +194,11 @@ function Navbar() {
             Lista Distribuidores
           </h2>
         )}
+        {distribuitorRegister && (
+          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
+            Registro de Distribuidores
+          </h2>
+        )}
         {userMenu && (
           <h2 className="font-bold text-sm md:text-base transition-all duration-150">
             Menú de Usuarios
@@ -213,17 +209,34 @@ function Navbar() {
             Menú de Dispositivos
           </h2>
         )}
+        {devicesRegistration && (
+          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
+            Registro de Dispositivos
+          </h2>
+        )}
+        {clientUpdateUrl && (
+          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
+            Edición de Clientes
+          </h2>
+        )}
       </div>
       <div className="flex flex-row gap-2 md:gap-3 mt-2 md:mt-0 justify-end">
+        {/* Botón de Usuarios */}
+        <Link href="/admin/userMenu">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all duration-150">
+            Usuarios
+          </button>
+        </Link>
         <div className="text-right">
-          <p className="text-xs md:text-base font-semibold">{user.Name}</p>
-          <p className="text-xs opacity-60">{user.Email}</p>
+          {/* <p className="text-xs md:text-base font-semibold">{user.Name}</p> */}
+          {/* <p className="text-xs opacity-60">{user.Email}</p> */}
+          {<p className="text-xs md:text-base font-semibold">Daniel Paredes</p>}
+          {<p className="text-xs opacity-60">daniparedes@dumont.com</p>}
         </div>
         <div
           className="relative"
           ref={dropRef}
           tabIndex={0}
-          //onBlur={handleBlur}
           onClick={handleDropProfile}
         >
           <Image
@@ -355,13 +368,7 @@ function Navbar() {
                 Cancelar
               </button>
               <button
-                onClick={
-                  handleDelete
-                  //   () => {
-                  //   setUserDelete(!userDelete);
-                  //   setEditUser(!editUser);
-                  // }
-                }
+                onClick={handleDelete}
                 className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
               >
                 Eliminar

@@ -7,7 +7,7 @@ const SelectField = ({
   inputClassName,
 }) => (
   <div className={`flex flex-col  w-full  2xl:w-full ${inputClassName}`}>
-    <label htmlFor={name} className="text-sm font-semibold">
+    <label htmlFor={name} className="text-sm font-semibold text-white">
       {label}
     </label>
     <select
@@ -15,7 +15,7 @@ const SelectField = ({
       value={value}
       onChange={onChange}
       required
-      className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
+      className="bg-[#E2E5E5] h-12 rounded-lg p-2 text-sm text-black"
     >
       {options.map((option) => (
         <option key={option.value} value={option.value}>

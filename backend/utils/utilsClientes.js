@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 export const generateToken = (client) => {
   return jwt.sign(
@@ -7,6 +7,7 @@ export const generateToken = (client) => {
       CodigoCliente: client.CodigoCliente,
       CodigoDistribuidor: client.CodigoDistribuidor,
       Segmentacion: client.Segmentacion,
+      CondicionFiscal: client.CondicionFiscal,
       Localidad: client.Localidad,
       Calle: client.Calle,
       EntreCalles: client.EntreCalles,
@@ -20,7 +21,7 @@ export const generateToken = (client) => {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: "30d",
+      expiresIn: '30d',
     }
   );
 };

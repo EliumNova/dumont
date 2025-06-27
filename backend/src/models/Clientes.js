@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from '../db/db.js';
 import { Dispositivos } from './Dispositivos.js';
 import { Distribuidores } from './Distribuidores.js';
+import { ClientesDistribuidores } from './ClientesDistribuidores.js';
 
 export const Clientes = sequelize.define(
   'Clientes',
@@ -12,28 +13,35 @@ export const Clientes = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
     },
-    CodigoCliente: {
-      type: DataTypes.INTEGER,
+    NombreCompleto: {
+      type: DataTypes.STRING(45),
       allowNull: false,
     },
-    CodigoDistribuidor: {
-      type: DataTypes.INTEGER,
+    CodigoCliente: {
+      type: DataTypes.STRING(45),
       allowNull: false,
     },
     Segmentacion: {
-      type: DataTypes.ENUM,
-      values: ['Kiosco', 'Almacen', 'Autoservicio'],
-      allowNull: false,
-    },
-    Localidad: {
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    Calle: {
+    CondicionFiscal: {
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    EntreCalles: {
+    CodigoDistribuidor: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    CodigoDumont: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    CorreoElectronico: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    VentaAlcohol: {
       type: DataTypes.STRING(45),
       allowNull: false,
     },
@@ -41,15 +49,23 @@ export const Clientes = sequelize.define(
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    Email: {
+    localidad: {
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    VentaAlcohol: {
-      type: DataTypes.BOOLEAN,
+    calle: {
+      type: DataTypes.STRING(45),
       allowNull: false,
     },
-    WebPage: {
+    altura: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    entreCalle1: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    entreCalle2: {
       type: DataTypes.STRING(45),
       allowNull: false,
     },
@@ -57,42 +73,8 @@ export const Clientes = sequelize.define(
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    HorarioOnOffDispositivos: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    HorarioPublicitario: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    AtencionAlCliente: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    NombreCompleto: {
-      // Agregamos Nombre Completo
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    }   
   },
   {
     timestamps: false,
   }
 );
-
-Clientes.hasMany(Dispositivos, {
-  foreignKey: 'idClientes',
-  sourceKey: 'idClientes',
-  as: 'Dispositivos',
-});
-
-Dispositivos.belongsTo(Clientes, {
-  foreignKey: 'idClientes',
-  targetKey: 'idClientes',
-  as: 'Clientes',
-});
-
-Clientes.belongsToMany(Distribuidores, { through: 'ClientesDistribuidores', as: 'distribuidor' });
-Distribuidores.belongsToMany(Clientes, { through: 'ClientesDistribuidores', as: 'cliente' });
-
-

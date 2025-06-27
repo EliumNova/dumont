@@ -1,17 +1,25 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import UserMenu from './userMenu/page.js';
 import ClientMenu from './clientMenu/page.js';
 import DevicesMenu from './devicesMenu/page.js';
 import CommunicationMenu from './communicationMenu/page.js';
 import DistribuidorMenu from './distributorMenu/page.js';
+import GeolocatorMenu from './geolocatorMenu/page.js';
+import { initializeAuth } from '@/lib/slices/authAction'; // Importa la acción de inicialización
 
 function AdminMenu() {
+  const dispatch = useDispatch();
   const usuarioIniciado = useSelector((state) => state.auth.user);
   const [activeMenu, setActiveMenu] = useState(null);
+
+  // Inicializar la autenticación al cargar el componente
+  useEffect(() => {
+    dispatch(initializeAuth());
+  }, [dispatch]);
 
   return (
     <div
@@ -25,7 +33,11 @@ function AdminMenu() {
         <ul className="flex flex-wrap gap-4 justify-center">
           {/* Botones del menú */}
           {[
-            { name: 'Usuarios', icon: '/svg/userMenu.svg', id: 'user' },
+            {
+              name: 'Distribuidores',
+              icon: '/svg/distributorsMenu.svg',
+              id: 'distributors',
+            },
             { name: 'Clientes', icon: '/svg/clientMenu.svg', id: 'customer' },
             {
               name: 'Dispositivos',
@@ -33,19 +45,14 @@ function AdminMenu() {
               id: 'devices',
             },
             {
-              name: 'Comunicación',
-              icon: '/svg/communicationMenu.svg',
-              id: 'communication',
-            },
-            {
-              name: 'Distribuidores',
-              icon: '/svg/distributorsMenu.svg',
-              id: 'distributors',
-            },
-            {
               name: 'Geolocalización',
               icon: '/svg/geolocationMenu.svg',
               id: 'geolocation',
+            },
+            {
+              name: 'Comunicación',
+              icon: '/svg/communicationMenu.svg',
+              id: 'communication',
             },
           ].map((menu) => (
             <li
@@ -74,7 +81,7 @@ function AdminMenu() {
           <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm pt-10"></div>
 
           {/* Contenido del modal */}
-          <div className="relative w-full max-w-lg md:max-w-2xl lg:max-w-6xl bg-white rounded-md shadow-lg p-6 z-10 mt-10">
+          <div className="relative w-auto max-w-[90vw] md:max-w-[95vw] lg:max-w-[98vw] bg-white rounded-md shadow-lg p-6 z-10 mt-10">
             {/* Botón de cerrar */}
             <button
               className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
@@ -98,17 +105,11 @@ function AdminMenu() {
 
             {/* Contenido dinámico del modal */}
             <div className="overflow-y-auto">
-              {activeMenu === 'user' && <UserMenu />}
               {activeMenu === 'customer' && <ClientMenu />}
               {activeMenu === 'devices' && <DevicesMenu />}
               {activeMenu === 'communication' && <CommunicationMenu />}
               {activeMenu === 'distributors' && <DistribuidorMenu />}
-              {activeMenu === 'geolocation' && (
-                <div>
-                  <h1 className="text-2xl">Menú de Geolocalización</h1>
-                  {/* Contenido adicional aquí */}
-                </div>
-              )}
+              {activeMenu === 'geolocation' && <GeolocatorMenu />}
             </div>
           </div>
         </div>

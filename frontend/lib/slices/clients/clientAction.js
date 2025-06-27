@@ -1,4 +1,4 @@
-import axios from 'axios';
+const axios = require('axios');
 import { CLIENTS } from '../constants';
 import {
   setClients,
@@ -7,12 +7,13 @@ import {
   removeClient,
 } from './clientSlice';
 
-export const fetchClients = () => {
+export const fetchClients = ({ page = 0, pageSize = 5 } = {}) => {
   return async (dispatch) => {
     try {
-      const res = await axios.get(CLIENTS);
-      console.log('fetchClients response:', res.data); // Log para verificar la respuesta
-      dispatch(setClients(res.data.rows)); // Asegúrate de despachar 'rows' si es lo que contiene la lista de clientes
+      const res = await axios.get(CLIENTS, {
+        params: { page, pageSize },
+      });
+      dispatch(setClients(res.data)); // Asegurate que res.data tenga count y rows
     } catch (err) {
       console.log(err);
     }
@@ -22,11 +23,16 @@ export const fetchClients = () => {
 export const createClient = (payload) => {
   return async (dispatch) => {
     try {
-      const res = await axios.post(`${CLIENTS}/create`, payload);
-      console.log('createClient response:', res.data); // Log para verificar la respuesta
+      const res = await axios.post(`${CLIENTS}/create`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Respuesta de la API:', res.data);
       dispatch(addClient(res.data));
     } catch (err) {
-      console.log(err);
+      console.error('Error al enviar datos a la API:', err);
+      throw err; // Propaga el error para manejarlo en el componente
     }
   };
 };

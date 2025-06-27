@@ -6,8 +6,9 @@ const InputField = ({
   placeholder,
   type = 'text',
   inputClassName = '',
+  disabled = false, // Prop opcional para deshabilitar el input
 }) => (
-  <div className={`flex flex-col w-full w-full  ${inputClassName}`}>
+  <div className={`flex flex-col w-full ${inputClassName}`}>
     <label htmlFor={name} className="text-sm font-semibold">
       {label}
     </label>
@@ -18,7 +19,10 @@ const InputField = ({
       onChange={onChange}
       placeholder={placeholder}
       required
-      className={`bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black`}
+      disabled={disabled} // Aplicar el atributo disabled
+      className={`bg-[#E2E5E5] h-12 rounded-lg p-4 text-base w-full text-black ${
+        disabled ? 'opacity-50 cursor-not-allowed' : ''
+      }`}
     />
   </div>
 );
