@@ -1,214 +1,317 @@
-import { setPrincipales } from '@/lib/slices/newCustomerSlice';
-import React, { useState } from 'react';
+'use client';
+import { setPrincipales } from '@/lib/slices/clients/clientSlice'; // Asegúrate de que la ruta sea correcta
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Link from 'next/link';
 import InputField from './InputField';
 import SelectField from './SelectedField';
 
-function Principales({ setInUbication, setProgress, setInPrincipales }) {
-  //Estado global de principales
+function Principales({ onNext, onBack }) {
+  const dispatch = useDispatch();
   const storePrincipales = useSelector(
-    (state) => state.newCustomer.principales
-    // console.log(`STORE PRINCIPALES: ${storePrincipales}`);
+    (state) => state.clients.newCustomer.principales
   );
 
-  const dispatch = useDispatch();
-
   const [principalesInfo, setPrincipalesInfo] = useState({
-    customerCode: storePrincipales?.customerCode || '',
-    segmentacion: storePrincipales?.segmentacion || '',
-    codeDistribuidor: storePrincipales?.codeDistribuidor || '',
-    email: storePrincipales?.email || '',
-    webPage: storePrincipales?.webPage || '',
-    alcoholAccess: storePrincipales?.alcoholAccess || '',
-    phone: storePrincipales?.phone || '',
+    NombreCompleto: storePrincipales?.NombreCompleto || '',
+    CodigoCliente: storePrincipales?.CodigoCliente || '',
+    Segmentacion: storePrincipales?.Segmentacion || '',
+    CodigoDistribuidor: storePrincipales?.CodigoDistribuidor || '',
+    CodigoDumont: storePrincipales?.CodigoDumont || '',
+    CorreoElectronico: storePrincipales?.CorreoElectronico || '',
+    VentaAlcohol: storePrincipales?.VentaAlcohol || '',
+    Telefono: storePrincipales?.Telefono || '',
+    CondicionFiscal: storePrincipales?.CondicionFiscal || '',
   });
 
+  const [distribuidores, setDistribuidores] = useState([]); // Estado para almacenar los distribuidores
   const [errorMessage, setErrorMessage] = useState('');
+  const [formErrors, setFormErrors] = useState({});
 
-  const validateEmail = (email) =>
-    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+  // Obtener los distribuidores al cargar el componente
+  useEffect(() => {
+    const fetchDistribuidores = async () => {
+      try {
+        const response = await fetch(
+          'http://localhost:3001/api/clientes/distribuidores/list'
+        );
+        if (!response.ok) {
+          throw new Error('Error al obtener los distribuidores');
+        }
+        const data = await response.json();
+        console.log('Distribuidores recibidos:', data); // Verifica la respuesta
 
-  const validateURL = (value) => /^www\.[a-zA-Z0-9]+\.com$/.test(value);
+        // Transformar los datos
+        const transformedData = data.map((distribuidor) => ({
+          value: distribuidor.CodigoDistribuidor.toString(), // Asegúrate de que sea un string
+          label: `${distribuidor.CodigoDistribuidor} - ${distribuidor.NombreComercial}`,
+        }));
 
-  const validateInput = (value) => /^[a-zA-Z0-9@.\s]*$/.test(value);
+        console.log('Distribuidores transformados:', transformedData); // Verifica los datos transformados
+        setDistribuidores(transformedData);
+      } catch (error) {
+        console.error('Error al obtener los distribuidores:', error);
+      }
+    };
+
+    fetchDistribuidores();
+  }, []);
+
+  // Generar el código DuMont cuando cambie CodigoDistribuidor o CodigoCliente
+  useEffect(() => {
+    generateCodigoDuMont();
+  }, [principalesInfo.CodigoDistribuidor, principalesInfo.CodigoCliente]);
+
+  const validateCorreoElectronico = (CorreoElectronico) =>
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(CorreoElectronico);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    if (
-      !validateInput(value) &&
-      name !== 'alcoholAccess' &&
-      name !== 'segmentacion'
-    ) {
-      setErrorMessage('Caracteres inválidos en el campo.');
-      return;
-    }
-
+    const { name, value, type, checked } = e.target;
     setPrincipalesInfo((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const generateCodigoDuMont = () => {
+    const { CodigoDistribuidor, CodigoCliente } = principalesInfo;
+
+    // Asegurarnos de que ambos códigos sean strings
+    const codigoDistribuidorStr = CodigoDistribuidor?.toString() || '';
+    const codigoClienteStr = CodigoCliente?.toString() || '';
+
+    // Verificar que ambos códigos tengan al menos un carácter
+    if (!codigoDistribuidorStr || !codigoClienteStr) {
+      console.error('Código Distribuidor y Código Cliente son obligatorios.');
+      return '';
+    }
+
+    // Calcular la longitud de los códigos
+    const distribuidorLength = codigoDistribuidorStr.length;
+    const clienteLength = codigoClienteStr.length;
+
+    // Calcular cuántos ceros se necesitan en el medio
+    const cerosNecesarios = 14 - (distribuidorLength + clienteLength);
+
+    // Si la combinación excede los 14 caracteres, truncar
+    if (cerosNecesarios < 0) {
+      console.error('La combinación de códigos excede los 14 caracteres.');
+      return '';
+    }
+
+    // Crear la cadena de ceros
+    const ceros = '0'.repeat(Math.max(0, cerosNecesarios));
+
+    // Combinar Distribuidor + Ceros + Cliente
+    const combined = `${codigoDistribuidorStr}${ceros}${codigoClienteStr}`;
+
+    // Asegurarse de que el código generado tenga exactamente 14 caracteres
+    const codigoDumont = combined.slice(0, 14);
+
+    // Actualizar el estado con el valor generado
+    setPrincipalesInfo((prevState) => ({
+      ...prevState,
+      CodigoDumont: codigoDumont,
     }));
 
-    if (name === 'webPage' && value && !validateURL(value)) {
-      setErrorMessage('La URL debe empezar con www y terminar con .com');
-    } else {
-      setErrorMessage('');
+    return codigoDumont;
+  };
+
+  useEffect(() => {
+    if (principalesInfo.CondicionFiscal === 'RI') {
+      setPrincipalesInfo((prev) => ({
+        ...prev,
+        VentaAlcohol: '1',
+      }));
+    } else if (principalesInfo.VentaAlcohol === '1') {
+      setPrincipalesInfo((prev) => ({
+        ...prev,
+        VentaAlcohol: '',
+      }));
     }
+  }, [principalesInfo.CondicionFiscal]);
+
+  const validateForm = () => {
+    const errors = {};
+    const requiredFields = [
+      'NombreCompleto',
+      'CodigoCliente',
+      'CodigoDistribuidor',
+      'Segmentacion',
+      'CorreoElectronico',
+      'VentaAlcohol',
+      'Telefono',
+      'CondicionFiscal',
+    ];
+
+    requiredFields.forEach((field) => {
+      if (!principalesInfo[field]) {
+        errors[field] = 'Este campo es obligatorio';
+      }
+    });
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const {
-      customerCode,
-      segmentacion,
-      codeDistribuidor,
-      email,
-      webPage,
-      alcoholAccess,
-    } = principalesInfo;
-
-    // Validar campos requeridos
-    if (
-      !customerCode ||
-      !segmentacion ||
-      !codeDistribuidor ||
-      !email ||
-      !webPage ||
-      !alcoholAccess
-    ) {
-      setErrorMessage('Todos los campos son obligatorios.');
+    if (!validateForm()) {
+      setErrorMessage('Por favor, completa todos los campos obligatorios.');
       return;
     }
 
-    // Validar email
-    if (!validateEmail(email)) {
-      setErrorMessage('El email debe tener un formato válido.');
+    const { CorreoElectronico, WebPage } = principalesInfo;
+
+    if (!validateCorreoElectronico(CorreoElectronico)) {
+      setErrorMessage('El CorreoElectronico debe tener un formato válido.');
       return;
     }
 
-    // Validar URL
-    if (!validateURL(webPage)) {
-      setErrorMessage('La URL debe empezar con www y terminar con .com');
-      return;
-    }
-
-    // // Si todas las validaciones pasan, enviar datos
     dispatch(setPrincipales(principalesInfo));
-    console.log(principalesInfo);
-    setInUbication(true);
-    setProgress(66);
-    setInPrincipales(false);
+    onNext();
   };
 
   return (
-    <div className="h-full flex flex-col items-center w-full">
-      <div className="grid  grid-cols-1 sm:grid-cols-2 w-full gap-5 ">
-        {/* Código del cliente */}
+    <form
+      onSubmit={handleSubmit}
+      className="h-full flex flex-col items-center w-full"
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 w-full gap-2 text-xs text-white">
+        {/* Campo NombreCompleto */}
+        <InputField
+          label="Nombre Completo"
+          name="NombreCompleto"
+          value={principalesInfo.NombreCompleto}
+          onChange={handleChange}
+          placeholder="Ingresa tu nombre completo"
+          error={formErrors.NombreCompleto}
+          className="h-8 text-xs"
+        />
+        {/* Campo CodigoCliente */}
         <InputField
           label="Código del cliente"
-          name="customerCode"
-          value={principalesInfo.customerCode}
+          name="CodigoCliente"
+          value={principalesInfo.CodigoCliente}
           onChange={handleChange}
-          placeholder="Ingresa tu numero de cliente"
-          inputClassName="w-full"
+          placeholder="Ingresa tu número de cliente"
+          error={formErrors.CodigoCliente}
+          className="h-8 text-xs"
         />
-
-        {/* Segmentación */}
-        <SelectField
-          label="Segmentación"
-          name="segmentacion"
-          value={principalesInfo.segmentacion}
-          onChange={handleChange}
-          options={[
-            { value: '', label: 'Selecciona...' },
-            { value: 'kiosco', label: 'Kiosco' },
-            { value: 'no', label: 'No' },
-          ]}
-          inputClassName="w-full justify-self-end"
-        />
-
-        {/* Código del distribuidor */}
-        <InputField
-          label="Código del distribuidor"
-          name="codeDistribuidor"
-          value={principalesInfo.codeDistribuidor}
-          onChange={handleChange}
-          placeholder="Ingresa tu código de distribuidor"
-          inputClassName="w-full"
-        />
-
-        {/* Correo electrónico */}
+        {/* Campo CorreoElectronico */}
         <InputField
           label="Correo electrónico"
-          name="email"
+          name="CorreoElectronico"
           type="email"
-          value={principalesInfo.email}
+          value={principalesInfo.CorreoElectronico}
           onChange={handleChange}
           placeholder="Ingresa tu correo electrónico"
-          inputClassName="w-full justify-self-end"
+          error={formErrors.CorreoElectronico}
+          className="h-8 text-xs"
         />
-
-        {/* Página web */}
-        <InputField
-          label="Página Web"
-          name="webPage"
-          value={principalesInfo.webPage}
-          onChange={handleChange}
-          placeholder="Ingresa tu página web"
-          inputClassName="w-full"
-        />
-
-        {/* Permiso de venta de alcohol */}
+        {/* Campo CodigoDistribuidor */}
         <SelectField
-          label="Permiso Venta Alcohol"
-          name="alcoholAccess"
-          value={principalesInfo.alcoholAccess}
+          label="Código del distribuidor"
+          name="CodigoDistribuidor"
+          value={principalesInfo.CodigoDistribuidor}
+          onChange={handleChange}
+          options={[
+            { value: '', label: 'Selecciona...' }, // Opción por defecto
+            ...distribuidores, // Opciones transformadas
+          ]}
+          error={formErrors.CodigoDistribuidor}
+          className="h-8 text-xs"
+        />
+        <SelectField
+          label="Segmentación"
+          name="Segmentacion"
+          value={principalesInfo.Segmentacion}
           onChange={handleChange}
           options={[
             { value: '', label: 'Selecciona...' },
-            { value: 'si', label: 'Sí' },
-            { value: 'no', label: 'No' },
+            { value: 'Kiosco', label: 'Kiosco' },
+            { value: 'Almacen', label: 'Almacen' },
+            { value: 'Autoservicio', label: 'Autoservicio' },
           ]}
-          inputClassName="w-full justify-self-end"
+          error={formErrors.Segmentacion}
+          className="h-8 text-xs"
         />
-
-        {/* Teléfono */}
+        {/* Campo Código DuMont */}
+        <div className="relative">
+          <InputField
+            label="Código DuMont"
+            name="CodigoDumont"
+            value={principalesInfo.CodigoDumont || generateCodigoDuMont()}
+            readOnly
+            placeholder="Código generado automáticamente"
+            className="h-8 text-xs cursor-not-allowed"
+          />
+        </div>
+        {/* Campo Condición Fiscal */}
+        <SelectField
+          label="Condición Fiscal"
+          name="CondicionFiscal"
+          value={principalesInfo.CondicionFiscal}
+          onChange={handleChange}
+          options={[
+            { value: '', label: 'Selecciona...' },
+            { value: 'CF', label: 'Consumidor Final' },
+            { value: 'RI', label: 'Responsable Inscripto' },
+            { value: 'MT', label: 'Monotributista' },
+          ]}
+          error={formErrors.CondicionFiscal}
+          className="h-8 text-xs"
+        />
+        {/* Campo Telefono */}
         <InputField
           label="Teléfono"
-          name="phone"
-          value={principalesInfo.phone}
-          onChange={handleChange}
+          name="Telefono"
+          value={principalesInfo.Telefono}
           placeholder="Ingresa tu número de teléfono"
-          inputClassName="w-full"
+          onChange={handleChange}
+          error={formErrors.Telefono}
+          className="h-8 text-xs"
         />
       </div>
+      {/* Campo VentaAlcohol */}
+      <SelectField
+        label="Permiso Venta Alcohol"
+        name="VentaAlcohol"
+        value={principalesInfo.VentaAlcohol}
+        onChange={handleChange}
+        options={[
+          { value: '', label: 'Selecciona...' },
+          { value: '1', label: 'Sí' },
+          { value: '2', label: 'No' },
+        ]}
+        error={formErrors.VentaAlcohol}
+        className="h-8 text-xs"
+        disabled={principalesInfo.CondicionFiscal === 'RI'} // 🚫 Bloquear si es RI
+      />
 
-      <div className="my-3">
-        {/* Mensaje de error */}
-        {errorMessage && (
-          <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium ">
-            {errorMessage}
-          </div>
-        )}
-
-        <div className="flex gap-5 flex-col sm:flex-row my-5">
-          <Link href={'/admin'}>
-            <button className="w-[15rem] h-12 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold">
-              Cancelar
-            </button>
-          </Link>
-
-          <button
-            onClick={handleSubmit}
-            className="w-[15rem] h-12 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
-          >
-            Siguiente
-          </button>
+      {/* Mensajes de error */}
+      {errorMessage && (
+        <div className="w-full mt-4 p-2 text-center text-red-500 bg-red-100 rounded">
+          {errorMessage}
         </div>
+      )}
+
+      <div className="flex gap-5 flex-col sm:flex-row my-5">
+        <button
+          type="button"
+          onClick={onBack}
+          className="w-[15rem] h-12 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          className="w-[15rem] h-12 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
+        >
+          Siguiente
+        </button>
       </div>
-    </div>
+    </form>
   );
 }
 

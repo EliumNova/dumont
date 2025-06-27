@@ -6,6 +6,7 @@ import clientesRouter from './routes/clientes.routes.js';
 import dispositivosRouter from './routes/dispositivos.routes.js';
 import filesRouter from './routes/files.routes.js';
 import distribuidoresRouter from './routes/distribuidores.routes.js';
+import clientesDistribuidoresRoutes from './routes/clientesDistribuidores.routes.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import './models/Usuarios.js';
@@ -26,7 +27,7 @@ app.use(express.static('./public'));
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: 'https://dumont.onrender.com',
+  origin: 'http://localhost:3000',
   credentials: true,
 };
 app.use(cors(corsOptions));
@@ -40,7 +41,7 @@ app.use('/api/clientes', clientesRouter);
 app.use('/api/dispositivos', dispositivosRouter);
 app.use('/api/files', filesRouter);
 app.use('/api/distribuidores', distribuidoresRouter);
-
+app.use('/api/clientes-distribuidores', clientesDistribuidoresRoutes);
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');

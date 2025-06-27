@@ -1,21 +1,57 @@
-import { check } from "express-validator";
-import { validationResult } from "express-validator";
+import { check } from 'express-validator';
+import { validationResult } from 'express-validator';
 
 const validateCreateClientes = [
-  check("CodigoCliente").notEmpty().isString(),
-  check("CodigoDistribuidor").notEmpty().isString(),
-  check("Segmentacion").notEmpty().isString(),
-  check("Localidad").notEmpty().isString(),
-  check("Calle").notEmpty().isString(),
-  check("EntreCalles").notEmpty().isString(),
-  check("Telefono").notEmpty().isNumeric(),
-  check("Email").isEmail(),
-  check("VentaAlcohol").notEmpty().isBoolean(),
-  check("WebPage").notEmpty().isURL(),
-  check("HorarioVenta").notEmpty().isString(),
-  check("HorarioOnOffDispositivos").notEmpty().isString(),
-  check("HorarioPublicitario").notEmpty().isString(),
-  check("AtencionAlCliente").notEmpty().isString(),
+  check('NombreCompleto')
+    .notEmpty()
+    .withMessage('El nombre completo es obligatorio')
+    .isString(),
+  check('CodigoCliente')
+    .notEmpty()
+    .withMessage('El código de cliente es obligatorio')
+    .isString(),
+  check('Segmentacion')
+    .notEmpty()
+    .withMessage('La segmentación es obligatoria')
+    .isString(),
+  check('CondicionFiscal')
+    .notEmpty()
+    .withMessage('La Condición Fiscal es obligatoria')
+    .isString(),
+  check('CodigoDistribuidor')
+    .notEmpty()
+    .withMessage('El código de distribuidor es obligatorio')
+    .isString(),
+  check('CorreoElectronico')
+    .notEmpty()
+    .withMessage('El correo electrónico es obligatorio')
+    .isEmail(),
+  check('VentaAlcohol')
+    .notEmpty()
+    .withMessage('El campo VentaAlcohol es obligatorio')
+    .isString(),
+  check('Telefono')
+    .notEmpty()
+    .withMessage('El teléfono es obligatorio')
+    .isString(),
+  check('localidad')
+    .notEmpty()
+    .withMessage('La localidad es obligatoria')
+    .isString(),
+  check('calle').notEmpty().withMessage('La calle es obligatoria').isString(),
+  check('altura').notEmpty().withMessage('La altura es obligatoria').isString(),
+  check('entreCalle1')
+    .notEmpty()
+    .withMessage('La entrecalle 1 es obligatoria')
+    .isString(),
+  check('entreCalle2')
+    .notEmpty()
+    .withMessage('La entrecalle 2 es obligatoria')
+    .isString(),
+  check('HorarioVenta')
+    .notEmpty()
+    .withMessage('El horario de venta es obligatorio')
+    .isString(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -26,20 +62,18 @@ const validateCreateClientes = [
 ];
 
 const validateUpdateClientes = [
-  check("CodigoCliente").optional().isString(),
-  check("CodigoDistribuidor").optional().isString(),
-  check("Segmentacion").optional().isString(),
-  check("Localidad").optional().isString(),
-  check("Calle").optional().isString(),
-  check("EntreCalles").optional().isString(),
-  check("Telefono").optional().isNumeric(),
-  check("Email").optional().isEmail(),
-  check("VentaAlcohol").optional().isBoolean(),
-  check("WebPage").optional().isURL(),
-  check("HorarioVenta").optional().isString(),
-  check("HorarioOnOffDispositivos").optional().isString(),
-  check("HorarioPublicitario").optional().isString(),
-  check("AtencionAlCliente").optional().isString(),
+  check('principales').optional().isObject(),
+  check('ubicacion').optional().isObject(),
+  check('ubicacion.localidad').optional().isString(),
+  check('ubicacion.calle').optional().isString(),
+  check('ubicacion.altura').optional().isString(),
+  check('ubicacion.entreCalle1').optional().isString(),
+  check('ubicacion.entreCalle2').optional().isString(),
+  check('ubicacion.latitud').optional().isString(),
+  check('ubicacion.longitud').optional().isString(),
+  check('horus').optional().isObject(),
+  check('horus.saleHorusFrom').optional().isString(),
+  check('horus.saleHorusTo').optional().isString(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

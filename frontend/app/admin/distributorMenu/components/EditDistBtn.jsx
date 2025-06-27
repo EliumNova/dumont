@@ -2,8 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { distribuidorUpdate, distribuidorDelete } from '@/lib/slices/distribuidores/distribuidorAction';
+import {
+  distribuidorUpdate,
+  distribuidorDelete,
+} from '@/lib/slices/distribuidores/distribuidorAction';
 import InputField from '../../components/InputField';
+import { AiOutlineEdit } from 'react-icons/ai';
 
 function EditDistBtn({ datos, onCloseModal }) {
   const dispatch = useDispatch();
@@ -15,28 +19,28 @@ function EditDistBtn({ datos, onCloseModal }) {
   const [distDelete, setDistDelete] = useState(false);
   const [distSave, setDistSave] = useState(false);
   const [registerDist, setRegisterDist] = useState({
-    Calle: '',    
-    Contacto: '',
-    Email:'',
-    EntreCalles:'',
-    Localidad:'',
-    NombreComercial:'',
-    RazonSocial:'',
-    Telefono:'',
+    Calle: '',
+    SegundoTelefono: '',
+    Email: '',
+    EntreCalles: '',
+    Localidad: '',
+    NombreComercial: '',
+    RazonSocial: '',
+    Telefono: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
 
   // Maneja la apertura del modal y el llenado de datos
   const handleModalOpen = () => {
     setRegisterDist({
-        Calle: datos.Calle || '',        
-        Contacto: datos.Contacto || '',
-        Email: datos.Email || '',        
-        EntreCalles: datos.EntreCalles || '',
-        Localidad: datos.Localidad || '',
-        NombreComercial: datos.NombreComercial || '',
-        RazonSocial: datos.RazonSocial || '',
-        Telefono: datos.Telefono || '',
+      Calle: datos.Calle || '',
+      SegundoTelefono: datos.SegundoTelefono || '',
+      Email: datos.Email || '',
+      EntreCalles: datos.EntreCalles || '',
+      Localidad: datos.Localidad || '',
+      NombreComercial: datos.NombreComercial || '',
+      RazonSocial: datos.RazonSocial || '',
+      Telefono: datos.Telefono || '',
     });
     setEditDist(true);
   };
@@ -84,15 +88,33 @@ function EditDistBtn({ datos, onCloseModal }) {
     e.preventDefault();
 
     //Validar los campos
-    const {Calle, Contacto, Email, EntreCalles, Localidad, NombreComercial, RazonSocial, Telefono } = registerDist;
-    if (!Calle || !Contacto || !Email || !EntreCalles || !Localidad || !NombreComercial || !RazonSocial || !Telefono ) {
+    const {
+      Calle,
+      SegundoTelefono,
+      Email,
+      EntreCalles,
+      Localidad,
+      NombreComercial,
+      RazonSocial,
+      Telefono,
+    } = registerDist;
+    if (
+      !Calle ||
+      !SegundoTelefono ||
+      !Email ||
+      !EntreCalles ||
+      !Localidad ||
+      !NombreComercial ||
+      !RazonSocial ||
+      !Telefono
+    ) {
       setErrorMessage('Todos los campos son obligatorios');
       setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
     console.log('boton guardar', datos.idDistribuidor);
     console.log('boton guardar', registerDist);
-    
+
     dispatch(distribuidorUpdate(datos.idDistribuidor, registerDist));
     handleCloseModal();
   };
@@ -117,9 +139,9 @@ function EditDistBtn({ datos, onCloseModal }) {
     <div className="flex p-1 gap-5">
       <button
         onClick={handleModalOpen}
-        className=" text-white flex items-center justify-center"
+        className=" flex items-center justify-center text-2xl"
       >
-        <img src="/svg/editUser.svg" alt="" />
+        <AiOutlineEdit />
       </button>
       {editDist && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 p-2 lg:p-10">
@@ -171,7 +193,7 @@ function EditDistBtn({ datos, onCloseModal }) {
               className="gap-3 font-light p-0 text-black"
               labelClassName="font-light"
               inputClassName="rounded-2xl text-black"
-            />            
+            />
             <InputField
               label="Localidad"
               id="Localidad"
@@ -208,10 +230,10 @@ function EditDistBtn({ datos, onCloseModal }) {
               inputClassName="rounded-2xl text-black"
             />
             <InputField
-              label="Contacto"
+              label="SegundoTelefono"
               id="Contacto"
-              name="Contacto"
-              value={registerDist.Contacto}
+              name="SegundoTelefono"
+              value={registerDist.SegundoTelefono}
               onChange={handleChange}
               required
               className="gap-3 font-light p-0 text-black"
@@ -248,7 +270,9 @@ function EditDistBtn({ datos, onCloseModal }) {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
           <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
             <img src="/svg/alertIcon.svg" alt="" />
-            <p className="">¿Estas seguro que deseas eliminar este Distribuidor?</p>
+            <p className="">
+              ¿Estas seguro que deseas eliminar este Distribuidor?
+            </p>
             <div className="flex gap-5 flex-col lg:flex-row">
               <button
                 onClick={() => setDistDelete(!distDelete)}

@@ -3,7 +3,7 @@ import { Usuarios } from '../models/Usuarios.js';
 import { generateToken } from '../../utils/utilsUsuarios.js';
 import { handleError } from '../../utils/utilsErrors.js';
 import bcrypt from 'bcryptjs';
-import { transporter } from '../../utils/mailer.js';
+// import { transporter } from '../../utils/mailer.js';
 import { verifyEmailTemplate } from '../../utils/htmlEmails.js';
 import { PublishCommand } from '@aws-sdk/client-sns';
 import { snsClient } from '../../utils/utilsVerify.js';

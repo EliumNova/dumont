@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
@@ -7,81 +7,75 @@ import Principales from './Componentes/Principales';
 import Ubicacion from './Componentes/Ubicacion';
 import Horus from './Componentes/Horus';
 import CompleteModal from './Componentes/CompleteModal';
-import { setLoading, setError } from '@/lib/slices/newCustomerSlice';
-import { createClient } from '@/lib/slices/clients/clientAction';
+import { setLoading, setError } from '@/lib/slices/clients/clientSlice';
 
 function CustomerRegistration() {
-  const newCustomerStore = useSelector((state) => state.newCustomer);
   const dispatch = useDispatch();
   const router = useRouter();
+  const newCustomerStore = useSelector((state) => state.clients.newCustomer);
 
-  const [progress, setProgress] = useState(33);
-  const [inPrincipales, setInPrincipales] = useState(true);
-  const [inUbication, setInUbication] = useState(false);
-  const [inHorus, setInHorus] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [step, setStep] = useState(1); // Paso actual del formulario
+  const [progress, setProgress] = useState(33); // Progreso del formulario
+  const [showModal, setShowModal] = useState(false); // Estado del modal de éxito
 
-  const URL = `https://dumont-back.onrender.com/api/clientes/create`;
+  const URL = `http://localhost:3001/api/clientes/create`;
 
-  useEffect(() => {
-    console.log('Current Store Data:', newCustomerStore);
-  }, [newCustomerStore]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (inPrincipales) {
-      setInUbication(true);
-      setProgress(66);
-      setInPrincipales(false);
-    } else if (inUbication) {
-      setInUbication(false);
-      setInHorus(true);
-      setProgress(100);
-    } else if (inHorus) {
-      try {
-        dispatch(setLoading(true));
-        console.log('Enviando solicitud a la API:', URL);
-        console.log('Datos enviados:', newCustomerStore);
-        const response = await axios.post(URL, newCustomerStore, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        console.log('Respuesta de la API:', response.data);
-        dispatch(createClient(response.data));
-        dispatch(setLoading(false));
-        setShowModal(true);
-        setTimeout(() => {
-          router.push('/admin/customerMenu');
-        }, 2500);
-      } catch (error) {
-        console.error('Error al enviar datos a la API:', error);
-        dispatch(setLoading(false));
-        dispatch(setError(error.message));
-      }
+  const handleNext = () => {
+    // Avanzar al siguiente paso sin validar campos obligatorios
+    if (step < 3) {
+      setStep(step + 1);
+      setProgress(progress + 33);
     }
   };
 
   const handleBack = () => {
-    if (inPrincipales) {
-      console.log('volver');
-    } else if (inUbication) {
-      setInUbication(false);
-      setInPrincipales(true);
-      setProgress(33);
-    } else if (inHorus) {
-      setInHorus(false);
-      setInUbication(true);
-      setProgress(66);
+    if (step > 1) {
+      setStep(step - 1);
+      setProgress(progress - 33);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      // Combinar los datos de principales, ubicacion y horus en una estructura plana
+      const payload = {
+        ...newCustomerStore.principales,
+        ...newCustomerStore.ubicacion,
+        ...newCustomerStore.horus,
+      };
+
+      dispatch(setLoading(true)); // Activa el estado de carga
+      console.log('Enviando solicitud a la API:', URL);
+      console.log('Datos enviados:', payload);
+
+      // Envía todos los datos del formulario al servidor
+      const response = await axios.post(URL, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Respuesta de la API:', response.data);
+      dispatch(setLoading(false)); // Desactiva el estado de carga
+      setShowModal(true); // Muestra el modal de éxito
+
+      // Redirige al usuario después de 3 segundos
+      setTimeout(() => {
+        router.push('/admin');
+      }, 2500);
+    } catch (error) {
+      console.error('Error al enviar datos a la API:', error);
+      dispatch(setLoading(false)); // Desactiva el estado de carga
+      dispatch(setError(error.message)); // Guarda el mensaje de error en Redux
     }
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center my-5 px-2">
-      <h2 className="text-white text-3xl md:text-5xl font-semibold my-2">
+    <div className="container mx-auto flex flex-col items-center justify-start my-2 px-4 h-[90vh] overflow-y-auto">
+      <h2 className="text-white text-4xl md:text-2xl font-semibold my-1">
         Registro de Clientes
       </h2>
-      <div className="w-full bg-gray-300 h-2 rounded mb-4">
+      <div className="w-full bg-gray-300 h-1 rounded mb-2">
         <div
           className="h-full bg-black rounded"
           style={{
@@ -91,37 +85,19 @@ function CustomerRegistration() {
         />
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col items-center w-full lg:w-8/12 xl:w-9/12 my-1 px-4 text-white"
-      >
-        <div className="container mx-auto grid grid-cols-1 gap-4 w-full justify-items-center xl:items-center">
-          {inPrincipales && (
-            <Principales
-              setInUbication={setInUbication}
-              setProgress={setProgress}
-              setInPrincipales={setInPrincipales}
-            />
-          )}
-          {inUbication && (
-            <Ubicacion
-              setInUbication={setInUbication}
-              setProgress={setProgress}
-              setInHorus={setInHorus}
-              setInPrincipales={setInPrincipales}
-            />
-          )}
-          {inHorus && (
-            <Horus
-              setInUbication={setInUbication}
-              setProgress={setProgress}
-              setInHorus={setInHorus}
-              setShowModal={setShowModal}
-            />
-          )}
-        </div>
-        {showModal && <CompleteModal setShowModal={setShowModal} />}
-      </form>
+      {step === 1 && (
+        <Principales onNext={handleNext} onBack={() => router.push('/admin')} />
+      )}
+      {step === 2 && <Ubicacion onNext={handleNext} onBack={handleBack} />}
+      {step === 3 && (
+        <Horus
+          onSubmit={handleSubmit} // Pasa handleSubmit como prop
+          onBack={handleBack}
+          setShowModal={setShowModal}
+        />
+      )}
+
+      {showModal && <CompleteModal setShowModal={setShowModal} />}
     </div>
   );
 }

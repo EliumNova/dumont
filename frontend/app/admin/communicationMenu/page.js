@@ -1,4 +1,3 @@
-'use client';
 import BtnCom from './components/BtnCom';
 
 function CommunicationMenu() {

@@ -6,51 +6,68 @@ import ModalWindow from '../components/ModalWindow';
 import { distribuidorCreate } from '@/lib/slices/distribuidores/distribuidorAction';
 
 function DistribuidorRegistration() {
-  const dispatch = useDispatch();  
+  const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [registerDist, setRegisterDist] = useState({
     Calle: '',
     CodigoDistribuidor: '',
-    Contacto: '',
-    Email:'',
-    EntreCalles:'',
-    Localidad:'',
-    NombreComercial:'',
-    RazonSocial:'',
-    Telefono:'',
-    CUIT:''    
+    SegundoTelefono: '',
+    Email: '',
+    EntreCalles: '',
+    Localidad: '',
+    NombreComercial: '',
+    RazonSocial: '',
+    Telefono: '',
+    CUIT: '',
   });
   const [modal, setModal] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const { Calle, CodigoDistribuidor, Contacto, Email, EntreCalles, Localidad, NombreComercial, RazonSocial, Telefono } =
-      registerDist;
+    const {
+      Calle,
+      CodigoDistribuidor,
+      SegundoTelefono,
+      Email,
+      EntreCalles,
+      Localidad,
+      NombreComercial,
+      RazonSocial,
+      Telefono,
+    } = registerDist;
 
     // Validar que todos los campos están llenos
     if (
-        !Calle || !CodigoDistribuidor|| !Contacto || !Email || !EntreCalles || !Localidad || !NombreComercial || !RazonSocial || !Telefono
+      !Calle ||
+      !CodigoDistribuidor ||
+      !SegundoTelefono ||
+      !Email ||
+      !EntreCalles ||
+      !Localidad ||
+      !NombreComercial ||
+      !RazonSocial ||
+      !Telefono
     ) {
       setErrorMessage('Todos los campos son obligatorios.');
       setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
-    
+
     dispatch(distribuidorCreate(registerDist));
 
     // Resetear el formulario
     setRegisterDist({
-        Calle: '',
-        CodigoDistribuidor: '',
-        Contacto: '',
-        Email:'',
-        EntreCalles:'',
-        Localidad:'',
-        NombreComercial:'',
-        RazonSocial:'',
-        Telefono:'',
-        CUIT:''    
+      Calle: '',
+      CodigoDistribuidor: '',
+      SegundoTelefono: '',
+      Email: '',
+      EntreCalles: '',
+      Localidad: '',
+      NombreComercial: '',
+      RazonSocial: '',
+      Telefono: '',
+      CUIT: '',
     });
 
     setModal(true);
@@ -68,7 +85,7 @@ function DistribuidorRegistration() {
       CUIT: /^[0-9]*$/,
       Telefono: /^[0-9\s()]*$/,
       NombreComercial: /^[a-zA-Z\s]*$/,
-      Email: /^[a-zA-Z0-9@.\s]*$/      
+      Email: /^[a-zA-Z0-9@.\s]*$/,
     };
 
     if (name === 'Telefono') {
@@ -119,11 +136,11 @@ function DistribuidorRegistration() {
       >
         <div className="container mx-auto grid grid-cols-1 w-full  items-center xl:grid-cols-2 justify-items-center xl:items-center ">
           <InputField
-            label="Nombre Comercial"
+            label="Distribuidor"
             id="NombreComercial"
             name="NombreComercial"
             value={registerDist.NombreComercial}
-            onChange={handleChange}            
+            onChange={handleChange}
             required
             className="col-span-1 xl:col-start-1 row-start-1 lg:w-[32rem] gap-3 font-semibold px-4"
             inputClassName="font-light text-black"
@@ -133,7 +150,7 @@ function DistribuidorRegistration() {
             id="RazonSocial"
             name="RazonSocial"
             value={registerDist.RazonSocial}
-            onChange={handleChange}            
+            onChange={handleChange}
             required
             className="col-span-1 xl:col-start-2 xl:row-start-1 lg:w-[32rem] font-semibold px-4"
             inputClassName="font-light text-black"
@@ -144,7 +161,7 @@ function DistribuidorRegistration() {
             name="CodigoDistribuidor"
             type="number"
             value={registerDist.CodigoDistribuidor}
-            onChange={handleChange}            
+            onChange={handleChange}
             required
             className="col-span-1 xl:col-start-1 xl:row-start-2 lg:w-[32rem] font-semibold px-4"
             inputClassName="font-light text-black"
@@ -154,7 +171,7 @@ function DistribuidorRegistration() {
             id="CUIT"
             name="CUIT"
             value={registerDist.CUIT}
-            onChange={handleChange}            
+            onChange={handleChange}
             required
             className="col-span-1 xl:col-start-2 xl:row-start-2 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
@@ -164,7 +181,7 @@ function DistribuidorRegistration() {
             id="Calle"
             name="Calle"
             value={registerDist.Calle}
-            onChange={handleChange}            
+            onChange={handleChange}
             required
             className="col-span-1 xl:col-start-1 xl:row-start-3 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
@@ -174,7 +191,7 @@ function DistribuidorRegistration() {
             id="EntreCalles"
             name="EntreCalles"
             value={registerDist.EntreCalles}
-            onChange={handleChange}            
+            onChange={handleChange}
             required
             className="col-span-1 xl:col-start-2 xl:row-start-3 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
@@ -184,7 +201,7 @@ function DistribuidorRegistration() {
             id="Localidad"
             name="Localidad"
             value={registerDist.Localidad}
-            onChange={handleChange}            
+            onChange={handleChange}
             required
             className="col-span-1 xl:col-start-1 xl:row-start-4 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
@@ -194,7 +211,7 @@ function DistribuidorRegistration() {
             id="Email"
             name="Email"
             value={registerDist.Email}
-            onChange={handleChange}            
+            onChange={handleChange}
             required
             className="col-span-1 xl:col-start-2 xl:row-start-4 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
@@ -204,22 +221,21 @@ function DistribuidorRegistration() {
             id="Telefono"
             name="Telefono"
             value={registerDist.Telefono}
-            onChange={handleChange}            
+            onChange={handleChange}
             required
             className="col-span-1 xl:col-start-1 xl:row-start-6 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
           />
           <InputField
-            label="Contacto"
-            id="Contacto"
-            name="Contacto"
-            value={registerDist.Contacto}
-            onChange={handleChange}            
+            label="Segundo Teléfono (Jefe de Ventas)"
+            id="SegundoTelefono"
+            name="SegundoTelefono"
+            value={registerDist.SegundoTelefono}
+            onChange={handleChange}
             required
             className="col-span-1 xl:col-start-2 xl:row-start-6 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
           />
-          
         </div>
         {errorMessage && (
           <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium relative">

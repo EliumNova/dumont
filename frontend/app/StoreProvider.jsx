@@ -1,18 +1,13 @@
-'use client';
-import { useRef, useEffect, useState } from 'react';
+'use client'
+import { useRef } from 'react';
 import { Provider } from 'react-redux';
-import { makeStore } from '../lib/store';
+import  {makeStore}  from '../lib/store'; // Asegúrate de que la ruta es correcta
 
 export default function StoreProvider({ children }) {
   const storeRef = useRef(null);
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
+  if (!storeRef.current) {
     storeRef.current = makeStore();
-    setIsReady(true);
-  }, []);
-
-  if (!isReady) return null; // Evita el render hasta que Redux esté listo
+  }
 
   return <Provider store={storeRef.current}>{children}</Provider>;
 }
