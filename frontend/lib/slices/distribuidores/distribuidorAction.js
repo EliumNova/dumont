@@ -22,7 +22,9 @@ export const getDistribuidores = ({ page = 0, pageSize = 5 } = {}) => {
   return async (dispatch) => {
     try {
       // Pasa los parámetros en la URL
-      const res = await axios.get(`${DISTRIBUIDORES}?page=${page}&pageSize=${pageSize}`);
+      const res = await axios.get(
+        `${DISTRIBUIDORES}?page=${page}&pageSize=${pageSize}`
+      );
       console.log('getDistribuidores response: ', res.data);
 
       // Despacha todo el objeto con count y rows
@@ -32,7 +34,6 @@ export const getDistribuidores = ({ page = 0, pageSize = 5 } = {}) => {
     }
   };
 };
-
 
 export const distribuidorUpdate = (id, payload) => {
   console.log(id, payload);
@@ -45,13 +46,13 @@ export const distribuidorUpdate = (id, payload) => {
   };
 };
 
-export const distribuidorDelete = (id) => {
+export const deleteDistribuidor = (id) => {
   console.log(id);
 
   return (dispatch) => {
     axios
       .delete(`${DISTRIBUIDORES}/delete/${id}`)
-      .then((res) => dispatch(deleteDistribuidor(res.data)))
+      .then((res) => dispatch(deleteDistribuidorSuccess(res.data)))
       .catch((err) => console.log(err));
   };
 };
