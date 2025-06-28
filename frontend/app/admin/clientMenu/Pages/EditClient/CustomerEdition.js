@@ -35,7 +35,7 @@ function CustomerEdition() {
       const fetchCustomerData = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:3001/api/clientes/${id}`
+            `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${id}`
           );
           const data = response.data;
 
@@ -101,7 +101,7 @@ function CustomerEdition() {
       console.log('Datos enviados:', payload);
 
       const response = await axios.put(
-        `http://localhost:3001/api/clientes/update/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/update/${id}`,
         payload,
         {
           headers: {

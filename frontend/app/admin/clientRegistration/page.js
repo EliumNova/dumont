@@ -18,7 +18,7 @@ function CustomerRegistration() {
   const [progress, setProgress] = useState(33); // Progreso del formulario
   const [showModal, setShowModal] = useState(false); // Estado del modal de éxito
 
-  const URL = `http://localhost:3001/api/clientes/create`;
+  const URL = `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/create`;
 
   const handleNext = () => {
     // Avanzar al siguiente paso sin validar campos obligatorios

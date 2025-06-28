@@ -94,7 +94,7 @@ function DeviceTable() {
   const handleViewClientDetails = async (codigoDumont) => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/clientes/dumont/${codigoDumont}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/dumont/${codigoDumont}`
       );
 
       setSelectedClient(response.data);
@@ -138,7 +138,7 @@ function DeviceTable() {
 
   useEffect(() => {
     axios
-      .get('http://localhost:3001/api/clientes-distribuidores')
+      .get('${process.env.NEXT_PUBLIC_API_URL}/api/clientes-distribuidores')
       .then((res) => {
         console.log('Data sin Redux:', res.data);
       });

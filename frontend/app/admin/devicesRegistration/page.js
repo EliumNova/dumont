@@ -25,7 +25,7 @@ function DispositivoRegistration() {
     const fetchDistribuidores = async () => {
       try {
         const response = await fetch(
-          'http://localhost:3001/api/distribuidores/'
+          '${process.env.NEXT_PUBLIC_API_URL}/api/distribuidores/'
         );
         if (!response.ok) {
           throw new Error('Error al obtener los distribuidores');
@@ -43,7 +43,9 @@ function DispositivoRegistration() {
 
     const fetchClientes = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/clientes/');
+        const response = await fetch(
+          '${process.env.NEXT_PUBLIC_API_URL}/api/clientes/'
+        );
         if (!response.ok) {
           throw new Error('Error al obtener los clientes');
         }

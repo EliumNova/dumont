@@ -32,7 +32,7 @@ function Principales({ onNext, onBack }) {
     const fetchDistribuidores = async () => {
       try {
         const response = await fetch(
-          'http://localhost:3001/api/clientes/distribuidores/list'
+          '${process.env.NEXT_PUBLIC_API_URL}/api/clientes/distribuidores/list'
         );
         if (!response.ok) {
           throw new Error('Error al obtener los distribuidores');
