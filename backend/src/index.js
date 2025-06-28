@@ -27,7 +27,18 @@ app.use(express.static('./public'));
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://dumont.onrender.com',
+    ];
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 };
 app.use(cors(corsOptions));
@@ -42,13 +53,6 @@ app.use('/api/dispositivos', dispositivosRouter);
 app.use('/api/files', filesRouter);
 app.use('/api/distribuidores', distribuidoresRouter);
 app.use('/api/clientes-distribuidores', clientesDistribuidoresRoutes);
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
