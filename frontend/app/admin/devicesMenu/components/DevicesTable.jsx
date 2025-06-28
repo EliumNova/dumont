@@ -6,6 +6,7 @@ import {
   getDispositivos,
   dispositivoDelete,
 } from '@/lib/slices/dispositivos/dispositivoAction';
+import { useRouter } from 'next/navigation';
 import { fetchClients } from '@/lib/slices/clients/clientAction';
 import { fetchRelacionesClientesDistribuidores } from '@/lib/slices/dispositivos/clientesDistribuidoresAction';
 import {
@@ -27,6 +28,7 @@ import axios from 'axios';
 
 function DeviceTable() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const dispositivos = useSelector(
     (state) => state.dispositivos.allDispositivos.rows || []
   );
@@ -79,9 +81,9 @@ function DeviceTable() {
   };
 
   const handleEdit = (device) => {
-    if (typeof window !== 'undefined') {
-      window.location.href = `admin/deviceMenu/Pages/EditDevice?id=${device.idDispositivos}`;
-    }
+    router.push(
+      `/admin/deviceMenu/Pages/EditDevice?id=${device.idDispositivos}`
+    );
   };
 
   const handleViewDetails = (dispositivo) => {
