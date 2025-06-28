@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 import { CLIENTS } from '../constants';
 import {
   setClients,
