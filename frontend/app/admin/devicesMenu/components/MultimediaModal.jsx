@@ -91,17 +91,20 @@ function MultimediaModal({ isOpen, onClose, device }) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const videoRef = useRef(null);
-  const [timelineWidth, setTimelineWidth] = useState(window.innerWidth - 100);
+  const [timelineWidth, setTimelineWidth] = useState(800); // valor por defecto seguro
+
   const [zoom, setZoom] = useState(10);
   const [playhead, setPlayhead] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const playheadRef = useRef(null);
 
   useEffect(() => {
+    const updateWidth = () => setTimelineWidth(window.innerWidth - 100);
+
     if (typeof window !== 'undefined') {
-      const onResize = () => setTimelineWidth(window.innerWidth - 100);
-      window.addEventListener('resize', onResize);
-      return () => window.removeEventListener('resize', onResize);
+      updateWidth(); // setea el valor inicial basado en el ancho real
+      window.addEventListener('resize', updateWidth);
+      return () => window.removeEventListener('resize', updateWidth);
     }
   }, []);
 
