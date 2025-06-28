@@ -59,7 +59,11 @@ function Principales({ onNext, onBack }) {
   // Generar el código DuMont cuando cambie CodigoDistribuidor o CodigoCliente
   useEffect(() => {
     generateCodigoDuMont();
-  }, [principalesInfo.CodigoDistribuidor, principalesInfo.CodigoCliente]);
+  }, [
+    generateCodigoDuMont,
+    principalesInfo.CodigoDistribuidor,
+    principalesInfo.CodigoCliente,
+  ]);
 
   const validateCorreoElectronico = (CorreoElectronico) =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(CorreoElectronico);

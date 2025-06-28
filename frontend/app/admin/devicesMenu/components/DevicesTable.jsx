@@ -79,7 +79,9 @@ function DeviceTable() {
   };
 
   const handleEdit = (device) => {
-    window.location.href = `admin/deviceMenu/Pages/EditDevice?id=${device.idDispositivos}`;
+    if (typeof window !== 'undefined') {
+      window.location.href = `admin/deviceMenu/Pages/EditDevice?id=${device.idDispositivos}`;
+    }
   };
 
   const handleViewDetails = (dispositivo) => {

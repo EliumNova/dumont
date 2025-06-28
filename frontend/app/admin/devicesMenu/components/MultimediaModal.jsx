@@ -98,9 +98,11 @@ function MultimediaModal({ isOpen, onClose, device }) {
   const playheadRef = useRef(null);
 
   useEffect(() => {
-    const onResize = () => setTimelineWidth(window.innerWidth - 100);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    if (typeof window !== 'undefined') {
+      const onResize = () => setTimelineWidth(window.innerWidth - 100);
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
+    }
   }, []);
 
   useEffect(() => {
