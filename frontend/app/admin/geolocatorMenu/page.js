@@ -16,7 +16,7 @@ export default function GeolocatorMenu() {
 
   useEffect(() => {
     axios
-      .get('${process.env.NEXT_PUBLIC_API_URL}/api/dispositivos/all') // nuevo endpoint
+      .get('/api/dispositivos/all') // nuevo endpoint
       .then((res) => {
         setDispositivos(res.data || []);
       })
