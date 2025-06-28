@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "1.0.0",
+  "type": "module",
   "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
   "main": "tailwind.config.js",
   "directories": {
@@ -37,6 +38,6 @@
     "eslint": "^9.30.0",
     "eslint-config-next": "^15.3.4",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "4.1"
   }
 }

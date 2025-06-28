@@ -7,6 +7,7 @@ import { FaUserShield } from 'react-icons/fa';
 import { BsFillShieldLockFill } from 'react-icons/bs';
 import { AiOutlineSwapRight } from 'react-icons/ai';
 import logo from '@/public/DuMontLogo.jpeg';
+import '../globals.css';
 import './Login.css';
 
 function Login() {

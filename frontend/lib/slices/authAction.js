@@ -8,7 +8,7 @@ import {
   setLoading,
   logout,
 } from './authSlice';
-const axios = require('axios');
+import axios from 'axios';
 
 export const fetchUserData = (userId) => {
   return async (dispatch) => {
