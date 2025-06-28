@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 import { DISTRIBUIDORES } from '../constants';
 import {
   allDistribuidores,
@@ -22,7 +22,9 @@ export const getDistribuidores = ({ page = 0, pageSize = 5 } = {}) => {
   return async (dispatch) => {
     try {
       // Pasa los parámetros en la URL
-      const res = await axios.get(`${DISTRIBUIDORES}?page=${page}&pageSize=${pageSize}`);
+      const res = await axios.get(
+        `${DISTRIBUIDORES}?page=${page}&pageSize=${pageSize}`
+      );
       console.log('getDistribuidores response: ', res.data);
 
       // Despacha todo el objeto con count y rows
@@ -32,7 +34,6 @@ export const getDistribuidores = ({ page = 0, pageSize = 5 } = {}) => {
     }
   };
 };
-
 
 export const distribuidorUpdate = (id, payload) => {
   console.log(id, payload);
