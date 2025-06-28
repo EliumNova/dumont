@@ -38,7 +38,7 @@ function Login() {
 
     try {
       const response = await axios.post(
-        'http://localhost:3001/api/usuarios/login',
+        `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/login`,
         loginData
       );
 
