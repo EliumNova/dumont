@@ -1,24 +1,25 @@
-'use client';
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import InputField from '../components/InputField';
-import ModalWindow from '../components/ModalWindow';
-import { distribuidorCreate } from '@/lib/slices/distribuidores/distribuidorAction';
+"use client";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import InputField from "../components/InputField";
+import ModalWindow from "../components/ModalWindow";
+import { distribuidorCreate } from "@/lib/slices/distribuidores/distribuidorAction";
 
 function DistribuidorRegistration() {
   const dispatch = useDispatch();
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   const [registerDist, setRegisterDist] = useState({
-    Calle: '',
-    CodigoDistribuidor: '',
-    SegundoTelefono: '',
-    Email: '',
-    EntreCalles: '',
-    Localidad: '',
-    NombreComercial: '',
-    RazonSocial: '',
-    Telefono: '',
-    CUIT: '',
+    NombreComercial: "",
+    RazonSocial: "", // ⬅️ NUEVO CAMPO
+    Email: "",
+    CodigoDistribuidor: "",
+    CUIT: "",
+    Calle: "",
+    EntreCalles: "",
+    Localidad: "",
+    Telefono: "",
+    SegundoTelefono: "",
+    JefeDeVentas: "",
   });
   const [modal, setModal] = useState(false);
 
@@ -26,48 +27,50 @@ function DistribuidorRegistration() {
     e.preventDefault();
 
     const {
-      Calle,
-      CodigoDistribuidor,
-      SegundoTelefono,
+      NombreComercial,
+      RazonSocial, // ⬅️ VALIDADO
       Email,
+      CodigoDistribuidor,
+      CUIT,
+      Calle,
       EntreCalles,
       Localidad,
-      NombreComercial,
-      RazonSocial,
       Telefono,
+      SegundoTelefono,
     } = registerDist;
 
-    // Validar que todos los campos están llenos
     if (
-      !Calle ||
-      !CodigoDistribuidor ||
-      !SegundoTelefono ||
-      !Email ||
-      !EntreCalles ||
-      !Localidad ||
       !NombreComercial ||
       !RazonSocial ||
-      !Telefono
+      !Email ||
+      !CodigoDistribuidor ||
+      !CUIT ||
+      !Calle ||
+      !EntreCalles ||
+      !Localidad ||
+      !Telefono ||
+      !SegundoTelefono
     ) {
-      setErrorMessage('Todos los campos son obligatorios.');
-      setTimeout(() => setErrorMessage(''), 3000);
+      setErrorMessage("Todos los campos son obligatorios.");
+      setTimeout(() => setErrorMessage(""), 3000);
       return;
     }
 
     dispatch(distribuidorCreate(registerDist));
 
-    // Resetear el formulario
+    // Reset
     setRegisterDist({
-      Calle: '',
-      CodigoDistribuidor: '',
-      SegundoTelefono: '',
-      Email: '',
-      EntreCalles: '',
-      Localidad: '',
-      NombreComercial: '',
-      RazonSocial: '',
-      Telefono: '',
-      CUIT: '',
+      NombreComercial: "",
+      RazonSocial: "",
+      Email: "",
+      CodigoDistribuidor: "",
+      CUIT: "",
+      Calle: "",
+      EntreCalles: "",
+      Localidad: "",
+      Telefono: "",
+      SegundoTelefono: "",
+      JefeDeVentas: "",
     });
 
     setModal(true);
@@ -79,22 +82,19 @@ function DistribuidorRegistration() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    const processedValue = name === 'admin' ? value === 'true' : value;
+    const processedValue = name === "admin" ? value === "true" : value;
 
     const validations = {
-      CUIT: /^[0-9]*$/,
+      CUIT: /^[0-9.-]*$/,
       Telefono: /^[0-9\s()]*$/,
-      NombreComercial: /^[a-zA-Z\s]*$/,
+      SegundoTelefono: /^[0-9\s()]*$/,
+      NombreComercial: /^[a-zA-ZÀ-ÿ0-9\s.-]*$/,
+      RazonSocial: /^[a-zA-ZÀ-ÿ0-9\s.-]*$/, // ⬅️ VALIDACIÓN NUEVA
       Email: /^[a-zA-Z0-9@.\s]*$/,
     };
 
-    if (name === 'Telefono') {
-      const maskedValue = e.target.inputElement
-        ? e.target.inputElement.value
-        : value;
-      registrar(name, maskedValue);
-    } else if (name in validations) {
-      if (value === '' || validateInput(processedValue, validations[name])) {
+    if (name in validations) {
+      if (value === "" || validateInput(processedValue, validations[name])) {
         registrar(name, processedValue);
       } else {
         errorMessageBox();
@@ -105,8 +105,8 @@ function DistribuidorRegistration() {
   };
 
   const errorMessageBox = () => {
-    setErrorMessage('Caracteres inválidos en el campo.');
-    setTimeout(() => setErrorMessage(''), 3000);
+    setErrorMessage("Caracteres inválidos en el campo.");
+    setTimeout(() => setErrorMessage(""), 3000);
   };
 
   const validateInput = (value, regex) => regex.test(value);
@@ -121,7 +121,7 @@ function DistribuidorRegistration() {
   return (
     <div className="container mx-auto flex flex-col items-center justify-center my-5">
       {modal ? (
-        <ModalWindow text={'¡Usuario creado con èxito!'} />
+        <ModalWindow text={"¡Usuario creado con èxito!"} />
       ) : (
         <div></div>
       )}
@@ -132,9 +132,9 @@ function DistribuidorRegistration() {
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col items-center w-full lg:w-9/12 xl:w-10/12 px-4 text-white"
-      >
-        <div className="container mx-auto grid grid-cols-1 w-full  items-center xl:grid-cols-2 justify-items-center xl:items-center ">
+        className="flex flex-col items-center w-full lg:w-9/12 xl:w-10/12 px-4 text-white">
+        <div className="container mx-auto grid grid-cols-1 w-full items-center xl:grid-cols-2 justify-items-center xl:items-center">
+          {/* Nombre Comercial */}
           <InputField
             label="Distribuidor"
             id="NombreComercial"
@@ -145,18 +145,22 @@ function DistribuidorRegistration() {
             className="col-span-1 xl:col-start-1 row-start-1 lg:w-[32rem] gap-3 font-semibold px-4"
             inputClassName="font-light text-black"
           />
+
+          {/* Email */}
           <InputField
-            label="Razon Social"
-            id="RazonSocial"
-            name="RazonSocial"
-            value={registerDist.RazonSocial}
+            label="Email"
+            id="Email"
+            name="Email"
+            value={registerDist.Email}
             onChange={handleChange}
             required
-            className="col-span-1 xl:col-start-2 xl:row-start-1 lg:w-[32rem] font-semibold px-4"
+            className="col-span-1 xl:col-start-2 xl:row-start-1 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
           />
+
+          {/* Código Distribuidor */}
           <InputField
-            label="Codigo Distribuidor"
+            label="Código Distribuidor"
             id="CodigoDistribuidor"
             name="CodigoDistribuidor"
             type="number"
@@ -166,6 +170,8 @@ function DistribuidorRegistration() {
             className="col-span-1 xl:col-start-1 xl:row-start-2 lg:w-[32rem] font-semibold px-4"
             inputClassName="font-light text-black"
           />
+
+          {/* CUIT */}
           <InputField
             label="CUIT"
             id="CUIT"
@@ -176,6 +182,8 @@ function DistribuidorRegistration() {
             className="col-span-1 xl:col-start-2 xl:row-start-2 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
           />
+
+          {/* Calle */}
           <InputField
             label="Calle"
             id="Calle"
@@ -186,6 +194,8 @@ function DistribuidorRegistration() {
             className="col-span-1 xl:col-start-1 xl:row-start-3 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
           />
+
+          {/* Entre Calles */}
           <InputField
             label="EntreCalles"
             id="EntreCalles"
@@ -196,6 +206,8 @@ function DistribuidorRegistration() {
             className="col-span-1 xl:col-start-2 xl:row-start-3 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
           />
+
+          {/* Localidad */}
           <InputField
             label="Localidad"
             id="Localidad"
@@ -206,26 +218,20 @@ function DistribuidorRegistration() {
             className="col-span-1 xl:col-start-1 xl:row-start-4 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
           />
+
+          {/* Teléfono */}
           <InputField
-            label="Email"
-            id="Email"
-            name="Email"
-            value={registerDist.Email}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-2 xl:row-start-4 flex flex-col w-full lg:w-[32rem] px-4"
-            inputClassName="font-light text-black"
-          />
-          <InputField
-            label="Telefono"
+            label="Teléfono"
             id="Telefono"
             name="Telefono"
             value={registerDist.Telefono}
             onChange={handleChange}
             required
-            className="col-span-1 xl:col-start-1 xl:row-start-6 flex flex-col w-full lg:w-[32rem] px-4"
+            className="col-span-1 xl:col-start-2 xl:row-start-4 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
           />
+
+          {/* Segundo Teléfono */}
           <InputField
             label="Segundo Teléfono (Jefe de Ventas)"
             id="SegundoTelefono"
@@ -233,19 +239,32 @@ function DistribuidorRegistration() {
             value={registerDist.SegundoTelefono}
             onChange={handleChange}
             required
-            className="col-span-1 xl:col-start-2 xl:row-start-6 flex flex-col w-full lg:w-[32rem] px-4"
+            className="col-span-1 xl:col-start-2 xl:row-start-5 flex flex-col w-full lg:w-[32rem] px-4"
+            inputClassName="font-light text-black"
+          />
+
+          {/* Razón Social – NUEVO CAMPO */}
+          <InputField
+            label="Razón Social"
+            id="RazonSocial"
+            name="RazonSocial"
+            value={registerDist.RazonSocial}
+            onChange={handleChange}
+            required
+            className="col-span-1 xl:col-start-1 xl:row-start-5 flex flex-col w-full lg:w-[32rem] px-4"
             inputClassName="font-light text-black"
           />
         </div>
+
         {errorMessage && (
           <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium relative">
             {errorMessage}
           </div>
         )}
+
         <button
           type="submit"
-          className="w-11/12 lg:w-[30rem] p-4 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
-        >
+          className="w-11/12 lg:w-[30rem] p-4 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold">
           Guardar
         </button>
       </form>

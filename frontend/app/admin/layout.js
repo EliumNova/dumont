@@ -1,4 +1,4 @@
-import Navbar from './components/Navbar';
+import Navbar from "./components/Navbar";
 
 const BackgroundImage = ({ src, style }) => {
   return (
@@ -7,8 +7,7 @@ const BackgroundImage = ({ src, style }) => {
       style={{
         backgroundImage: `url(${src})`,
         ...style,
-      }}
-    ></div>
+      }}></div>
   );
 };
 
@@ -19,10 +18,9 @@ export default function Layout({ children }) {
       <div
         className="absolute inset-0 bg-cover bg-no-repeat bg-center"
         style={{
-          backgroundImage: 'url(/logodumont.jpg)',
-          backgroundSize: 'contain',
-        }}
-      ></div>
+          backgroundImage: "url(/logodumont.png)",
+          backgroundSize: "contain",
+        }}></div>
       {/* <div
         className="absolute inset-0 bg-cover bg-no-repeat bg-center"
         style={{ backgroundImage: 'url(/background.png)', backgroundSize: 'cover' }}

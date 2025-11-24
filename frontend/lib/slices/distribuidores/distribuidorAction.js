@@ -1,11 +1,11 @@
-import axios from 'axios';
-import { DISTRIBUIDORES } from '../constants';
+import axios from "axios";
+import { DISTRIBUIDORES } from "../constants";
 import {
   allDistribuidores,
   newDistribuidor,
   updateDistribuidor,
   deleteDistribuidor,
-} from './distribuidorSlice';
+} from "./distribuidorSlice";
 
 export const distribuidorCreate = (payload) => {
   return (dispatch) => {
@@ -16,7 +16,7 @@ export const distribuidorCreate = (payload) => {
   };
 };
 
-export const getDistribuidores = ({ page = 0, pageSize = 5 } = {}) => {
+export const getDistribuidores = ({ page = 0, pageSize = 15 } = {}) => {
   return async (dispatch) => {
     try {
       const res = await axios.get(

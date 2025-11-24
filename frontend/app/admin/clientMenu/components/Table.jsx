@@ -1,26 +1,25 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchClients, deleteClient } from '@/lib/slices/clients/clientAction';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchClients, deleteClient } from "@/lib/slices/clients/clientAction";
 import {
   AiOutlineEye,
   AiOutlineDelete,
   AiOutlineEdit,
   AiOutlineCheck,
   AiOutlineClose,
-} from 'react-icons/ai';
-import Modal from './Modal'; // Importa el componente Modal
-import ModalDelete from './ModalDelete'; // Importa el componente Modal
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+} from "react-icons/ai";
+import Modal from "./Modal"; // Importa el componente Modal
+import ModalDelete from "./ModalDelete"; // Importa el componente Modal
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ClientTable() {
   const dispatch = useDispatch();
-  const clients = useSelector((state) => state.clients.allClients.rows || []);
-  const totalClients = useSelector(
-    (state) => state.clients.allClients.count || 0
-  );
+  const clients = useSelector((state) => state.clients.data?.rows || []);
+  const totalClients = useSelector((state) => state.clients.data?.count || 0);
+
   const [selectedClient, setSelectedClient] = useState(null);
   const [clientToDelete, setClientToDelete] = useState(null);
   const [refresh, setRefresh] = useState(false);
@@ -34,7 +33,7 @@ function ClientTable() {
   }, [dispatch, page, pageSize, refresh]);
 
   useEffect(() => {
-    console.log('Clients:', clients); // Log para verificar los datos de clientes
+    console.log("Clients:", clients); // Log para verificar los datos de clientes
   }, [clients]);
 
   const forceRender = () => {
@@ -42,21 +41,21 @@ function ClientTable() {
   };
 
   const handleDelete = (id) => {
-    console.log('Delete client ID:', id); // Log para verificar la ID del cliente a eliminar
+    console.log("Delete client ID:", id); // Log para verificar la ID del cliente a eliminar
     dispatch(deleteClient(id)).then(() => {
-      toast.success('Usuario eliminado');
+      toast.success("Usuario eliminado");
       forceRender();
       setIsDeleteModalOpen(false);
     });
   };
 
   const handleEdit = (client) => {
-    console.log('Edit client:', client); // Log para verificar los datos del cliente a editar
+    console.log("Edit client:", client); // Log para verificar los datos del cliente a editar
     window.location.href = `admin/clientMenu/Pages/EditClient?id=${client.idClientes}`;
   };
 
   const handleViewDetails = (client) => {
-    console.log('View details for client:', client); // Log para verificar los datos del cliente seleccionado
+    console.log("View details for client:", client); // Log para verificar los datos del cliente seleccionado
     setSelectedClient(client);
     setIsModalOpen(true); // Abre el modal
   };
@@ -92,14 +91,13 @@ function ClientTable() {
                     setPage(0);
                     setPageSize(Number(e.target.value));
                   }}
-                  className="ml-2 p-1 border rounded"
-                >
+                  className="ml-2 p-1 border rounded">
                   {[5, 10, 20, 50].map((size) => (
                     <option key={size} value={size}>
                       {size}
                     </option>
                   ))}
-                </select>{' '}
+                </select>{" "}
                 clientes por página
               </label>
 
@@ -107,8 +105,7 @@ function ClientTable() {
                 <button
                   className="px-2 py-1 text-sm bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
                   onClick={() => setPage((p) => Math.max(p - 1, 0))}
-                  disabled={page === 0}
-                >
+                  disabled={page === 0}>
                   Anterior
                 </button>
                 <span className="text-sm">
@@ -117,8 +114,7 @@ function ClientTable() {
                 <button
                   className="px-2 py-1 text-sm bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
                   onClick={() => setPage((p) => p + 1)}
-                  disabled={page + 1 >= totalPages}
-                >
+                  disabled={page + 1 >= totalPages}>
                   Siguiente
                 </button>
               </div>
@@ -145,17 +141,16 @@ function ClientTable() {
                   clients.map((client, index) => (
                     <tr
                       className="border-b transition duration-300 ease-in-out text-black hover:bg-neutral-100 dark:border-[#F2F5F6] dark:hover:bg-[#d2dadd]"
-                      key={index}
-                    >
+                      key={index}>
                       <td className="whitespace-nowrap px-10 py-6 text-center font-medium">
-                        {client.NombreCompleto || 'Nombre no disponible'}
+                        {client.NombreCompleto || "Nombre no disponible"}
                       </td>
                       <td className="whitespace-nowrap px-10 py-1 text-center">
                         {`${client.calle}, ${client.localidad}` ||
-                          'Correo no disponible'}
+                          "Correo no disponible"}
                       </td>
                       <td className="whitespace-nowrap px-10 py-1 text-center">
-                        {client.Telefono || 'Código no disponible'}
+                        {client.Telefono || "Código no disponible"}
                       </td>
                       <td className="whitespace-nowrap px-10 py-6 flex justify-center items-center gap-4 h-full">
                         <div className="flex items-center h-full">
@@ -203,8 +198,7 @@ function ClientTable() {
               <p>
                 <a
                   href={`mailto:${selectedClient.CorreoElectronico}`}
-                  className="text-blue-500 underline"
-                >
+                  className="text-blue-500 underline">
                   {selectedClient.CorreoElectronico}
                 </a>
               </p>
@@ -231,7 +225,7 @@ function ClientTable() {
               <p>
                 <strong>Código DuMont</strong>
               </p>
-              <p>{selectedClient.CodigoDumont || 'Código no disponible'}</p>
+              <p>{selectedClient.CodigoDumont || "Código no disponible"}</p>
             </div>
             <div>
               <p>
@@ -263,7 +257,7 @@ function ClientTable() {
               <p>
                 <strong>Venta Alcohol</strong>
               </p>
-              <p>{selectedClient.VentaAlcohol ? 'Sí' : 'No'}</p>
+              <p>{selectedClient.VentaAlcohol ? "Sí" : "No"}</p>
             </div>
             <div>
               <p>
@@ -275,12 +269,11 @@ function ClientTable() {
                     href={selectedClient.WebPage}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline text-blue-500"
-                  >
+                    className="underline text-blue-500">
                     {selectedClient.WebPage}
                   </a>
                 ) : (
-                  'No posee'
+                  "No posee"
                 )}
               </p>
             </div>
@@ -306,15 +299,13 @@ function ClientTable() {
           <div className="flex justify-center gap-4">
             <button
               className="flex items-center bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              onClick={() => handleDelete(clientToDelete.idClientes)}
-            >
+              onClick={() => handleDelete(clientToDelete.idClientes)}>
               <AiOutlineCheck className="mr-2" />
               Eliminar
             </button>
             <button
               className="flex items-center bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-              onClick={closeDeleteModal}
-            >
+              onClick={closeDeleteModal}>
               <AiOutlineClose className="mr-2" />
               Cancelar
             </button>

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllUsers } from '@/lib/slices/users/userAction';
-import EditUserBtn from './EditUserBtn';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllUsers } from "@/lib/slices/users/userAction";
+import EditUserBtn from "./EditUserBtn";
 
 function Table() {
   const dispatch = useDispatch();
@@ -53,7 +53,17 @@ function Table() {
   console.log(refresh);
   console.log(userLogueado);
 
-  const filterUsers = users.filter((e) => e.idUsuarios !== userLogueado.id); //sacamos el usuario logueado
+  // ✅ En su lugar, agregamos John Doe manualmente:
+  const filterUsers = [
+    {
+      Name: "John Doe",
+      Email: "john.doe@example.com",
+      DNI: "00000000",
+      isAdmin: false,
+    },
+    ...users,
+  ];
+
   console.log(filterUsers);
 
   //console.log('aca tienen que estar todos los usuarios', users);
@@ -88,8 +98,7 @@ function Table() {
                   filterUsers.map((user, index) => (
                     <tr
                       className="border-b transition duration-300 ease-in-out text-white hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
-                      key={index}
-                    >
+                      key={index}>
                       <td className="whitespace-nowrap px-10 py-6 font-medium">
                         {user.Name}
                       </td>
@@ -100,7 +109,7 @@ function Table() {
                         {user.DNI}
                       </td>
                       <td className="whitespace-nowrap px-10 py-1">
-                        {!user.isAdmin ? 'No' : 'Si'}
+                        {!user.isAdmin ? "No" : "Si"}
                       </td>
                       <td className="whitespace-nowrap px-10 py-1">
                         {/* {user.icon} */}

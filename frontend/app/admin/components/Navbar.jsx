@@ -1,17 +1,17 @@
-'use client';
-import Image from 'next/image';
-import React from 'react';
-import { useEffect, useState, useRef } from 'react';
-import { usePathname } from 'next/navigation';
-import { useSelector, useDispatch } from 'react-redux';
-import { updateAuthUser, logoutUser } from '@/lib/slices/authAction';
-import { IoIosArrowForward } from 'react-icons/io';
-import Link from 'next/link';
-import InputField from '../clientRegistration/Componentes/InputField';
+"use client";
+import Image from "next/image";
+import React from "react";
+import { useEffect, useState, useRef } from "react";
+import { usePathname } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { updateAuthUser, logoutUser } from "@/lib/slices/authAction";
+import { IoIosArrowForward } from "react-icons/io";
+import Link from "next/link";
+import InputField from "../clientRegistration/Componentes/InputField";
 
 function Navbar() {
   const pathname = usePathname();
-  console.log('ruta: ', pathname);
+  console.log("ruta: ", pathname);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const [dropProfile, setDropProfile] = useState(false);
@@ -20,12 +20,12 @@ function Navbar() {
   const [userDelete, setUserDelete] = useState(false);
   const [userSave, setUserSave] = useState(false);
   const [registerUser, setRegisterUser] = useState({
-    Name: '',
-    Email: '',
-    isAdmin: '',
-    DNI: '',
+    Name: "",
+    Email: "",
+    isAdmin: "",
+    DNI: "",
   });
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   console.log(user);
 
   useEffect(() => {
@@ -51,30 +51,30 @@ function Navbar() {
 
   useEffect(() => {
     if (dropProfile) {
-      document.addEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
     } else {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [dropProfile]);
 
   const handleModalOpen = (e) => {
     setRegisterUser({
-      Name: user.Name || '',
-      Email: user.Email || '',
-      isAdmin: user.isAdmin || '',
-      DNI: user.DNI || '',
+      Name: user.Name || "",
+      Email: user.Email || "",
+      isAdmin: user.isAdmin || "",
+      DNI: user.DNI || "",
     });
     setEditUser(true);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log('handleChange', name, value);
+    console.log("handleChange", name, value);
 
-    const processedValue = name === 'admin' ? value === 'true' : value;
+    const processedValue = name === "admin" ? value === "true" : value;
 
     const validations = {
       DNI: /^[0-9]*$/,
@@ -83,7 +83,7 @@ function Navbar() {
     };
 
     if (name in validations) {
-      if (value === '' || validateInput(processedValue, validations[name])) {
+      if (value === "" || validateInput(processedValue, validations[name])) {
         registrar(name, processedValue);
       } else {
         errorMessageBox();
@@ -96,7 +96,7 @@ function Navbar() {
   const validateInput = (value, regex) => regex.test(value);
 
   const registrar = (name, processedValue) => {
-    console.log('Registrar', name, processedValue);
+    console.log("Registrar", name, processedValue);
 
     return setRegisterUser((prev) => ({
       ...prev,
@@ -105,18 +105,18 @@ function Navbar() {
   };
 
   const errorMessageBox = () => {
-    setErrorMessage('Caracteres inválidos en el campo.');
-    setTimeout(() => setErrorMessage(''), 3000);
+    setErrorMessage("Caracteres inválidos en el campo.");
+    setTimeout(() => setErrorMessage(""), 3000);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Handle Submit');
+    console.log("Handle Submit");
 
     const { Name, Email, DNI } = registerUser;
     if (!Name || !Email || !DNI) {
-      setErrorMessage('Todos los campos son obligatorios');
-      setTimeout(() => setErrorMessage(''), 3000);
+      setErrorMessage("Todos los campos son obligatorios");
+      setTimeout(() => setErrorMessage(""), 3000);
       return;
     }
 
@@ -129,39 +129,38 @@ function Navbar() {
   };
 
   const handleLogout = () => {
-    console.log('logout');
+    console.log("logout");
 
     dispatch(logoutUser());
     localStorage.clear();
     setTimeout(() => {
-      window.location.href = '/login';
+      window.location.href = "/login";
     }, 500);
   };
 
-  let isAdminRoot = pathname === '/admin';
-  let isAdminSubroute = pathname.startsWith('/admin/');
-  let userRegisterUrl = pathname === '/admin/userRegistration';
-  let clientRegisterUrl = pathname === '/admin/clientRegistration';
-  let clientMenu = pathname === '/admin/clientMenu';
-  let distribuitorMenu = pathname === '/admin/customerMenu/distribuitorMenu';
-  let distribuitorRegister = pathname === '/admin/distributorRegistration';
-  let userMenu = pathname === '/admin/userMenu';
-  let devicesMenu = pathname === '/admin/devicesMenu';
-  let devicesRegistration = pathname === '/admin/devicesRegistration';
-  let clientUpdateUrl = pathname === '/admin/clientMenu/Pages/EditClient';
+  let isAdminRoot = pathname === "/admin";
+  let isAdminSubroute = pathname.startsWith("/admin/");
+  let userRegisterUrl = pathname === "/admin/userRegistration";
+  let clientRegisterUrl = pathname === "/admin/clientRegistration";
+  let clientMenu = pathname === "/admin/clientMenu";
+  let distribuitorMenu = pathname === "/admin/customerMenu/distribuitorMenu";
+  let distribuitorRegister = pathname === "/admin/distributorRegistration";
+  let userMenu = pathname === "/admin/userMenu";
+  let devicesMenu = pathname === "/admin/devicesMenu";
+  let devicesRegistration = pathname === "/admin/devicesRegistration";
+  let clientUpdateUrl = pathname === "/admin/clientMenu/Pages/EditClient";
 
   const getBackUrl = () => {
-    if (distribuitorMenu) return '/admin';
-    if (clientRegisterUrl) return '/admin';
-    if (userRegisterUrl) return '/admin';
-    return '/admin';
+    if (distribuitorMenu) return "/admin";
+    if (clientRegisterUrl) return "/admin";
+    if (userRegisterUrl) return "/admin";
+    return "/admin";
   };
 
   return (
     <div
       className={`z-40 text-[#191920] flex flex-col md:flex-row justify-between px-4 md:px-8 p-3 shadow-[#35334426] shadow-sm border-b-2 border-[#12141D]
-      ${isAdminSubroute ? 'bg-[#F2F5F6]' : 'bg-[#F2F5F6]'}`}
-    >
+      ${isAdminSubroute ? "bg-[#F2F5F6]" : "bg-[#F2F5F6]"}`}>
       <div className="flex flex-row gap-2 md:gap-4 justify-center items-center">
         {isAdminSubroute && (
           <Link href={getBackUrl()}>
@@ -228,21 +227,20 @@ function Navbar() {
           </button>
         </Link>
         <div className="text-right">
-          {/* <p className="text-xs md:text-base font-semibold">{user.Name}</p> */}
-          {/* <p className="text-xs opacity-60">{user.Email}</p> */}
+          {/* <p className="text-xs md:text-base font-semibold">{user.Name}</p>
+          <p className="text-xs opacity-60">{user.Email}</p> */}
           {<p className="text-xs md:text-base font-semibold">Daniel Paredes</p>}
-          {<p className="text-xs opacity-60">daniparedes@dumont.com</p>}
+          {<p className="text-xs opacity-60">admin@dumont.com</p>}
         </div>
         <div
           className="relative"
           ref={dropRef}
           tabIndex={0}
-          onClick={handleDropProfile}
-        >
+          onClick={handleDropProfile}>
           <Image
             width={40}
             height={40}
-            src={'/UserIcon5.jpeg'}
+            src={"/UserIcon5.jpeg"}
             alt="Perfil Image"
             className="rounded-full "
           />
@@ -252,15 +250,13 @@ function Navbar() {
             <div
               className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
               ref={dropRef}
-              onClick={handleModalOpen}
-            >
+              onClick={handleModalOpen}>
               Actualizar Perfil
             </div>
             <div
               className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
               onClick={handleLogout}
-              ref={dropRef}
-            >
+              ref={dropRef}>
               Logout
             </div>
           </div>
@@ -316,11 +312,10 @@ function Navbar() {
               <select
                 id="isAdmin"
                 name="isAdmin"
-                value={registerUser.isAdmin === true ? 'Si' : 'No'}
+                value={registerUser.isAdmin === true ? "Si" : "No"}
                 onChange={handleChange}
                 className="bg-[#E2E5E5] h-14 rounded-2xl p-4 text-base text-black"
-                required
-              >
+                required>
                 <option value="true" className="text-black">
                   Sí
                 </option>
@@ -333,21 +328,18 @@ function Navbar() {
             <div className="flex gap-10 flex-col lg:flex-row my-4">
               <button
                 onClick={() => setUserSave(!userSave)}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
-              >
+                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
-                className="bg-blue-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
-              >
+                className="bg-blue-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
                 Guardar
               </button>
             </div>
             <button
               onClick={() => setUserDelete(!userDelete)}
-              className="w-full font-semibold text-red-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-red-500 flex justify-center gap-5 hover:bg-red-300"
-            >
+              className="w-full font-semibold text-red-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-red-500 flex justify-center gap-5 hover:bg-red-300">
               <img src="/svg/trashIcon.svg" alt="Eliminar" />
               Eliminar Usuario
             </button>
@@ -363,14 +355,12 @@ function Navbar() {
             <div className="flex gap-5 flex-col lg:flex-row">
               <button
                 onClick={() => setUserDelete(!userDelete)}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
-              >
+                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
-                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
-              >
+                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
                 Eliminar
               </button>
             </div>
@@ -390,8 +380,7 @@ function Navbar() {
                 onClick={() => {
                   setUserSave(!userSave);
                 }}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
-              >
+                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
                 Cancelar
               </button>
               <button
@@ -399,8 +388,7 @@ function Navbar() {
                   setUserSave(!userSave);
                   setEditUser(!editUser);
                 }}
-                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
-              >
+                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
                 Aceptar
               </button>
             </div>

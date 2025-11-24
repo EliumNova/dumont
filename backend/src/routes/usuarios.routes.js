@@ -21,7 +21,7 @@ usuariosRouter.get('/', getUsuarios);
 usuariosRouter.get('/:id', getUsuarioById);
 usuariosRouter.post('/create', validateCreateUser, createUsuarios);
 usuariosRouter.post('/confirmVerify', verifyUsuarios);
-usuariosRouter.post('/login', validateLoginUser, loginUsuario);
+usuariosRouter.post('/login', loginUsuario);
 usuariosRouter.post('/verifysms', checkAuth, verifySms);
 usuariosRouter.put('/update/:id', checkAuth, validateUpdateUser, updateUsuario);
 usuariosRouter.delete('/delete/:id', checkAuth, deleteUsuario);
