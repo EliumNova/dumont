@@ -51,7 +51,11 @@ export default function DistribuidorTable() {
 
   const handleCartera = (dist) => setCarteraDistribuidor(dist);
 
-  const closeModal = () => setSelectedDistribuidor(null);
+  const closeModal = () => {
+    setSelectedDistribuidor(null);
+    setIsModalOpen(false);
+  };
+
   const closeCarteraModal = () => setCarteraDistribuidor(null);
 
   const openDeleteModal = (dist) => {
@@ -80,11 +84,20 @@ export default function DistribuidorTable() {
 
     switch (searchType) {
       case "Nombre":
-        return (dist.NombreComercial || "").toLowerCase().includes(q);
+        return String(dist.NombreComercial ?? "")
+          .toLowerCase()
+          .includes(q);
+
       case "Código":
-        return (dist.CodigoDistribuidor || "").toLowerCase().includes(q);
+        return String(dist.CodigoDistribuidor ?? "")
+          .toLowerCase()
+          .includes(q);
+
       case "CUIT":
-        return (dist.CUIT || "").toLowerCase().includes(q);
+        return String(dist.CUIT ?? "")
+          .toLowerCase()
+          .includes(q);
+
       default:
         return true;
     }
@@ -188,10 +201,12 @@ export default function DistribuidorTable() {
                       onClick={() => handleView(dist)}
                     />
                     <EditDistBtn
-                      className="cursor-pointer text-2xl"
                       datos={dist}
-                      onEditComplete={forceRender}
+                      onEditComplete={() => {
+                        dispatch(getDistribuidores({ page, pageSize }));
+                      }}
                     />
+
                     <AiOutlineDelete
                       className="cursor-pointer text-2xl"
                       onClick={() => openDeleteModal(dist)}

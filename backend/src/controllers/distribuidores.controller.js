@@ -1,6 +1,6 @@
-import expressAsyncHandler from 'express-async-handler';
-import { Distribuidores } from '../models/Distribuidores.js';
-import { Clientes } from '../models/Clientes.js';
+import expressAsyncHandler from "express-async-handler";
+import { Distribuidores } from "../models/Distribuidores.js";
+import { Clientes } from "../models/Clientes.js";
 
 const createDistribuidor = expressAsyncHandler(async (req, res) => {
   try {
@@ -30,8 +30,8 @@ const createDistribuidor = expressAsyncHandler(async (req, res) => {
     });
     res.send(distribuidor);
   } catch (error) {
-    console.error('Error en createDistribuidor:', error);
-    res.status(500).send({ message: 'Error en createDistribuidor' });
+    console.error("Error en createDistribuidor:", error);
+    res.status(500).send({ message: "Error en createDistribuidor" });
   }
 });
 
@@ -43,8 +43,8 @@ const getDistribuidores = expressAsyncHandler(async (req, res) => {
       include: [
         {
           model: Clientes,
-          as: 'Clientes',
-          attributes: ['NombreCompleto'],
+          as: "Clientes",
+          attributes: ["NombreCompleto"],
         },
       ],
     };
@@ -57,8 +57,8 @@ const getDistribuidores = expressAsyncHandler(async (req, res) => {
     const { count, rows } = await Distribuidores.findAndCountAll(options);
     res.send({ count, rows });
   } catch (error) {
-    console.error('Error al obtener distribuidores:', error);
-    res.status(500).send({ error: 'Error al obtener distribuidores' });
+    console.error("Error al obtener distribuidores:", error);
+    res.status(500).send({ error: "Error al obtener distribuidores" });
   }
 });
 
@@ -68,15 +68,15 @@ const getDistribuidoresById = expressAsyncHandler(async (req, res) => {
       include: [
         {
           model: Clientes,
-          as: 'cliente',
-          attributes: ['NombreCompleto'],
+          as: "cliente",
+          attributes: ["NombreCompleto"],
         },
       ],
     });
     if (distribuidorId) {
       res.send({ distribuidorId });
     } else {
-      res.status(404).send({ message: 'Distribuidor no encontrado' });
+      res.status(404).send({ message: "Distribuidor no encontrado" });
     }
   } catch (error) {
     console.log(error);
@@ -85,9 +85,20 @@ const getDistribuidoresById = expressAsyncHandler(async (req, res) => {
 });
 
 const updateDistribuidor = expressAsyncHandler(async (req, res) => {
-  try {
-    const {
-      CodigoDistribuidor,
+  const {
+    Localidad,
+    Calle,
+    EntreCalles,
+    Telefono,
+    Email,
+    RazonSocial,
+    NombreComercial,
+    CUIT,
+    SegundoTelefono,
+  } = req.body;
+
+  const [updated] = await Distribuidores.update(
+    {
       Localidad,
       Calle,
       EntreCalles,
@@ -97,27 +108,17 @@ const updateDistribuidor = expressAsyncHandler(async (req, res) => {
       NombreComercial,
       CUIT,
       SegundoTelefono,
-    } = req.body;
-
-    const distribuidor = await Distribuidores.findByPk(req.params.id);
-    if (distribuidor) {
-      distribuidor.CodigoDistribuidor = CodigoDistribuidor;
-      distribuidor.Localidad = Localidad;
-      distribuidor.Calle = Calle;
-      distribuidor.EntreCalles = EntreCalles;
-      distribuidor.Telefono = Telefono;
-      distribuidor.Email = Email;
-      distribuidor.RazonSocial = RazonSocial;
-      distribuidor.NombreComercial = NombreComercial;
-      distribuidor.Contacto = SegundoTelefono;
-      await distribuidor.save();
-      res.send(distribuidor);
-    } else {
-      res.status(404).send({ message: 'Distribuidor no encontrado' });
+    },
+    {
+      where: { idDistribuidor: req.params.id },
     }
-  } catch (error) {
-    console.log(error);
+  );
+
+  if (!updated) {
+    return res.status(404).json({ message: "Distribuidor no encontrado" });
   }
+
+  res.json({ ok: true });
 });
 
 const deleteDistribuidor = expressAsyncHandler(async (req, res) => {
@@ -127,7 +128,7 @@ const deleteDistribuidor = expressAsyncHandler(async (req, res) => {
         idDistribuidor: req.params.id,
       },
     });
-    res.send({ message: 'Distribuidor eliminado' });
+    res.send({ message: "Distribuidor eliminado" });
   } catch (error) {
     console.log(error);
 

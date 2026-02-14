@@ -39,10 +39,12 @@ export const distribuidorUpdate = (id, payload) => {
 };
 
 export const distribuidorDelete = (id) => {
-  return (dispatch) => {
-    axios
-      .delete(`${DISTRIBUIDORES}/delete/${id}`)
-      .then((res) => dispatch(deleteDistribuidor(res.data)))
-      .catch((err) => console.log(err));
+  return async (dispatch) => {
+    try {
+      await axios.delete(`${DISTRIBUIDORES}/delete/${id}`);
+      dispatch(deleteDistribuidor(id)); // 👈 mandamos el ID
+    } catch (err) {
+      console.log(err);
+    }
   };
 };

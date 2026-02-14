@@ -19,7 +19,7 @@ export default function Layout({ children }) {
         className="absolute inset-0 bg-cover bg-no-repeat bg-center"
         style={{
           backgroundImage: "url(/logodumont.png)",
-          backgroundSize: "contain",
+          backgroundSize: "cover",
         }}></div>
       {/* <div
         className="absolute inset-0 bg-cover bg-no-repeat bg-center"

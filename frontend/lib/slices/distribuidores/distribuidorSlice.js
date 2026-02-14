@@ -1,25 +1,41 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const DistribuidorSlice = createSlice({
-  name: 'distribuidores',
+  name: "distribuidores",
   initialState: {
-    allDistribuidores: [],
-    newDistribuidor: {},
-    updateDistribuidor: {},
-    deleteDistribuidor: {},
+    allDistribuidores: {
+      rows: [],
+      count: 0,
+    },
   },
   reducers: {
+    /* CARGAR LISTA */
+    allDistribuidores: (state, { payload }) => {
+      state.allDistribuidores = payload;
+    },
+
+    /* CREAR */
     newDistribuidor: (state, { payload }) => {
-      state.newDistribuidor = payload;
+      state.allDistribuidores.rows.unshift(payload);
+      state.allDistribuidores.count += 1;
     },
-    allDistribuidores: (state, action) => {
-      state.allDistribuidores = action.payload || [];
-    },
+
+    /* 🔥 UPDATE EN TIEMPO REAL */
     updateDistribuidor: (state, { payload }) => {
-      state.updateDistribuidor = payload;
+      state.allDistribuidores.rows = state.allDistribuidores.rows.map((dist) =>
+        dist.idDistribuidor === payload.idDistribuidor ||
+        dist.idDistribuidor === payload.id
+          ? { ...dist, ...payload }
+          : dist
+      );
     },
+
+    /* 🔥 DELETE EN TIEMPO REAL */
     deleteDistribuidor: (state, { payload }) => {
-      state.deleteDistribuidor = payload;
+      state.allDistribuidores.rows = state.allDistribuidores.rows.filter(
+        (dist) => dist.idDistribuidor !== payload
+      );
+      state.allDistribuidores.count -= 1;
     },
   },
 });

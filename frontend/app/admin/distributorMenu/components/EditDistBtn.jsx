@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   distribuidorUpdate,
   distribuidorDelete,
-} from '@/lib/slices/distribuidores/distribuidorAction';
-import InputField from '../../components/InputField';
-import { AiOutlineEdit } from 'react-icons/ai';
+} from "@/lib/slices/distribuidores/distribuidorAction";
+import InputField from "../../components/InputField";
+import { AiOutlineEdit } from "react-icons/ai";
 
-function EditDistBtn({ datos, onCloseModal }) {
+function EditDistBtn({ datos, onEditComplete }) {
   const dispatch = useDispatch();
   //const router = useRouter();
   //const {id} = router.query
@@ -19,37 +19,37 @@ function EditDistBtn({ datos, onCloseModal }) {
   const [distDelete, setDistDelete] = useState(false);
   const [distSave, setDistSave] = useState(false);
   const [registerDist, setRegisterDist] = useState({
-    Calle: '',
-    SegundoTelefono: '',
-    Email: '',
-    EntreCalles: '',
-    Localidad: '',
-    NombreComercial: '',
-    RazonSocial: '',
-    Telefono: '',
+    Calle: "",
+    SegundoTelefono: "",
+    Email: "",
+    EntreCalles: "",
+    Localidad: "",
+    NombreComercial: "",
+    RazonSocial: "",
+    Telefono: "",
   });
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Maneja la apertura del modal y el llenado de datos
   const handleModalOpen = () => {
     setRegisterDist({
-      Calle: datos.Calle || '',
-      SegundoTelefono: datos.SegundoTelefono || '',
-      Email: datos.Email || '',
-      EntreCalles: datos.EntreCalles || '',
-      Localidad: datos.Localidad || '',
-      NombreComercial: datos.NombreComercial || '',
-      RazonSocial: datos.RazonSocial || '',
-      Telefono: datos.Telefono || '',
+      Calle: datos.Calle || "",
+      SegundoTelefono: datos.SegundoTelefono || "",
+      Email: datos.Email || "",
+      EntreCalles: datos.EntreCalles || "",
+      Localidad: datos.Localidad || "",
+      NombreComercial: datos.NombreComercial || "",
+      RazonSocial: datos.RazonSocial || "",
+      Telefono: datos.Telefono || "",
     });
     setEditDist(true);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log('handleChange', name, value);
+    console.log("handleChange", name, value);
 
-    const processedValue = name === 'admin' ? value === 'true' : value;
+    const processedValue = name === "admin" ? value === "true" : value;
 
     const validations = {
       //CUIT: /^[0-9]{10}$/,
@@ -58,7 +58,7 @@ function EditDistBtn({ datos, onCloseModal }) {
     };
 
     if (name in validations) {
-      if (value === '' || validateInput(processedValue, validations[name])) {
+      if (value === "" || validateInput(processedValue, validations[name])) {
         registrar(name, processedValue);
       } else {
         errorMessageBox();
@@ -71,7 +71,7 @@ function EditDistBtn({ datos, onCloseModal }) {
   const validateInput = (value, regex) => regex.test(value);
 
   const registrar = (name, processedValue) => {
-    console.log('Registrar', name, processedValue);
+    console.log("Registrar", name, processedValue);
 
     return setRegisterDist((prev) => ({
       ...prev,
@@ -80,8 +80,8 @@ function EditDistBtn({ datos, onCloseModal }) {
   };
 
   const errorMessageBox = () => {
-    setErrorMessage('Caracteres inválidos en el campo.');
-    setTimeout(() => setErrorMessage(''), 3000);
+    setErrorMessage("Caracteres inválidos en el campo.");
+    setTimeout(() => setErrorMessage(""), 3000);
   };
 
   const handleSubmit = (e) => {
@@ -108,19 +108,19 @@ function EditDistBtn({ datos, onCloseModal }) {
       !RazonSocial ||
       !Telefono
     ) {
-      setErrorMessage('Todos los campos son obligatorios');
-      setTimeout(() => setErrorMessage(''), 3000);
+      setErrorMessage("Todos los campos son obligatorios");
+      setTimeout(() => setErrorMessage(""), 3000);
       return;
     }
-    console.log('boton guardar', datos.idDistribuidor);
-    console.log('boton guardar', registerDist);
+    console.log("boton guardar", datos.idDistribuidor);
+    console.log("boton guardar", registerDist);
 
     dispatch(distribuidorUpdate(datos.idDistribuidor, registerDist));
     handleCloseModal();
   };
 
   const handleDelete = () => {
-    console.log('boton eliminar', datos.idDistribuidor);
+    console.log("boton eliminar", datos.idDistribuidor);
     setDistDelete(!distDelete);
     setEditDist(!editDist);
 
@@ -131,16 +131,15 @@ function EditDistBtn({ datos, onCloseModal }) {
   const handleCloseModal = () => {
     setTimeout(() => {
       setEditDist(false);
-      onCloseModal();
-    }, '500');
+      onEditComplete?.(); // 🔥 vuelve a pedir la tabla
+    }, 300);
   };
 
   return (
     <div className="flex p-1 gap-5">
       <button
         onClick={handleModalOpen}
-        className=" flex items-center justify-center text-2xl"
-      >
+        className=" flex items-center justify-center text-2xl">
         <AiOutlineEdit />
       </button>
       {editDist && (
@@ -244,21 +243,18 @@ function EditDistBtn({ datos, onCloseModal }) {
             <div className="flex gap-10 flex-col lg:flex-row my-4">
               <button
                 onClick={() => setDistSave(!distSave)}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
-              >
+                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
-                className="bg-blue-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
-              >
+                className="bg-blue-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
                 Guardar
               </button>
             </div>
             <button
               onClick={() => setDistDelete(!distDelete)}
-              className="w-full font-semibold text-red-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-red-500 flex justify-center gap-5 hover:bg-red-300"
-            >
+              className="w-full font-semibold text-red-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-red-500 flex justify-center gap-5 hover:bg-red-300">
               <img src="/svg/trashIcon.svg" alt="Eliminar" />
               Eliminar Distribuidor
             </button>
@@ -276,8 +272,7 @@ function EditDistBtn({ datos, onCloseModal }) {
             <div className="flex gap-5 flex-col lg:flex-row">
               <button
                 onClick={() => setDistDelete(!distDelete)}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
-              >
+                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
                 Cancelar
               </button>
               <button
@@ -288,8 +283,7 @@ function EditDistBtn({ datos, onCloseModal }) {
                   //   setEditDist(!distUser);
                   // }
                 }
-                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
-              >
+                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
                 Eliminar
               </button>
             </div>
@@ -310,8 +304,7 @@ function EditDistBtn({ datos, onCloseModal }) {
                   setDistSave(!distSave);
                   handleCloseModal();
                 }}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
-              >
+                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
                 Cancelar
               </button>
               <button
@@ -319,8 +312,7 @@ function EditDistBtn({ datos, onCloseModal }) {
                   setDistSave(!distSave);
                   setEditDist(!editDist);
                 }}
-                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
-              >
+                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
                 Aceptar
               </button>
             </div>

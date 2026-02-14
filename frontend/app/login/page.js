@@ -1,23 +1,24 @@
-'use client';
-import React, { useState } from 'react';
-import axios from 'axios';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { FaUserShield } from 'react-icons/fa';
-import { BsFillShieldLockFill } from 'react-icons/bs';
-import { AiOutlineSwapRight } from 'react-icons/ai';
-import logo from '@/public/DuMontLogo.jpeg';
-import '../globals.css';
-import './Login.css';
+"use client";
+import React, { useState } from "react";
+import axios from "axios";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { FaUserShield } from "react-icons/fa";
+import { BsFillShieldLockFill } from "react-icons/bs";
+import { AiOutlineSwapRight } from "react-icons/ai";
+import logo from "@/public/DuMontLogo.jpeg";
+import "../globals.css";
+import "./Login.css";
 
 function Login() {
   const [loginData, setLoginData] = useState({
-    Email: '',
-    Password: '',
+    Email: "",
+    Password: "",
   });
-  const [status, setStatus] = useState('');
-  const [statusClass, setStatusClass] = useState('status-message');
+  const [status, setStatus] = useState("");
+  const [statusClass, setStatusClass] = useState("status-message");
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,25 +32,29 @@ function Login() {
     e.preventDefault();
 
     if (!loginData.Email || !loginData.Password) {
-      setStatus('Email y contraseña son obligatorios');
-      setStatusClass('status-show');
-      setTimeout(() => setStatusClass('status-message'), 3000);
+      setStatus("Email y contraseña son obligatorios");
+      setStatusClass("status-show");
+      setTimeout(() => setStatusClass("status-message"), 3000);
       return;
     }
 
     try {
+      setLoading(true);
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/login`,
         loginData
       );
 
       const { token } = response.data;
-      localStorage.setItem('authToken', token);
-      router.push('/admin');
+      localStorage.setItem("authToken", token);
+
+      router.push("/admin");
     } catch (error) {
-      setStatus('Credenciales incorrectas');
-      setStatusClass('status-show');
-      setTimeout(() => setStatusClass('status-message'), 3000);
+      setStatus("Credenciales incorrectas");
+      setStatusClass("status-show");
+      setTimeout(() => setStatusClass("status-message"), 3000);
+      setLoading(false);
     }
   };
 
@@ -58,8 +63,7 @@ function Login() {
       {/* Fondo tipo layout */}
       <div
         className="absolute inset-0 bg-center bg-no-repeat bg-contain opacity-10"
-        style={{ backgroundImage: "url('/DuMontLogo.jpeg')" }}
-      ></div>
+        style={{ backgroundImage: "url('/DuMontLogo.jpeg')" }}></div>
 
       {/* Contenido del login */}
       <div className="loginWrapper relative z-10">
@@ -92,9 +96,9 @@ function Login() {
 
           <span className={statusClass}>{status}</span>
 
-          <button type="submit" className="loginButton">
-            <span>Iniciar sesión</span>
-            <AiOutlineSwapRight className="btnIcon" />
+          <button type="submit" className="loginButton" disabled={loading}>
+            <span>{loading ? "Iniciando..." : "Iniciar sesión"}</span>
+            {!loading && <AiOutlineSwapRight className="btnIcon" />}
           </button>
         </form>
       </div>
