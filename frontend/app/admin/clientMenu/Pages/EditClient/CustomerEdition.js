@@ -48,7 +48,7 @@ function CustomerEdition() {
       dispatch(setLoading(true));
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${id}`,
         );
 
         const data = response.data;
@@ -110,7 +110,7 @@ function CustomerEdition() {
       CorreoElectronico: customerInfo.principales.CorreoElectronico,
 
       // 🔥 CLAVE
-      VentaAlcohol: customerInfo.principales.VentaAlcohol ? "SI" : "NO",
+      VentaAlcohol: customerInfo.principales.VentaAlcohol ? 1 : 0,
       Telefono: String(customerInfo.principales.Telefono),
 
       localidad: customerInfo.ubicacion.localidad,
@@ -132,7 +132,7 @@ function CustomerEdition() {
 
       await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/update/${clientId}`,
-        payload
+        payload,
       );
 
       dispatch(setLoading(false));
@@ -211,7 +211,7 @@ function CustomerEdition() {
                 handleChange(
                   "principales",
                   "CodigoDistribuidor",
-                  e.target.value
+                  e.target.value,
                 )
               }
             />

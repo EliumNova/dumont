@@ -8,7 +8,7 @@ import SelectField from "./SelectedField";
 function Principales({ onNext, onBack }) {
   const dispatch = useDispatch();
   const storePrincipales = useSelector(
-    (state) => state.clients.newCustomer.principales
+    (state) => state.clients.newCustomer.principales,
   );
 
   const [principalesInfo, setPrincipalesInfo] = useState({
@@ -60,7 +60,7 @@ function Principales({ onNext, onBack }) {
     const fetchDistribuidores = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/distribuidores/list`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/distribuidores/list`,
         );
         if (!response.ok) {
           throw new Error("Error al obtener los distribuidores");
@@ -91,12 +91,12 @@ function Principales({ onNext, onBack }) {
     if (principalesInfo.CondicionFiscal === "RI") {
       setPrincipalesInfo((prev) => ({
         ...prev,
-        VentaAlcohol: "1",
+        VentaAlcohol: 1,
       }));
-    } else if (principalesInfo.VentaAlcohol === "1") {
+    } else if (principalesInfo.VentaAlcohol === 1) {
       setPrincipalesInfo((prev) => ({
         ...prev,
-        VentaAlcohol: "",
+        VentaAlcohol: 0,
       }));
     }
   }, [principalesInfo.CondicionFiscal]);
@@ -107,7 +107,15 @@ function Principales({ onNext, onBack }) {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    let newValue = type === "checkbox" ? checked : value;
+    let newValue;
+
+    if (type === "checkbox") {
+      newValue = checked ? 1 : 0;
+    } else if (name === "VentaAlcohol") {
+      newValue = Number(value); // 🔥 clave
+    } else {
+      newValue = value;
+    }
 
     // 🔹 Limitar CódigoCliente a 4 caracteres
     if (name === "CodigoCliente") {
@@ -265,8 +273,8 @@ function Principales({ onNext, onBack }) {
         onChange={handleChange}
         options={[
           { value: "", label: "Selecciona..." },
-          { value: "1", label: "Sí" },
-          { value: "2", label: "No" },
+          { value: 1, label: "Sí" },
+          { value: 0, label: "No" },
         ]}
         error={formErrors.VentaAlcohol}
         className="h-8 text-xs"

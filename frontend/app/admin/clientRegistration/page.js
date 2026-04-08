@@ -1,13 +1,13 @@
-'use client';
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import Principales from './Componentes/Principales';
-import Ubicacion from './Componentes/Ubicacion';
-import Horus from './Componentes/Horus';
-import CompleteModal from './Componentes/CompleteModal';
-import { setLoading, setError } from '@/lib/slices/clients/clientSlice';
+"use client";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import Principales from "./Componentes/Principales";
+import Ubicacion from "./Componentes/Ubicacion";
+import Horus from "./Componentes/Horus";
+import CompleteModal from "./Componentes/CompleteModal";
+import { setLoading, setError } from "@/lib/slices/clients/clientSlice";
 
 function CustomerRegistration() {
   const dispatch = useDispatch();
@@ -42,29 +42,35 @@ function CustomerRegistration() {
         ...newCustomerStore.principales,
         ...newCustomerStore.ubicacion,
         ...newCustomerStore.horus,
+
+        // 🔥 aseguramos tipo correcto
+        VentaAlcohol: Number(newCustomerStore.principales.VentaAlcohol),
       };
 
       dispatch(setLoading(true)); // Activa el estado de carga
-      console.log('Enviando solicitud a la API:', URL);
-      console.log('Datos enviados:', payload);
+      console.log("Enviando solicitud a la API:", URL);
+      console.log("Datos enviados:", payload);
+
+      console.log("TIPO VentaAlcohol:", typeof payload.VentaAlcohol);
+      console.log("VALOR VentaAlcohol:", payload.VentaAlcohol);
 
       // Envía todos los datos del formulario al servidor
       const response = await axios.post(URL, payload, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
-      console.log('Respuesta de la API:', response.data);
+      console.log("Respuesta de la API:", response.data);
       dispatch(setLoading(false)); // Desactiva el estado de carga
       setShowModal(true); // Muestra el modal de éxito
 
       // Redirige al usuario después de 3 segundos
       setTimeout(() => {
-        router.push('/admin');
+        router.push("/admin");
       }, 2500);
     } catch (error) {
-      console.error('Error al enviar datos a la API:', error);
+      console.error("Error al enviar datos a la API:", error);
       dispatch(setLoading(false)); // Desactiva el estado de carga
       dispatch(setError(error.message)); // Guarda el mensaje de error en Redux
     }
@@ -80,13 +86,13 @@ function CustomerRegistration() {
           className="h-full bg-black rounded"
           style={{
             width: `${progress}%`,
-            transition: 'width 0.3s ease-in-out',
+            transition: "width 0.3s ease-in-out",
           }}
         />
       </div>
 
       {step === 1 && (
-        <Principales onNext={handleNext} onBack={() => router.push('/admin')} />
+        <Principales onNext={handleNext} onBack={() => router.push("/admin")} />
       )}
       {step === 2 && <Ubicacion onNext={handleNext} onBack={handleBack} />}
       {step === 3 && (

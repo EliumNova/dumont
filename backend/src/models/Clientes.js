@@ -1,11 +1,8 @@
-import { DataTypes } from 'sequelize';
-import { sequelize } from '../db/db.js';
-import { Dispositivos } from './Dispositivos.js';
-import { Distribuidores } from './Distribuidores.js';
-import { ClientesDistribuidores } from './ClientesDistribuidores.js';
+import { DataTypes } from "sequelize";
+import { sequelize } from "../db/db.js";
 
 export const Clientes = sequelize.define(
-  'Clientes',
+  "Clientes",
   {
     idClientes: {
       type: DataTypes.UUID,
@@ -14,7 +11,7 @@ export const Clientes = sequelize.define(
       allowNull: false,
     },
     NombreCompleto: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     CodigoCliente: {
@@ -22,11 +19,11 @@ export const Clientes = sequelize.define(
       allowNull: false,
     },
     Segmentacion: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.ENUM("Kiosco", "Almacen", "Autoservicio"),
       allowNull: false,
     },
     CondicionFiscal: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     CodigoDistribuidor: {
@@ -34,39 +31,39 @@ export const Clientes = sequelize.define(
       allowNull: false,
     },
     CodigoDumont: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     CorreoElectronico: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     VentaAlcohol: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.BOOLEAN, // 🔥 CAMBIO
       allowNull: false,
     },
     Telefono: {
+      type: DataTypes.INTEGER, // 🔥 CAMBIO
+      allowNull: false,
+    },
+    Localidad: {
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    localidad: {
+    Calle: {
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    calle: {
-      type: DataTypes.STRING(45),
+    Altura: {
+      type: DataTypes.INTEGER, // 🔥 CAMBIO
       allowNull: false,
     },
-    altura: {
-      type: DataTypes.STRING(45),
+    EntreCalle1: {
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
-    entreCalle1: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    entreCalle2: {
-      type: DataTypes.STRING(45),
+    EntreCalle2: {
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     HorarioVenta: {
@@ -76,5 +73,5 @@ export const Clientes = sequelize.define(
   },
   {
     timestamps: false,
-  }
+  },
 );

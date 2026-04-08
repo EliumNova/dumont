@@ -156,11 +156,7 @@ const updateCliente = expressAsyncHandler(async (req, res) => {
 
     // 🔥 NORMALIZACIÓN
     cliente.VentaAlcohol =
-      typeof VentaAlcohol === "boolean"
-        ? VentaAlcohol
-          ? "SI"
-          : "NO"
-        : VentaAlcohol;
+      typeof VentaAlcohol === "boolean" ? (VentaAlcohol ? 1 : 0) : VentaAlcohol;
 
     cliente.Telefono = Telefono ? String(Telefono) : cliente.Telefono;
     cliente.localidad = localidad ?? cliente.localidad;
@@ -250,7 +246,7 @@ const getDispositivosByClienteByParams = expressAsyncHandler(
       console.log(error);
       //handleError(error, res);
     }
-  }
+  },
 );
 
 const getDistribuidores = async (req, res) => {
