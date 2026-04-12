@@ -8,6 +8,18 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+/* Chrome, Safari, Edge */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 html {
   background-color: #f2f5f6;
 }
@@ -24,7 +36,7 @@ html {
   }
 
   .before-content::before {
-    content: 'Pone tu documento sin espacios y sin carácteres especiales.';
+    content: "Pone tu documento sin espacios y sin carácteres especiales.";
     @apply absolute text-text-icon text-xs md:text-sm w-5/6 top-[7.2rem] md:top-28;
   }
 }

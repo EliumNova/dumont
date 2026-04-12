@@ -146,7 +146,7 @@ function ClientTable() {
                         {client.NombreCompleto || "Nombre no disponible"}
                       </td>
                       <td className="whitespace-nowrap px-10 py-1 text-center">
-                        {`${client.calle}, ${client.localidad}` ||
+                        {`${client.Calle}, ${client.Localidad}` ||
                           "Correo no disponible"}
                       </td>
                       <td className="whitespace-nowrap px-10 py-1 text-center">
@@ -231,21 +231,21 @@ function ClientTable() {
               <p>
                 <strong>Calle</strong>
               </p>
-              <p>{selectedClient.calle}</p>
+              <p>{selectedClient.Calle}</p>
             </div>
             <div>
               <p>
                 <strong>Entre Calles</strong>
               </p>
               <p>
-                {selectedClient.entreCalle1} y {selectedClient.entreCalle2}
+                {selectedClient.EntreCalle1} y {selectedClient.EntreCalle2}
               </p>
             </div>
             <div>
               <p>
                 <strong>Localidad</strong>
               </p>
-              <p>{selectedClient.localidad}</p>
+              <p>{selectedClient.Localidad}</p>
             </div>
             <div>
               <p>

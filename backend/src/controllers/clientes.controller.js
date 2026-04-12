@@ -155,8 +155,7 @@ const updateCliente = expressAsyncHandler(async (req, res) => {
     cliente.CorreoElectronico = CorreoElectronico ?? cliente.CorreoElectronico;
 
     // 🔥 NORMALIZACIÓN
-    cliente.VentaAlcohol =
-      typeof VentaAlcohol === "boolean" ? (VentaAlcohol ? 1 : 0) : VentaAlcohol;
+    cliente.VentaAlcohol = Boolean(VentaAlcohol);
 
     cliente.Telefono = Telefono ? String(Telefono) : cliente.Telefono;
     cliente.localidad = localidad ?? cliente.localidad;
