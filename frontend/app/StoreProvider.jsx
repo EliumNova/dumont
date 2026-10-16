@@ -2,6 +2,9 @@
 import { useRef } from 'react';
 import { Provider } from 'react-redux';
 import  {makeStore}  from '../lib/store'; // Asegúrate de que la ruta es correcta
+import { installAxiosAuth } from '../lib/axiosAuth';
+
+installAxiosAuth();
 
 export default function StoreProvider({ children }) {
   const storeRef = useRef(null);
