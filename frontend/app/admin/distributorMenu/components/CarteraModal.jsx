@@ -89,13 +89,6 @@ export default function CarteraModal({ distribuidor, onClose }) {
           </p>
         )}
 
-        <div className="flex justify-center mt-4">
-          <button
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-            onClick={onClose}>
-            Cerrar
-          </button>
-        </div>
       </div>
     </Modal>
   );
