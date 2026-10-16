@@ -1,319 +1,132 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   distribuidorUpdate,
   distribuidorDelete,
 } from "@/lib/slices/distribuidores/distribuidorAction";
-import InputField from "../../components/InputField";
 import { AiOutlineEdit } from "react-icons/ai";
+import MacModal from "../../components/MacModal";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import Field from "../../components/Field";
+
+const VACIO = {
+  NombreComercial: "",
+  RazonSocial: "",
+  Calle: "",
+  EntreCalles: "",
+  Localidad: "",
+  Email: "",
+  Telefono: "",
+  SegundoTelefono: "",
+};
 
 function EditDistBtn({ datos, onEditComplete }) {
   const dispatch = useDispatch();
-  //const router = useRouter();
-  //const {id} = router.query
+  const [abierto, setAbierto] = useState(false);
+  const [confirmar, setConfirmar] = useState(null); // 'descartar' | 'eliminar'
+  const [form, setForm] = useState(VACIO);
+  const [error, setError] = useState("");
 
-  const [editDist, setEditDist] = useState(false);
-  const [distDelete, setDistDelete] = useState(false);
-  const [distSave, setDistSave] = useState(false);
-  const [registerDist, setRegisterDist] = useState({
-    Calle: "",
-    SegundoTelefono: "",
-    Email: "",
-    EntreCalles: "",
-    Localidad: "",
-    NombreComercial: "",
-    RazonSocial: "",
-    Telefono: "",
-  });
-  const [errorMessage, setErrorMessage] = useState("");
-
-  // Maneja la apertura del modal y el llenado de datos
-  const handleModalOpen = () => {
-    setRegisterDist({
-      Calle: datos.Calle || "",
-      SegundoTelefono: datos.SegundoTelefono || "",
-      Email: datos.Email || "",
-      EntreCalles: datos.EntreCalles || "",
-      Localidad: datos.Localidad || "",
-      NombreComercial: datos.NombreComercial || "",
-      RazonSocial: datos.RazonSocial || "",
-      Telefono: datos.Telefono || "",
-    });
-    setEditDist(true);
+  const abrir = () => {
+    setForm(
+      Object.fromEntries(Object.keys(VACIO).map((k) => [k, datos[k] || ""]))
+    );
+    setError("");
+    setAbierto(true);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    const processedValue = name === "admin" ? value === "true" : value;
-
-    const validations = {
-      //CUIT: /^[0-9]{10}$/,
-      NombreComercial: /^[a-zA-Z\s]*$/,
-      Email: /^[a-zA-Z@.\s]*$/,
-    };
-
-    if (name in validations) {
-      if (value === "" || validateInput(processedValue, validations[name])) {
-        registrar(name, processedValue);
-      } else {
-        errorMessageBox();
-      }
-    } else {
-      registrar(name, processedValue);
-    }
+  const cerrar = () => {
+    setConfirmar(null);
+    setAbierto(false);
+    onEditComplete?.(); // vuelve a pedir la tabla
   };
 
-  const validateInput = (value, regex) => regex.test(value);
+  const handleChange = (e) =>
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
-  const registrar = (name, processedValue) => {
-
-    return setRegisterDist((prev) => ({
-      ...prev,
-      [name]: processedValue,
-    }));
-  };
-
-  const errorMessageBox = () => {
-    setErrorMessage("Caracteres inválidos en el campo.");
-    setTimeout(() => setErrorMessage(""), 3000);
-  };
-
-  const handleSubmit = (e) => {
+  const guardar = async (e) => {
     e.preventDefault();
-
-    //Validar los campos
-    const {
-      Calle,
-      SegundoTelefono,
-      Email,
-      EntreCalles,
-      Localidad,
-      NombreComercial,
-      RazonSocial,
-      Telefono,
-    } = registerDist;
-    if (
-      !Calle ||
-      !SegundoTelefono ||
-      !Email ||
-      !EntreCalles ||
-      !Localidad ||
-      !NombreComercial ||
-      !RazonSocial ||
-      !Telefono
-    ) {
-      setErrorMessage("Todos los campos son obligatorios");
-      setTimeout(() => setErrorMessage(""), 3000);
+    if (Object.values(form).some((v) => !String(v).trim())) {
+      setError("Todos los campos son obligatorios.");
       return;
     }
-
-    dispatch(distribuidorUpdate(datos.idDistribuidor, registerDist));
-    handleCloseModal();
+    if (!/^\S+@\S+\.\S+$/.test(form.Email.trim())) {
+      setError("El correo no es válido.");
+      return;
+    }
+    await dispatch(distribuidorUpdate(datos.idDistribuidor, form));
+    cerrar();
   };
 
-  const handleDelete = () => {
-    setDistDelete(!distDelete);
-    setEditDist(!editDist);
-
-    dispatch(distribuidorDelete(datos.idDistribuidor));
-    onCloseModal();
-  };
-
-  const handleCloseModal = () => {
-    setTimeout(() => {
-      setEditDist(false);
-      onEditComplete?.(); // 🔥 vuelve a pedir la tabla
-    }, 300);
+  const eliminar = async () => {
+    await dispatch(distribuidorDelete(datos.idDistribuidor));
+    cerrar();
   };
 
   return (
-    <div className="flex p-1 gap-5">
+    <>
       <button
-        onClick={handleModalOpen}
-        className=" flex items-center justify-center text-2xl">
+        type="button"
+        onClick={abrir}
+        aria-label="Editar distribuidor"
+        className="mac-press flex items-center justify-center rounded-lg p-1 text-2xl hover:bg-black/5">
         <AiOutlineEdit />
       </button>
-      {editDist && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 p-2 lg:p-10">
-          <div className="relative flex flex-col bg-white p-8 rounded-lg shadow-lg xl:w-[600px] w-full max-h-[80vh] overflow-y-auto">
-            <h2 className="text-4xl font-semibold mb-7 text-black">
-              Editar Distribuidor
-            </h2>
 
-            <InputField
-              label="Nombre Comercial"
-              id="NombreComercial"
-              name="NombreComercial"
-              value={registerDist.NombreComercial}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light "
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="Razon Social"
-              id="RazonSocial"
-              name="RazonSocial"
-              value={registerDist.RazonSocial}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="Calle"
-              id="Calle"
-              name="Calle"
-              value={registerDist.Calle}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="EntreCalles"
-              id="EntreCalles"
-              name="EntreCalles"
-              value={registerDist.EntreCalles}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="Localidad"
-              id="Localidad"
-              name="Localidad"
-              value={registerDist.Localidad}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="Email"
-              id="Email"
-              name="Email"
-              type="email"
-              placeholder="distribuidor@email.com"
-              value={registerDist.Email}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="Telefono"
-              id="Telefono"
-              name="Telefono"
-              value={registerDist.Telefono}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="SegundoTelefono"
-              id="Contacto"
-              name="SegundoTelefono"
-              value={registerDist.SegundoTelefono}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
+      <MacModal
+        isOpen={abierto}
+        onClose={() => setConfirmar("descartar")}
+        title="Editar distribuidor"
+        footer={false}
+        maxWidth="max-w-2xl">
+        <form onSubmit={guardar} className="flex flex-col gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Nombre comercial" name="NombreComercial" value={form.NombreComercial} onChange={handleChange} />
+            <Field label="Razón social" name="RazonSocial" value={form.RazonSocial} onChange={handleChange} />
+            <Field label="Calle" name="Calle" value={form.Calle} onChange={handleChange} />
+            <Field label="Entre calles" name="EntreCalles" value={form.EntreCalles} onChange={handleChange} />
+            <Field label="Localidad" name="Localidad" value={form.Localidad} onChange={handleChange} />
+            <Field label="Email" name="Email" type="email" placeholder="distribuidor@email.com" value={form.Email} onChange={handleChange} />
+            <Field label="Teléfono" name="Telefono" inputMode="tel" value={form.Telefono} onChange={handleChange} />
+            <Field label="Teléfono (jefe de ventas)" name="SegundoTelefono" inputMode="tel" value={form.SegundoTelefono} onChange={handleChange} />
+          </div>
+          {error && <p className="mac-shake rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
 
-            <div className="flex gap-10 flex-col lg:flex-row my-4">
-              <button
-                onClick={() => setDistSave(!distSave)}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <button type="button" onClick={() => setConfirmar("eliminar")} className="mac-press rounded-xl px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">
+              Eliminar distribuidor
+            </button>
+            <div className="flex gap-3">
+              <button type="button" onClick={() => setConfirmar("descartar")} className="mac-press rounded-xl border border-gray-300 px-5 py-2 text-sm font-medium hover:bg-gray-100">
                 Cancelar
               </button>
-              <button
-                onClick={handleSubmit}
-                className="bg-blue-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
+              <button type="submit" className="mac-press rounded-xl bg-blue-500 px-5 py-2 text-sm font-medium text-white hover:bg-blue-600">
                 Guardar
               </button>
             </div>
-            <button
-              onClick={() => setDistDelete(!distDelete)}
-              className="w-full font-semibold text-red-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-red-500 flex justify-center gap-5 hover:bg-red-300">
-              <img src="/svg/trashIcon.svg" alt="Eliminar" />
-              Eliminar Distribuidor
-            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </MacModal>
 
-      {distDelete && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
-          <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
-            <img src="/svg/alertIcon.svg" alt="" />
-            <p className="">
-              ¿Estas seguro que deseas eliminar este Distribuidor?
-            </p>
-            <div className="flex gap-5 flex-col lg:flex-row">
-              <button
-                onClick={() => setDistDelete(!distDelete)}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
-                Cancelar
-              </button>
-              <button
-                onClick={
-                  handleDelete
-                  //   () => {
-                  //   setDistDelete(!distDelete);
-                  //   setEditDist(!distUser);
-                  // }
-                }
-                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
-                Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {distSave && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
-          <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
-            <img src="/svg/alertIcon.svg" alt="" />
-            <p className="text-lg text-black">
-              ¿Deseas descartar la edición del Distribuidor?
-            </p>
-            <div className="flex gap-5 flex-col lg:flex-row">
-              <button
-                onClick={() => {
-                  setDistSave(!distSave);
-                  handleCloseModal();
-                }}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
-                Cancelar
-              </button>
-              <button
-                onClick={() => {
-                  setDistSave(!distSave);
-                  setEditDist(!editDist);
-                }}
-                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
-                Aceptar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <ConfirmDialog
+        isOpen={confirmar === "descartar"}
+        title="¿Descartar los cambios?"
+        message="Se perderá lo que editaste."
+        confirmText="Descartar"
+        onCancel={() => setConfirmar(null)}
+        onConfirm={cerrar}
+      />
+      <ConfirmDialog
+        isOpen={confirmar === "eliminar"}
+        title="Eliminar distribuidor"
+        message={`¿Seguro que querés eliminar a ${datos.NombreComercial}? No se puede deshacer.`}
+        confirmText="Eliminar"
+        onCancel={() => setConfirmar(null)}
+        onConfirm={eliminar}
+      />
+    </>
   );
 }
 

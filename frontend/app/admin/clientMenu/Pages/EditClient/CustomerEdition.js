@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { setLoading, setError } from "@/lib/slices/clients/clientSlice";
 import CompleteModal from "../../components/CompleteModal_Update";
+import Field from "../../../components/Field";
 
 function CustomerEdition() {
   const dispatch = useDispatch();
@@ -181,199 +182,88 @@ function CustomerEdition() {
     }
   };
 
-  if (loading) return <div>Cargando...</div>;
+  if (loading) return <div className="p-6 text-sm text-gray-500">Cargando...</div>;
+
+  const p = customerInfo.principales;
+  const u = customerInfo.ubicacion;
+  const h = customerInfo.horus;
+  const set = (sec, campo) => (e) => handleChange(sec, campo, e.target.value);
 
   return (
-    <div className="container mx-auto px-4">
-      <h2 className="text-white text-3xl my-4">Edición de Clientes</h2>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-8 p-5 sm:p-8">
+      <h2 className="text-2xl font-semibold text-[#191920]">Edición de clientes</h2>
 
-      <form onSubmit={handleSubmit}>
-        {/* PRINCIPALES */}
-        <h3 className="text-white text-xl mb-2">Principales</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input
-            label="Nombre"
-            value={customerInfo.principales.NombreCompleto}
-            onChange={(e) =>
-              handleChange("principales", "NombreCompleto", e.target.value)
-            }
-          />
-          <Input
-            label="Código Cliente"
-            value={customerInfo.principales.CodigoCliente}
-            onChange={(e) =>
-              handleChange("principales", "CodigoCliente", e.target.value)
-            }
-          />
-          <Input
-            label="Segmentación"
-            value={customerInfo.principales.Segmentacion}
-            onChange={(e) =>
-              handleChange("principales", "Segmentacion", e.target.value)
-            }
-          />
-          <Input
-            label="Condición Fiscal"
-            value={customerInfo.principales.CondicionFiscal}
-            onChange={(e) =>
-              handleChange("principales", "CondicionFiscal", e.target.value)
-            }
-          />
-          <Input
-            label="Código Distribuidor"
-            value={customerInfo.principales.CodigoDistribuidor}
-            onChange={(e) =>
-              handleChange("principales", "CodigoDistribuidor", e.target.value)
-            }
-          />
-          <Input
-            label="Email"
-            value={customerInfo.principales.CorreoElectronico}
-            onChange={(e) =>
-              handleChange("principales", "CorreoElectronico", e.target.value)
-            }
-          />
-          <Input
-            label="Teléfono"
-            value={customerInfo.principales.Telefono}
-            onChange={(e) =>
-              handleChange("principales", "Telefono", e.target.value)
-            }
-          />
-
-          <label className="text-white flex items-center gap-2">
+      <section className="mac-fade-up flex flex-col gap-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Principales</h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <Field label="Nombre" value={p.NombreCompleto} onChange={set("principales", "NombreCompleto")} required />
+          <Field label="Código cliente" value={p.CodigoCliente} onChange={set("principales", "CodigoCliente")} required />
+          <Field label="Segmentación" value={p.Segmentacion} onChange={set("principales", "Segmentacion")} required />
+          <Field label="Condición fiscal" value={p.CondicionFiscal} onChange={set("principales", "CondicionFiscal")} required />
+          <Field label="Código distribuidor" value={p.CodigoDistribuidor} onChange={set("principales", "CodigoDistribuidor")} required />
+          <Field label="Email" type="email" value={p.CorreoElectronico} onChange={set("principales", "CorreoElectronico")} required />
+          <Field label="Teléfono" inputMode="tel" value={p.Telefono} onChange={set("principales", "Telefono")} required />
+          <label className="flex items-center gap-2 self-end pb-2.5 text-sm font-medium text-[#191920]">
             <input
               type="checkbox"
-              checked={customerInfo.principales.VentaAlcohol}
-              onChange={(e) =>
-                handleChange("principales", "VentaAlcohol", e.target.checked)
-              }
+              className="h-4 w-4 accent-blue-500"
+              checked={p.VentaAlcohol}
+              onChange={(e) => handleChange("principales", "VentaAlcohol", e.target.checked)}
             />
-            Venta Alcohol
+            Venta de alcohol
           </label>
         </div>
+      </section>
 
-        {/* UBICACION */}
-        <h3 className="text-white text-xl mt-6 mb-2">Ubicación</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input
-            label="Localidad"
-            value={customerInfo.ubicacion.Localidad}
-            onChange={(e) =>
-              handleChange("ubicacion", "Localidad", e.target.value)
-            }
-          />
-          <Input
-            label="Calle"
-            value={customerInfo.ubicacion.Calle}
-            onChange={(e) => handleChange("ubicacion", "Calle", e.target.value)}
-          />
-          <Input
-            label="Altura"
-            value={customerInfo.ubicacion.Altura}
-            onChange={(e) =>
-              handleChange("ubicacion", "Altura", e.target.value)
-            }
-          />
-          <Input
-            label="Entre calle 1"
-            value={customerInfo.ubicacion.EntreCalle1}
-            onChange={(e) =>
-              handleChange("ubicacion", "EntreCalle1", e.target.value)
-            }
-          />
-          <Input
-            label="Entre calle 2"
-            value={customerInfo.ubicacion.EntreCalle2}
-            onChange={(e) =>
-              handleChange("ubicacion", "EntreCalle2", e.target.value)
-            }
-          />
-          <Input
-            label="Latitud (respaldo mapa)"
-            value={customerInfo.ubicacion.Latitud}
-            onChange={(e) =>
-              handleChange("ubicacion", "Latitud", e.target.value)
-            }
-            required={false}
-          />
-          <Input
-            label="Longitud (respaldo mapa)"
-            value={customerInfo.ubicacion.Longitud}
-            onChange={(e) =>
-              handleChange("ubicacion", "Longitud", e.target.value)
-            }
-            required={false}
-          />
+      <section className="mac-fade-up flex flex-col gap-4" style={{ animationDelay: "60ms" }}>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Ubicación</h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <Field label="Localidad" value={u.Localidad} onChange={set("ubicacion", "Localidad")} required />
+          <Field label="Calle" value={u.Calle} onChange={set("ubicacion", "Calle")} required />
+          <Field label="Altura" value={u.Altura} onChange={set("ubicacion", "Altura")} required />
+          <Field label="Entre calle 1" value={u.EntreCalle1} onChange={set("ubicacion", "EntreCalle1")} required />
+          <Field label="Entre calle 2" value={u.EntreCalle2} onChange={set("ubicacion", "EntreCalle2")} required />
+          <span className="hidden xl:block" />
+          <Field label="Latitud (respaldo mapa)" value={u.Latitud} onChange={set("ubicacion", "Latitud")} />
+          <Field label="Longitud (respaldo mapa)" value={u.Longitud} onChange={set("ubicacion", "Longitud")} />
         </div>
+      </section>
 
-        {/* HORARIO */}
-        <h3 className="text-white text-xl mt-6 mb-2">Horario</h3>
-
-        <select
-          value={customerInfo.horus.tipo}
-          onChange={(e) => handleChange("horus", "tipo", e.target.value)}>
-          <option value="corrido">Corrido</option>
-          <option value="doble">Doble turno</option>
-        </select>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-          <Input
-            type="time"
-            label="Desde"
-            value={customerInfo.horus.desde1}
-            onChange={(e) => handleChange("horus", "desde1", e.target.value)}
+      <section className="mac-fade-up flex flex-col gap-4" style={{ animationDelay: "120ms" }}>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Horario</h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Field
+            label="Tipo"
+            value={h.tipo}
+            onChange={set("horus", "tipo")}
+            options={[
+              { value: "corrido", label: "Corrido" },
+              { value: "doble", label: "Doble turno" },
+            ]}
           />
-          <Input
-            type="time"
-            label="Hasta"
-            value={customerInfo.horus.hasta1}
-            onChange={(e) => handleChange("horus", "hasta1", e.target.value)}
-          />
-
-          {customerInfo.horus.tipo === "doble" && (
+          <Field type="time" label="Desde" value={h.desde1} onChange={set("horus", "desde1")} required />
+          <Field type="time" label="Hasta" value={h.hasta1} onChange={set("horus", "hasta1")} required />
+          {h.tipo === "doble" && (
             <>
-              <Input
-                type="time"
-                label="Desde tarde"
-                value={customerInfo.horus.desde2}
-                onChange={(e) =>
-                  handleChange("horus", "desde2", e.target.value)
-                }
-              />
-              <Input
-                type="time"
-                label="Hasta tarde"
-                value={customerInfo.horus.hasta2}
-                onChange={(e) =>
-                  handleChange("horus", "hasta2", e.target.value)
-                }
-              />
+              <Field type="time" label="Desde (tarde)" value={h.desde2} onChange={set("horus", "desde2")} required />
+              <Field type="time" label="Hasta (tarde)" value={h.hasta2} onChange={set("horus", "hasta2")} required />
             </>
           )}
         </div>
+      </section>
 
-        <button className="bg-blue-500 text-white px-6 py-3 mt-6 rounded">
+      <div className="sticky bottom-0 -mx-5 flex justify-end gap-3 border-t border-black/5 bg-white/80 px-5 py-4 backdrop-blur sm:-mx-8 sm:px-8">
+        <button type="button" onClick={() => router.push("/admin/clientMenu")} className="mac-press rounded-xl border border-gray-300 px-5 py-2 text-sm font-medium hover:bg-gray-100">
+          Cancelar
+        </button>
+        <button type="submit" className="mac-press rounded-xl bg-blue-500 px-6 py-2 text-sm font-medium text-white hover:bg-blue-600">
           Guardar
         </button>
-      </form>
+      </div>
 
       {showModal && <CompleteModal setShowModal={setShowModal} />}
-    </div>
+    </form>
   );
 }
 
 export default CustomerEdition;
-
-const Input = ({ label, value, onChange, type = "text", required = true }) => (
-  <div className="flex flex-col">
-    <label className="text-white">{label}</label>
-    <input
-      type={type}
-      value={value || ""}
-      onChange={onChange}
-      className="h-10 px-2 rounded text-black"
-      required={required}
-    />
-  </div>
-);

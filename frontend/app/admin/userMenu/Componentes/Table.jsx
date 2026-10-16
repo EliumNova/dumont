@@ -7,121 +7,56 @@ import EditUserBtn from "./EditUserBtn";
 
 function Table() {
   const dispatch = useDispatch();
-  // const [user, setUsers] = useState([
-  //   {
-  //     name: 'Esther Howard',
-  //     email: 'esther.howard@example',
-  //     dni: '40146000',
-  //     rolAdmin: 'Si',
-  //   },
-  //   {
-  //     name: 'Dianne Russell',
-  //     email: 'dianne.russell@example',
-  //     dni: '36598216',
-  //     rolAdmin: 'No',
-  //   },
-  //   {
-  //     name: 'Arlene McCoy Howard',
-  //     email: 'arlene.mccoy@example',
-  //     dni: '21904294',
-  //     rolAdmin: 'Si',
-  //   },
-  //   {
-  //     name: 'Ronald Ricards',
-  //     email: 'ronald.richards@example',
-  //     dni: '31412046',
-  //     rolAdmin: 'Si',
-  //   },
-  //   {
-  //     name: 'Esther Howard',
-  //     email: 'esther.howard@example',
-  //     dni: '40146000',
-  //     rolAdmin: 'No',
-  //   },
-  // ]);
-  const users = useSelector((state) => state.users.allUsers);
-  const userLogueado = useSelector((state) => state.auth.user);
+  const users = useSelector((state) => state.users.allUsers) || [];
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     dispatch(getAllUsers());
   }, [dispatch, refresh]);
 
-  const forceRender = () => {
-    setRefresh(!refresh);
-  };
-
-  // ✅ En su lugar, agregamos John Doe manualmente:
-  const filterUsers = [
-    {
-      Name: "John Doe",
-      Email: "john.doe@example.com",
-      DNI: "00000000",
-      isAdmin: false,
-    },
-    ...users,
-  ];
-
-
+  const forceRender = () => setRefresh((r) => !r);
 
   return (
-    <div className="flex flex-col border border-[#12141D] rounded bg-[#12141D] text-center">
-      <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-          <div className="overflow-hidden">
-            <table className="min-w-full text-left text-sm font-light">
-              <thead className="border-b font-medium dark:border-neutral-500">
-                <tr className="text-white">
-                  <th scope="col" className="px-6 py-3">
-                    Nombre completo
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Correo Electronico
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    DNI
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Rol Administrador
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filterUsers &&
-                  filterUsers.map((user, index) => (
-                    <tr
-                      className="border-b transition duration-300 ease-in-out text-white hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
-                      key={index}>
-                      <td className="whitespace-nowrap px-10 py-6 font-medium">
-                        {user.Name}
-                      </td>
-                      <td className="whitespace-nowrap px-10 py-1">
-                        {user.Email}
-                      </td>
-                      <td className="whitespace-nowrap px-10 py-1">
-                        {user.DNI}
-                      </td>
-                      <td className="whitespace-nowrap px-10 py-1">
-                        {!user.isAdmin ? "No" : "Si"}
-                      </td>
-                      <td className="whitespace-nowrap px-10 py-1">
-                        {/* {user.icon} */}
-                        {
-                          <EditUserBtn
-                            datos={user}
-                            onCloseModal={forceRender}
-                          />
-                        }
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <div className="mac-fade-up overflow-hidden rounded-3xl bg-white/90 shadow-xl backdrop-blur">
+      <div className="max-h-[70vh] overflow-auto">
+        <table className="min-w-full text-left text-sm text-[#191920]">
+          <thead className="sticky top-0 bg-[#F2F5F6] text-xs uppercase tracking-wide text-gray-500">
+            <tr>
+              <th className="px-6 py-4 font-semibold">Nombre completo</th>
+              <th className="px-6 py-4 font-semibold">Correo electrónico</th>
+              <th className="px-6 py-4 font-semibold">DNI</th>
+              <th className="px-6 py-4 font-semibold">Rol</th>
+              <th className="px-6 py-4 text-right font-semibold">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.idUsuarios} className="mac-row border-t border-black/5 hover:bg-blue-50/60">
+                <td className="whitespace-nowrap px-6 py-4 font-medium">{user.Name}</td>
+                <td className="whitespace-nowrap px-6 py-4">{user.Email}</td>
+                <td className="whitespace-nowrap px-6 py-4">{user.DNI}</td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                      user.isAdmin ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"
+                    }`}>
+                    {user.isAdmin ? "Administrador" : "Usuario"}
+                  </span>
+                </td>
+                <td className="whitespace-nowrap px-6 py-3 text-right">
+                  <EditUserBtn datos={user} onCloseModal={forceRender} />
+                </td>
+              </tr>
+            ))}
+            {users.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-6 py-10 text-center text-gray-500">
+                  No hay usuarios para mostrar.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -1,262 +1,146 @@
-'use client';
-import { useRouter } from 'next/router';
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { userUpdate, usuarioDelete } from '@/lib/slices/users/userAction';
-import InputField from '../../components/InputField';
+"use client";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { userUpdate, usuarioDelete } from "@/lib/slices/users/userAction";
+import { FiEdit2 } from "react-icons/fi";
+import MacModal from "../../components/MacModal";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import Field from "../../components/Field";
 
 function EditUserBtn({ datos, onCloseModal }) {
   const dispatch = useDispatch();
-  //const router = useRouter();
-  //const {id} = router.query
+  const yo = useSelector((s) => s.auth.user);
+  const esYo = !!yo && (yo.id === datos.idUsuarios || yo.idUsuarios === datos.idUsuarios);
 
-  const [editUser, setEditUser] = useState(false);
-  const [userDelete, setUserDelete] = useState(false);
-  const [userSave, setUserSave] = useState(false);
-  const [registerUser, setRegisterUser] = useState({
-    Name: '',
-    Email: '',
-    isAdmin: false,
-    DNI: '',
-  });
-  const [errorMessage, setErrorMessage] = useState('');
+  const [abierto, setAbierto] = useState(false);
+  const [confirmar, setConfirmar] = useState(null); // 'descartar' | 'eliminar'
+  const [form, setForm] = useState({ Name: "", Email: "", DNI: "", Telefono: "", isAdmin: false });
+  const [error, setError] = useState("");
 
-  // Maneja la apertura del modal y el llenado de datos
-  const handleModalOpen = () => {
-    setRegisterUser({
-      Name: datos.Name || '',
-      Email: datos.Email || '',
-      isAdmin: datos.Admin || false,
-      DNI: datos.DNI || '',
+  const abrir = () => {
+    setForm({
+      Name: datos.Name || "",
+      Email: datos.Email || "",
+      DNI: datos.DNI ?? "",
+      Telefono: datos.Telefono || "",
+      isAdmin: !!datos.isAdmin,
     });
-    setEditUser(true);
+    setError("");
+    setAbierto(true);
+  };
+
+  const cerrar = () => {
+    setConfirmar(null);
+    setAbierto(false);
+    onCloseModal?.();
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    const processedValue = name === 'admin' ? value === 'true' : value;
-
-    const validations = {
-      DNI: /^[0-9]*$/,
-      Name: /^[a-zA-Z\s]*$/,
-      Email: /^[a-zA-Z@.\s]*$/,
-    };
-
-    if (name in validations) {
-      if (value === '' || validateInput(processedValue, validations[name])) {
-        registrar(name, processedValue);
-      } else {
-        errorMessageBox();
-      }
-    } else {
-      registrar(name, processedValue);
-    }
+    if (name === "DNI" && !/^\d*$/.test(value)) return;
+    setForm((p) => ({ ...p, [name]: name === "isAdmin" ? value === "true" : value }));
   };
 
-  const validateInput = (value, regex) => regex.test(value);
-
-  const registrar = (name, processedValue) => {
-
-    return setRegisterUser((prev) => ({
-      ...prev,
-      [name]: processedValue,
-    }));
-  };
-
-  const errorMessageBox = () => {
-    setErrorMessage('Caracteres inválidos en el campo.');
-    setTimeout(() => setErrorMessage(''), 3000);
-  };
-
-  const handleSubmit = (e) => {
+  const guardar = async (e) => {
     e.preventDefault();
-
-    //Validar los campos
-    const { Name, Email, DNI } = registerUser;
-    if (!Name || !Email || !DNI) {
-      setErrorMessage('Todos los campos son obligatorios');
-      setTimeout(() => setErrorMessage(''), 3000);
+    if (!form.Name.trim() || !form.Email.trim() || !form.DNI) {
+      setError("Nombre, correo y DNI son obligatorios.");
       return;
     }
-
-    dispatch(userUpdate(datos.idUsuarios, registerUser));
-    handleCloseModal();
+    if (!/^\S+@\S+\.\S+$/.test(form.Email.trim())) {
+      setError("El correo no es válido.");
+      return;
+    }
+    const payload = {
+      Name: form.Name.trim(),
+      Email: form.Email.trim(),
+      DNI: Number(form.DNI),
+      isAdmin: form.isAdmin,
+    };
+    if (form.Telefono) payload.Telefono = form.Telefono;
+    await dispatch(userUpdate(datos.idUsuarios, payload));
+    cerrar();
   };
 
-  const handleDelete = () => {
-    setUserDelete(!userDelete);
-    setEditUser(!editUser);
-
-    dispatch(usuarioDelete(datos.idUsuarios));
-    onCloseModal();
-  };
-
-  const handleCloseModal = () => {
-    setTimeout(() => {
-      setEditUser(false);
-      onCloseModal();
-    }, '500');
+  const eliminar = async () => {
+    await dispatch(usuarioDelete(datos.idUsuarios));
+    cerrar();
   };
 
   return (
-    <div className="flex p-1 gap-5">
+    <>
       <button
-        onClick={handleModalOpen}
-        className=" text-white flex items-center justify-center"
-      >
-        <img src="/svg/editUser.svg" alt="" />
+        type="button"
+        onClick={abrir}
+        aria-label="Editar usuario"
+        className="mac-press rounded-lg p-2 text-gray-600 hover:bg-black/5">
+        <FiEdit2 />
       </button>
-      {editUser && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 p-2 lg:p-10">
-          <div className="relative flex flex-col bg-white p-8 rounded-lg shadow-lg xl:w-[600px] w-full max-h-[80vh] overflow-y-auto">
-            <h2 className="text-4xl font-semibold mb-7 text-black">
-              Editar Usuario
-            </h2>
 
-            <InputField
-              label="Nombre Completo"
-              id="Name"
-              name="Name"
-              value={registerUser.Name}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light "
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="Correo Electrónico"
-              id="Email"
-              name="Email"
-              type="email"
-              placeholder="Esther.howard@example.com"
-              value={registerUser.Email}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="DNI"
-              id="DNI"
-              name="DNI"
-              type="number"
-              placeholder="40644249"
-              value={registerUser.DNI}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0 text-black"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
-            <div className="flex flex-col gap-3 w-full my-2">
-              <label htmlFor="admin" className="text-sm font-light text-black">
-                Rol Administrador
-              </label>
-              <select
-                id="isAdmin"
-                name="isAdmin"
-                value={registerUser.isAdmin ? 'true' : 'false'}
-                onChange={handleChange}
-                className="bg-[#E2E5E5] h-14 rounded-2xl p-4 text-base text-black"
-                required
-              >
-                <option value="true" className="text-black">
-                  Sí
-                </option>
-                <option value="false" className="text-black">
-                  No
-                </option>
-              </select>
-            </div>
+      <MacModal
+        isOpen={abierto}
+        onClose={() => setConfirmar("descartar")}
+        title="Editar usuario"
+        footer={false}
+        maxWidth="max-w-xl">
+        <form onSubmit={guardar} className="flex flex-col gap-4">
+          <Field label="Nombre completo" name="Name" value={form.Name} onChange={handleChange} maxLength={45} />
+          <Field label="Correo electrónico" name="Email" type="email" value={form.Email} onChange={handleChange} maxLength={45} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="DNI" name="DNI" inputMode="numeric" value={form.DNI} onChange={handleChange} maxLength={10} />
+            <Field label="Teléfono" name="Telefono" inputMode="tel" value={form.Telefono} onChange={handleChange} maxLength={15} />
+          </div>
+          <Field
+            label="Rol administrador"
+            name="isAdmin"
+            value={form.isAdmin ? "true" : "false"}
+            onChange={handleChange}
+            disabled={esYo}
+            options={[
+              { value: "false", label: "No" },
+              { value: "true", label: "Sí" },
+            ]}
+          />
+          {esYo && <p className="-mt-2 text-xs text-gray-500">No podés cambiar tu propio rol.</p>}
+          {error && <p className="mac-shake rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
 
-            <div className="flex gap-10 flex-col lg:flex-row my-4">
-              <button
-                onClick={() => setUserSave(!userSave)}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
-              >
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {!esYo ? (
+              <button type="button" onClick={() => setConfirmar("eliminar")} className="mac-press rounded-xl px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">
+                Eliminar usuario
+              </button>
+            ) : (
+              <span />
+            )}
+            <div className="flex gap-3">
+              <button type="button" onClick={() => setConfirmar("descartar")} className="mac-press rounded-xl border border-gray-300 px-5 py-2 text-sm font-medium hover:bg-gray-100">
                 Cancelar
               </button>
-              <button
-                onClick={handleSubmit}
-                className="bg-blue-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
-              >
+              <button type="submit" className="mac-press rounded-xl bg-blue-500 px-5 py-2 text-sm font-medium text-white hover:bg-blue-600">
                 Guardar
               </button>
             </div>
-            <button
-              onClick={() => setUserDelete(!userDelete)}
-              className="w-full font-semibold text-red-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-red-500 flex justify-center gap-5 hover:bg-red-300"
-            >
-              <img src="/svg/trashIcon.svg" alt="Eliminar" />
-              Eliminar Usuario
-            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </MacModal>
 
-      {userDelete && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
-          <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
-            <img src="/svg/alertIcon.svg" alt="" />
-            <p className="">¿Estas seguro que deseas eliminar este usuario?</p>
-            <div className="flex gap-5 flex-col lg:flex-row">
-              <button
-                onClick={() => setUserDelete(!userDelete)}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={
-                  handleDelete
-                  //   () => {
-                  //   setUserDelete(!userDelete);
-                  //   setEditUser(!editUser);
-                  // }
-                }
-                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {userSave && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
-          <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
-            <img src="/svg/alertIcon.svg" alt="" />
-            <p className="text-lg text-black">
-              ¿Deseas descartar la edición del usuario?
-            </p>
-            <div className="flex gap-5 flex-col lg:flex-row">
-              <button
-                onClick={() => {
-                  setUserSave(!userSave);
-                  handleCloseModal();
-                }}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => {
-                  setUserSave(!userSave);
-                  setEditUser(!editUser);
-                }}
-                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl"
-              >
-                Aceptar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <ConfirmDialog
+        isOpen={confirmar === "descartar"}
+        title="¿Descartar los cambios?"
+        message="Se perderá lo que editaste."
+        confirmText="Descartar"
+        onCancel={() => setConfirmar(null)}
+        onConfirm={cerrar}
+      />
+      <ConfirmDialog
+        isOpen={confirmar === "eliminar"}
+        title="Eliminar usuario"
+        message={`¿Seguro que querés eliminar a ${datos.Name}? No se puede deshacer.`}
+        confirmText="Eliminar"
+        onCancel={() => setConfirmar(null)}
+        onConfirm={eliminar}
+      />
+    </>
   );
 }
 

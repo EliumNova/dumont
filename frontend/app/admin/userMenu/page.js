@@ -3,17 +3,16 @@ import Link from 'next/link';
 
 function UserMenu() {
   return (
-    <div className="flex flex-col items-center">
-      {/* Tabla de usuarios */}
-      <Table />
+    <div className="flex h-full flex-col items-center gap-5 overflow-y-auto px-4 py-6">
+      <div className="w-full max-w-5xl">
+        <Table />
+      </div>
 
-      {/* Botón de agregar nuevo usuario */}
       <Link
         href="/admin/userRegistration"
-        className="p-1 text-blue-500 flex items-center mt-4"
-      >
-        <img src="/svg/addNewUser.svg" className="h-10 mr-2" />
-        <span>Agregar nuevo usuario</span>
+        className="mac-press flex items-center gap-2 rounded-2xl bg-white/90 px-5 py-2.5 text-sm font-medium text-blue-600 shadow-lg backdrop-blur hover:bg-white">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white">+</span>
+        Agregar nuevo usuario
       </Link>
     </div>
   );
