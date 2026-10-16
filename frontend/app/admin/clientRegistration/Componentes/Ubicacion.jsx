@@ -243,7 +243,7 @@ function Ubicacion({ onNext, onBack }) {
             />
           </div>
           <span className="text-xs text-gray-300 mt-1">
-            Se pueden pegar juntas (ej. "-34.819743, -58.636132") en el campo
+            Se pueden pegar juntas (ej. &quot;-34.819743, -58.636132&quot;) en el campo
             Latitud y se separan solas.
           </span>
         </div>
