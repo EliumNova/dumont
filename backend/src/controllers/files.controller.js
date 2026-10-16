@@ -19,9 +19,11 @@ const toPublicUrlPath = (filePath) =>
 
 // Dominio público de ESTE backend, para armar las URLs de los archivos. Se
 // toma del propio pedido (así nunca queda apuntando al frontend ni a
-// localhost por una variable mal configurada). Detrás del proxy de Render el
-// protocolo y el host reales vienen en los headers x-forwarded-*. Si hace
-// falta forzarlo, se puede definir PUBLIC_BASE_URL.
+// localhost por una variable mal configurada). OJO: se usa el header Host y
+// NO x-forwarded-host, porque si el pedido pasa por el proxy de Next
+// (rewrites de /api/*), ese header trae el dominio del FRONTEND. El
+// protocolo sí se toma de x-forwarded-proto (Render termina el HTTPS).
+// Si hace falta forzarlo, se puede definir PUBLIC_BASE_URL.
 const apiBase = (req) => {
   if (process.env.PUBLIC_BASE_URL) {
     return process.env.PUBLIC_BASE_URL.replace(/\/+$/, "");
@@ -29,10 +31,7 @@ const apiBase = (req) => {
   const proto = (req.get("x-forwarded-proto") || req.protocol || "http")
     .split(",")[0]
     .trim();
-  const host = (req.get("x-forwarded-host") || req.get("host") || "")
-    .split(",")[0]
-    .trim();
-  return `${proto}://${host}`;
+  return `${proto}://${req.get("host")}`;
 };
 
 // Devuelve la URL pública del archivo: Cloudinary si está configurado
