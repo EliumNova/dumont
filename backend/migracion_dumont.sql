@@ -47,6 +47,16 @@ CALL dumont_add_column('Dispositivos', 'longitud', 'VARCHAR(45) NULL');
 CALL dumont_add_column('Dispositivos', 'UltimaConexion', 'DATETIME NULL');
 CALL dumont_add_column('Dispositivos', 'HorarioPublicitario', 'VARCHAR(100) NULL');
 
+-- Link de pantalla de un solo dispositivo
+CALL dumont_add_column('Dispositivos', 'SesionToken', 'VARCHAR(64) NULL');
+CALL dumont_add_column('Dispositivos', 'SesionUltimoLatido', 'DATETIME NULL');
+
+-- Verificación en 2 pasos (TOTP)
+CALL dumont_add_column('Usuarios', 'TwoFactorSecret', 'TEXT NULL');
+CALL dumont_add_column('Usuarios', 'TwoFactorEnabled', 'TINYINT(1) NOT NULL DEFAULT 0');
+CALL dumont_add_column('Usuarios', 'TwoFactorRecovery', 'TEXT NULL');
+CALL dumont_add_column('Usuarios', 'TwoFactorLastStep', 'INT NULL');
+
 DROP PROCEDURE IF EXISTS dumont_add_column;
 
 -- ---------- Multimedia ----------

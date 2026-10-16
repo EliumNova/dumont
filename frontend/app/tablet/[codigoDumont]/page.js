@@ -58,11 +58,33 @@ async function limpiarCache(urlsVigentes) {
   );
 }
 
+// Identificador propio de este navegador para el link de "un solo dispositivo".
+// Se guarda en localStorage: sobrevive a recargas y reinicios, así la misma
+// tablet siempre recupera su pantalla. Otro navegador genera uno distinto y
+// el servidor lo rechaza mientras la primera siga conectada.
+function obtenerIdSesion(codigo) {
+  const clave = `dumont-sesion-${codigo}`;
+  try {
+    let id = localStorage.getItem(clave);
+    if (!id || !/^[A-Za-z0-9_-]{16,64}$/.test(id)) {
+      const bytes = crypto.getRandomValues(new Uint8Array(24));
+      id = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+      localStorage.setItem(clave, id);
+    }
+    return id;
+  } catch {
+    // Sin localStorage (modo privado estricto): id solo para esta carga.
+    const bytes = crypto.getRandomValues(new Uint8Array(24));
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  }
+}
+
 export default function TabletPage() {
   const { codigoDumont } = useParams();
 
   const [config, setConfig] = useState(null);
   const [errorNotFound, setErrorNotFound] = useState(false);
+  const [enUso, setEnUso] = useState(false);
   const [indiceActual, setIndiceActual] = useState(0);
   const [conectado, setConectado] = useState(true);
   // url original -> url local (blob:) ya descargada
@@ -72,7 +94,7 @@ export default function TabletPage() {
 
   const sync = useCallback(async () => {
     try {
-      const body = {};
+      const body = { sesion: obtenerIdSesion(codigoDumont) };
       if (ultimaPosicion.current.lat != null) {
         body.latitud = ultimaPosicion.current.lat;
         body.longitud = ultimaPosicion.current.lng;
@@ -81,9 +103,16 @@ export default function TabletPage() {
       const res = await axios.post(`${TABLET}/${codigoDumont}/sync`, body);
       setConfig(res.data);
       setErrorNotFound(false);
+      setEnUso(false);
       setConectado(true);
     } catch (err) {
-      if (err.response?.status === 404) {
+      if (err.response?.status === 409) {
+        // El link está abierto en otro dispositivo. Se sigue consultando: si
+        // el otro se desconecta, este lo toma solo.
+        setEnUso(true);
+        setConfig((prev) => prev || err.response.data);
+        setConectado(true);
+      } else if (err.response?.status === 404) {
         setErrorNotFound(true);
         setConfig(err.response.data);
       } else {
@@ -238,6 +267,23 @@ export default function TabletPage() {
   }, [avanzar]);
 
   // ---------- Pantallas de error ----------
+
+  if (enUso) {
+    return (
+      <PantallaBase>
+        <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-8">
+          <h1 className="text-3xl font-bold">Pantalla en uso</h1>
+          <p className="text-gray-400 max-w-md">
+            Este enlace ya está abierto en otro dispositivo y solo puede estar
+            activo en uno a la vez. Si querés usarlo acá, cerrá la otra
+            pantalla o pedile a soporte que libere el enlace; este dispositivo
+            lo tomará automáticamente.
+          </p>
+          <ContactoSoporte soporte={config?.soporte || {}} />
+        </div>
+      </PantallaBase>
+    );
+  }
 
   if (errorNotFound) {
     const soporte = config?.soporte || {};

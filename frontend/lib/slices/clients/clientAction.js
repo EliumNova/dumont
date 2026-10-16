@@ -7,11 +7,11 @@ import {
   removeClient,
 } from "./clientSlice";
 
-export const fetchClients = ({ page = 0, pageSize = 15 } = {}) => {
+export const fetchClients = ({ page = 0, pageSize = 15, q = "" } = {}) => {
   return async (dispatch) => {
     try {
       const res = await axios.get(CLIENTS, {
-        params: { page, pageSize },
+        params: { page, pageSize, ...(q ? { q } : {}) },
       });
       dispatch(setClients(res.data)); // Asegurate que res.data tenga count y rows
     } catch (err) {

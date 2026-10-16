@@ -1,23 +1,12 @@
 'use client';
 
 import React from 'react';
+import MacModal from '../../components/MacModal';
 
-const Modal = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-4xl">
-        {children}
-        <button
-          onClick={onClose}
-          className="mt-4 p-2 bg-blue-500 text-white rounded"
-        >
-          Cerrar
-        </button>
-      </div>
-    </div>
-  );
-};
+const Modal = ({ isOpen, onClose, title, children }) => (
+  <MacModal isOpen={isOpen} onClose={onClose} title={title}>
+    {children}
+  </MacModal>
+);
 
 export default Modal;

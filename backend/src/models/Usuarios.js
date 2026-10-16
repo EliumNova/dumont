@@ -53,8 +53,44 @@ export const Usuarios = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    // ── Verificación en 2 pasos (TOTP) ──
+    // Secreto cifrado (AES-GCM) — nunca se guarda en claro.
+    TwoFactorSecret: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    TwoFactorEnabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    // JSON con los hashes de los códigos de recuperación aún sin usar.
+    TwoFactorRecovery: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    // Último paso TOTP aceptado: impide reusar el mismo código dos veces.
+    TwoFactorLastStep: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     timestamps: false,
+    // Por defecto NUNCA se devuelven hashes, secretos ni tokens: así ningún
+    // res.send(usuario) puede filtrarlos. Para login/2FA se usa
+    // Usuarios.unscoped().
+    defaultScope: {
+      attributes: {
+        exclude: [
+          "Password",
+          "verifyToken",
+          "expireToken",
+          "TwoFactorSecret",
+          "TwoFactorRecovery",
+          "TwoFactorLastStep",
+        ],
+      },
+    },
   }
 );

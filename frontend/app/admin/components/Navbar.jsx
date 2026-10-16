@@ -1,393 +1,247 @@
 "use client";
 import Image from "next/image";
-import React from "react";
-import { useEffect, useState, useRef } from "react";
-import { usePathname } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { updateAuthUser, logoutUser } from "@/lib/slices/authAction";
 import { IoIosArrowForward } from "react-icons/io";
+import { FiUser, FiLogOut, FiUsers } from "react-icons/fi";
 import Link from "next/link";
-import InputField from "../clientRegistration/Componentes/InputField";
+import MacModal from "./MacModal";
+import SeguridadPerfil from "./SeguridadPerfil";
+
+// Título de la barra según la ruta (primer prefijo que coincide).
+const TITULOS = [
+  ["/admin/userRegistration", "Registro de Usuarios"],
+  ["/admin/clientRegistration", "Registro de Clientes"],
+  ["/admin/clientMenu/Pages/EditClient", "Edición de Clientes"],
+  ["/admin/clientMenu", "Menú Clientes"],
+  ["/admin/distributorRegistration", "Registro de Distribuidores"],
+  ["/admin/distributorMenu", "Lista Distribuidores"],
+  ["/admin/customerMenu/distribuitorMenu", "Lista Distribuidores"],
+  ["/admin/userMenu", "Menú de Usuarios"],
+  ["/admin/devicesMenu/Pages/EditDevice", "Edición de Dispositivo"],
+  ["/admin/deviceMenu/Pages/EditDevice", "Edición de Dispositivo"],
+  ["/admin/devicesMenu", "Menú de Dispositivos"],
+  ["/admin/devicesRegistration", "Registro de Dispositivos"],
+  ["/admin/geolocatorMenu", "Mapa de Dispositivos"],
+];
+
+const campoCls =
+  "w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-black outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200";
 
 function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const [dropProfile, setDropProfile] = useState(false);
-  const dropRef = useRef(null);
-  const [editUser, setEditUser] = useState(false);
-  const [userDelete, setUserDelete] = useState(false);
-  const [userSave, setUserSave] = useState(false);
-  const [registerUser, setRegisterUser] = useState({
-    Name: "",
-    Email: "",
-    isAdmin: "",
-    DNI: "",
-  });
-  const [errorMessage, setErrorMessage] = useState("");
+  const { user, loading } = useSelector((state) => state.auth);
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [perfilOpen, setPerfilOpen] = useState(false);
+  const [form, setForm] = useState({ Name: "", Email: "", Telefono: "", DNI: "", Password: "" });
+  const [error, setError] = useState("");
+  const [ok, setOk] = useState("");
+  const menuRef = useRef(null);
+
+  const isAdminRoot = pathname === "/admin";
+  const isAdminSubroute = pathname.startsWith("/admin/");
+  const titulo = isAdminRoot
+    ? "Menú Administrador"
+    : TITULOS.find(([ruta]) => pathname.startsWith(ruta))?.[1] || "";
+
+  // Un solo contenedor (avatar + menú) y el cierre por clic afuera / Esc.
+  // Antes el menú quedaba fuera del ref y el listener global lo cerraba antes
+  // de que el clic en "Actualizar Perfil"/"Logout" llegara a su onClick.
   useEffect(() => {
-    if (user) {
-      setRegisterUser({
-        Name: user.Name,
-        Email: user.Email,
-        isAdmin: user.isAdmin,
-        DNI: user.DNI,
-      });
-    }
-  }, [user]);
-
-  const handleDropProfile = () => {
-    setDropProfile(!dropProfile);
-  };
-
-  const handleClickOutside = (event) => {
-    if (dropRef.current && !dropRef.current.contains(event.target)) {
-      setDropProfile(false);
-    }
-  };
-
-  useEffect(() => {
-    if (dropProfile) {
-      document.addEventListener("click", handleClickOutside);
-    } else {
-      document.removeEventListener("click", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
+    if (!menuOpen) return undefined;
+    const onDown = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
     };
-  }, [dropProfile]);
+    const onKey = (e) => e.key === "Escape" && setMenuOpen(false);
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
 
-  const handleModalOpen = (e) => {
-    setRegisterUser({
-      Name: user.Name || "",
-      Email: user.Email || "",
-      isAdmin: user.isAdmin || "",
-      DNI: user.DNI || "",
+  const abrirPerfil = () => {
+    setForm({
+      Name: user?.Name || "",
+      Email: user?.Email || "",
+      Telefono: user?.Telefono || "",
+      DNI: user?.DNI ?? "",
+      Password: "",
     });
-    setEditUser(true);
+    setError("");
+    setOk("");
+    setMenuOpen(false);
+    setPerfilOpen(true);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    const processedValue = name === "admin" ? value === "true" : value;
-
-    const validations = {
-      DNI: /^[0-9]*$/,
-      Name: /^[a-zA-Z\s]*$/,
-      Email: /^[a-zA-Z@.\s]*$/,
-    };
-
-    if (name in validations) {
-      if (value === "" || validateInput(processedValue, validations[name])) {
-        registrar(name, processedValue);
-      } else {
-        errorMessageBox();
-      }
-    } else {
-      registrar(name, processedValue);
-    }
+    if (name === "DNI" && !/^\d*$/.test(value)) return;
+    if (name === "Telefono" && !/^[\d+\s-]*$/.test(value)) return;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const validateInput = (value, regex) => regex.test(value);
-
-  const registrar = (name, processedValue) => {
-
-    return setRegisterUser((prev) => ({
-      ...prev,
-      [name]: processedValue,
-    }));
-  };
-
-  const errorMessageBox = () => {
-    setErrorMessage("Caracteres inválidos en el campo.");
-    setTimeout(() => setErrorMessage(""), 3000);
-  };
-
-  const handleSubmit = (e) => {
+  const guardar = async (e) => {
     e.preventDefault();
-
-    const { Name, Email, DNI } = registerUser;
-    if (!Name || !Email || !DNI) {
-      setErrorMessage("Todos los campos son obligatorios");
-      setTimeout(() => setErrorMessage(""), 3000);
+    setError("");
+    setOk("");
+    const { Name, Email, Telefono, DNI, Password } = form;
+    if (!Name.trim() || !Email.trim() || !DNI) {
+      setError("Nombre, correo y DNI son obligatorios.");
       return;
     }
+    if (!/^\S+@\S+\.\S+$/.test(Email.trim())) {
+      setError("El correo no es válido.");
+      return;
+    }
+    if (Password && Password.length < 8) {
+      setError("La nueva contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+    const payload = { Name: Name.trim(), Email: Email.trim(), DNI: Number(DNI) };
+    if (Telefono) payload.Telefono = Telefono;
+    if (Password) payload.Password = Password;
 
-
-    dispatch(
-      updateAuthUser(user.id, { ...registerUser, tokenUser: user.token })
-    );
-    setEditUser(false);
+    const exito = await dispatch(updateAuthUser(user.id, payload));
+    if (exito) {
+      setOk("Perfil actualizado.");
+      setForm((prev) => ({ ...prev, Password: "" }));
+      setTimeout(() => setPerfilOpen(false), 900);
+    } else {
+      setError("No se pudo actualizar el perfil. Revisá los datos e intentá de nuevo.");
+    }
   };
 
   const handleLogout = () => {
-
+    setMenuOpen(false);
     dispatch(logoutUser());
-    localStorage.clear();
-    setTimeout(() => {
-      window.location.href = "/login";
-    }, 500);
+    router.replace("/login");
   };
 
-  let isAdminRoot = pathname === "/admin";
-  let isAdminSubroute = pathname.startsWith("/admin/");
-  let userRegisterUrl = pathname === "/admin/userRegistration";
-  let clientRegisterUrl = pathname === "/admin/clientRegistration";
-  let clientMenu = pathname === "/admin/clientMenu";
-  let distribuitorMenu = pathname === "/admin/customerMenu/distribuitorMenu";
-  let distribuitorRegister = pathname === "/admin/distributorRegistration";
-  let userMenu = pathname === "/admin/userMenu";
-  let devicesMenu = pathname === "/admin/devicesMenu";
-  let devicesRegistration = pathname === "/admin/devicesRegistration";
-  let clientUpdateUrl = pathname === "/admin/clientMenu/Pages/EditClient";
-
-  const getBackUrl = () => {
-    if (distribuitorMenu) return "/admin";
-    if (clientRegisterUrl) return "/admin";
-    if (userRegisterUrl) return "/admin";
-    return "/admin";
-  };
+  const nombre = user?.Name || "Administrador";
+  const correo = user?.Email || "";
 
   return (
-    <div
-      className={`z-40 text-[#191920] flex flex-col md:flex-row justify-between px-4 md:px-8 p-3 shadow-[#35334426] shadow-sm border-b-2 border-[#12141D]
-      ${isAdminSubroute ? "bg-[#F2F5F6]" : "bg-[#F2F5F6]"}`}>
-      <div className="flex flex-row gap-2 md:gap-4 justify-center items-center">
+    <div className="z-40 flex flex-col justify-between border-b-2 border-[#12141D] bg-[#F2F5F6] p-3 px-4 text-[#191920] shadow-sm shadow-[#35334426] md:flex-row md:px-8">
+      <div className="flex flex-row items-center justify-center gap-2 md:gap-4">
         {isAdminSubroute && (
-          <Link href={getBackUrl()}>
-            <IoIosArrowForward className="rotate-180 h-8 w-10 cursor-pointer transition-all duration-150 hover:scale-110" />
+          <Link href="/admin" aria-label="Volver">
+            <IoIosArrowForward className="mac-press h-8 w-10 rotate-180 cursor-pointer" />
           </Link>
         )}
-
-        {userRegisterUrl && (
-          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
-            Registro de Usuarios
-          </h2>
-        )}
-        {clientRegisterUrl && (
-          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
-            Registro de Clientes
-          </h2>
-        )}
-        {isAdminRoot && (
-          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
-            Menú Administrador
-          </h2>
-        )}
-        {clientMenu && (
-          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
-            Menú Clientes
-          </h2>
-        )}
-        {distribuitorMenu && (
-          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
-            Lista Distribuidores
-          </h2>
-        )}
-        {distribuitorRegister && (
-          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
-            Registro de Distribuidores
-          </h2>
-        )}
-        {userMenu && (
-          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
-            Menú de Usuarios
-          </h2>
-        )}
-        {devicesMenu && (
-          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
-            Menú de Dispositivos
-          </h2>
-        )}
-        {devicesRegistration && (
-          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
-            Registro de Dispositivos
-          </h2>
-        )}
-        {clientUpdateUrl && (
-          <h2 className="font-bold text-sm md:text-base transition-all duration-150">
-            Edición de Clientes
+        {titulo && (
+          <h2 className="mac-fade-up text-sm font-bold md:text-base" key={titulo}>
+            {titulo}
           </h2>
         )}
       </div>
-      <div className="flex flex-row gap-2 md:gap-3 mt-2 md:mt-0 justify-end">
-        {/* Botón de Usuarios */}
+
+      <div className="mt-2 flex flex-row items-center justify-end gap-2 md:mt-0 md:gap-3">
         <Link href="/admin/userMenu">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all duration-150">
-            Usuarios
+          <button className="mac-press flex items-center gap-2 rounded-xl bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+            <FiUsers /> Usuarios
           </button>
         </Link>
+
         <div className="text-right">
-          {/* <p className="text-xs md:text-base font-semibold">{user.Name}</p>
-          <p className="text-xs opacity-60">{user.Email}</p> */}
-          {<p className="text-xs md:text-base font-semibold">Daniel Paredes</p>}
-          {<p className="text-xs opacity-60">admin@dumont.com</p>}
+          <p className="text-xs font-semibold md:text-base">{nombre}</p>
+          {correo && <p className="text-xs opacity-60">{correo}</p>}
         </div>
-        <div
-          className="relative"
-          ref={dropRef}
-          tabIndex={0}
-          onClick={handleDropProfile}>
-          <Image
-            width={40}
-            height={40}
-            src={"/UserIcon5.jpeg"}
-            alt="Perfil Image"
-            className="rounded-full "
-          />
+
+        <div className="relative" ref={menuRef}>
+          <button
+            type="button"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            className="mac-press block rounded-full ring-2 ring-transparent focus:outline-none focus-visible:ring-blue-400">
+            <Image
+              width={40}
+              height={40}
+              src="/UserIcon5.jpeg"
+              alt="Perfil"
+              className="rounded-full"
+            />
+          </button>
+
+          {menuOpen && (
+            <div
+              role="menu"
+              className="mac-pop mac-glass absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl py-1.5">
+              <div className="border-b border-black/5 px-4 py-2.5">
+                <p className="truncate text-sm font-semibold">{nombre}</p>
+                {correo && <p className="truncate text-xs text-gray-500">{correo}</p>}
+              </div>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={abrirPerfil}
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-blue-500 hover:text-white">
+                <FiUser /> Actualizar perfil
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-red-600 transition-colors hover:bg-red-500 hover:text-white">
+                <FiLogOut /> Cerrar sesión
+              </button>
+            </div>
+          )}
         </div>
-        {dropProfile && (
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20">
-            <div
-              className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
-              ref={dropRef}
-              onClick={handleModalOpen}>
-              Actualizar Perfil
-            </div>
-            <div
-              className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
-              onClick={handleLogout}
-              ref={dropRef}>
-              Logout
-            </div>
-          </div>
-        )}
       </div>
 
-      {editUser && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 p-2 lg:p-10">
-          <div className="relative flex flex-col bg-white p-8 rounded-lg shadow-lg xl:w-[600px] w-full max-h-[80vh] overflow-y-auto">
-            <h2 className="text-4xl font-semibold mb-7">Editar Usuario</h2>
+      <MacModal
+        isOpen={perfilOpen}
+        onClose={() => setPerfilOpen(false)}
+        title="Mi perfil"
+        footer={false}
+        maxWidth="max-w-xl">
+        <form onSubmit={guardar} className="flex flex-col gap-4">
+          <label className="flex flex-col gap-1.5 text-sm font-medium">
+            Nombre completo
+            <input name="Name" value={form.Name} onChange={handleChange} className={campoCls} maxLength={45} />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm font-medium">
+            Correo electrónico
+            <input name="Email" type="email" value={form.Email} onChange={handleChange} className={campoCls} maxLength={45} />
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-sm font-medium">
+              DNI
+              <input name="DNI" inputMode="numeric" value={form.DNI} onChange={handleChange} className={campoCls} maxLength={10} />
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm font-medium">
+              Teléfono
+              <input name="Telefono" inputMode="tel" value={form.Telefono} onChange={handleChange} className={campoCls} maxLength={15} />
+            </label>
+          </div>
+          <label className="flex flex-col gap-1.5 text-sm font-medium">
+            Nueva contraseña <span className="font-normal text-gray-500">(dejala vacía para no cambiarla)</span>
+            <input name="Password" type="password" autoComplete="new-password" value={form.Password} onChange={handleChange} className={campoCls} />
+          </label>
 
-            <InputField
-              label="Nombre Completo"
-              id="Name"
-              name="Name"
-              value={registerUser.Name}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0"
-              labelClassName="font-light "
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="Correo Electrónico"
-              id="Email"
-              name="Email"
-              type="email"
-              placeholder=""
-              value={registerUser.Email}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
-            <InputField
-              label="DNI"
-              id="DNI"
-              name="DNI"
-              type="number"
-              placeholder="40644249"
-              value={registerUser.DNI}
-              onChange={handleChange}
-              required
-              className="gap-3 font-light p-0"
-              labelClassName="font-light"
-              inputClassName="rounded-2xl text-black"
-            />
-            <div className="flex flex-col gap-3 w-full my-2">
-              <label htmlFor="admin" className="text-sm font-light">
-                Rol Administrador
-              </label>
-              <select
-                id="isAdmin"
-                name="isAdmin"
-                value={registerUser.isAdmin === true ? "Si" : "No"}
-                onChange={handleChange}
-                className="bg-[#E2E5E5] h-14 rounded-2xl p-4 text-base text-black"
-                required>
-                <option value="true" className="text-black">
-                  Sí
-                </option>
-                <option value="false" className="text-black">
-                  No
-                </option>
-              </select>
-            </div>
+          {error && <p className="mac-shake rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
+          {ok && <p className="rounded-xl bg-green-50 px-4 py-2 text-sm text-green-700">{ok}</p>}
 
-            <div className="flex gap-10 flex-col lg:flex-row my-4">
-              <button
-                onClick={() => setUserSave(!userSave)}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
-                Cancelar
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="bg-blue-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
-                Guardar
-              </button>
-            </div>
-            <button
-              onClick={() => setUserDelete(!userDelete)}
-              className="w-full font-semibold text-red-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-red-500 flex justify-center gap-5 hover:bg-red-300">
-              <img src="/svg/trashIcon.svg" alt="Eliminar" />
-              Eliminar Usuario
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={() => setPerfilOpen(false)} className="mac-press rounded-xl border border-gray-300 px-5 py-2 text-sm font-medium hover:bg-gray-100">
+              Cancelar
+            </button>
+            <button type="submit" disabled={loading} className="mac-press rounded-xl bg-blue-500 px-5 py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-60">
+              {loading ? "Guardando…" : "Guardar cambios"}
             </button>
           </div>
-        </div>
-      )}
+        </form>
 
-      {userDelete && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
-          <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
-            <img src="/svg/alertIcon.svg" alt="" />
-            <p className="">¿Estas seguro que deseas eliminar este usuario?</p>
-            <div className="flex gap-5 flex-col lg:flex-row">
-              <button
-                onClick={() => setUserDelete(!userDelete)}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
-                Cancelar
-              </button>
-              <button
-                onClick={handleDelete}
-                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
-                Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {userSave && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-10">
-          <div className="bg-white h-96 w-96 rounded-3xl flex flex-col place-items-center justify-center gap-10 ">
-            <img src="/svg/alertIcon.svg" alt="" />
-            <p className="text-lg text-black">
-              ¿Deseas descartar la edición del usuario?
-            </p>
-            <div className="flex gap-5 flex-col lg:flex-row">
-              <button
-                onClick={() => {
-                  setUserSave(!userSave);
-                }}
-                className="xl:w-6/12 text-blue-500 py-4 px-6 rounded-2xl text-xl border-solid border-2 border-blue-500 font-semibold">
-                Cancelar
-              </button>
-              <button
-                onClick={() => {
-                  setUserSave(!userSave);
-                  setEditUser(!editUser);
-                }}
-                className="bg-red-500 font-semibold xl:w-6/12 text-white py-4 px-6 rounded-2xl text-xl">
-                Aceptar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        <SeguridadPerfil />
+      </MacModal>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
+import { Op } from "sequelize";
 import { Clientes } from "../models/Clientes.js";
 import { Dispositivos } from "../models/Dispositivos.js";
 import { Distribuidores } from "../models/Distribuidores.js";
@@ -85,24 +86,51 @@ const createCliente = expressAsyncHandler(async (req, res) => {
 
 const getClientes = expressAsyncHandler(async (req, res) => {
   try {
-    const { page = 0, pageSize = 5 } = req.query;
-    let options = {
-      limit: +pageSize,
-      offset: +page * +pageSize,
+    const { page = 0, pageSize = 5, q = "" } = req.query;
+    const limit = Math.min(Math.max(parseInt(pageSize) || 5, 1), 10000);
+    const offset = Math.max(parseInt(page) || 0, 0) * limit;
+
+    // Búsqueda opcional por texto (nombre, código, dirección, teléfono, mail).
+    const term = String(q).trim().slice(0, 80);
+    const where = term
+      ? {
+          [Op.or]: [
+            "NombreCompleto",
+            "CodigoCliente",
+            "CodigoDumont",
+            "Localidad",
+            "Calle",
+            "Telefono",
+            "CorreoElectronico",
+          ].map((campo) => ({ [campo]: { [Op.like]: `%${term}%` } })),
+        }
+      : undefined;
+
+    const options = {
+      where,
+      limit,
+      offset,
+      // distinct: sin esto, el include many-to-many infla el count (una fila
+      // por cada distribuidor) y la paginación queda mal contada.
+      distinct: true,
+      // Orden estable: sin ORDER BY, MySQL puede repetir/omitir filas entre páginas.
+      order: [
+        ["NombreCompleto", "ASC"],
+        ["idClientes", "ASC"],
+      ],
       include: [
         {
-          model: Distribuidores, // nombre modelo de distribuidores
-          as: "Distribuidores", //nombre alias en tu modelo de clientes
-          attributes: ["NombreComercial"], // atributos a mostrar de los distribuidores
+          model: Distribuidores,
+          as: "Distribuidores",
+          attributes: ["NombreComercial"],
         },
       ],
     };
     const { count, rows } = await Clientes.findAndCountAll(options);
     res.send({ count, rows });
   } catch (error) {
-    console.log(error);
-
-    //handleError(error, res);
+    console.error("Error en getClientes:", error);
+    res.status(500).send({ message: "Error al obtener clientes" });
   }
 });
 

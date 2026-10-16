@@ -11,7 +11,6 @@ import CommunicationMenu from "./communicationMenu/page.js";
 import DistribuidorMenu from "./distributorMenu/page.js";
 import GeolocatorMenu from "./geolocatorMenu/page.js";
 
-import { initializeAuth } from "@/lib/slices/authAction";
 import { Search } from "lucide-react";
 
 import ProfileModal from "./components/ProfileModal";
@@ -41,10 +40,7 @@ function AdminMenu() {
   const [selected, setSelected] = useState(null);
   const [carteraDistribuidor, setCarteraDistribuidor] = useState(null);
 
-  // AUTENTICACIÓN
-  useEffect(() => {
-    dispatch(initializeAuth());
-  }, [dispatch]);
+  // La sesión la restaura <AuthGuard> en app/admin/layout.js.
 
   // 🔥 Cargar clientes + distribuidores cuando se abre el buscador
   useEffect(() => {

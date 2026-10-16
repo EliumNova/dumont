@@ -12,6 +12,7 @@ const {
   createDispositivo,
   updateDispositivo,
   deleteDispositivo,
+  liberarSesion,
   getAllDispositivosNoPaginate,
 } = dispositivosController;
 
@@ -31,5 +32,6 @@ dispositivosRouter.put(
   updateDispositivo
 );
 dispositivosRouter.delete('/delete/:id', checkAuth, deleteDispositivo);
+dispositivosRouter.post('/:id/liberar-sesion', checkAuth, liberarSesion);
 
 export default dispositivosRouter;

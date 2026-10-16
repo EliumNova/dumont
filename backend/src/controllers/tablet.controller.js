@@ -19,6 +19,10 @@ const SOPORTE = {
 // "offline" (además de lo que reporte el propio navegador de la tablet).
 const MINUTOS_OFFLINE = 3;
 
+// Segundos sin latido tras los cuales otro dispositivo puede tomar el link
+// (la tablet avisa cada 15 s, así que tolera ~3 avisos perdidos).
+const SESION_TIMEOUT_SEG = 50;
+
 const resolverDispositivoYCliente = async (codigoDumont) => {
   const dispositivo = await Dispositivos.findOne({ where: { CodigoDumont: codigoDumont } });
   const cliente = await Clientes.findOne({ where: { CodigoDumont: codigoDumont } });
@@ -77,12 +81,46 @@ const sync = expressAsyncHandler(async (req, res) => {
       });
     }
 
-    dispositivo.UltimaConexion = new Date();
+    // ── Link de un solo dispositivo ──
+    // Cada navegador manda un identificador propio (`sesion`). El primero que
+    // llega "toma" el link; mientras siga latiendo, cualquier otro identificador
+    // es rechazado con 409. Si deja de latir (SESION_TIMEOUT_SEG), otro puede
+    // tomarlo. Es un UPDATE condicional, así que dos pedidos simultáneos no
+    // pueden quedarse los dos con el link.
+    const sesion = typeof req.body?.sesion === 'string' ? req.body.sesion : '';
+    if (!/^[A-Za-z0-9_-]{16,64}$/.test(sesion)) {
+      return res.status(400).send({ message: 'Falta el identificador de la pantalla' });
+    }
+    const ahora = new Date();
+    const limite = new Date(ahora.getTime() - SESION_TIMEOUT_SEG * 1000);
+    const [tomado] = await Dispositivos.update(
+      { SesionToken: sesion, SesionUltimoLatido: ahora },
+      {
+        where: {
+          idDispositivos: dispositivo.idDispositivos,
+          [Op.or]: [
+            { SesionToken: null },
+            { SesionToken: sesion },
+            { SesionUltimoLatido: null },
+            { SesionUltimoLatido: { [Op.lt]: limite } },
+          ],
+        },
+      }
+    );
+    if (!tomado) {
+      return res.status(409).send({
+        code: 'EN_USO',
+        message: 'Esta pantalla ya está abierta en otro dispositivo',
+        soporte: SOPORTE,
+      });
+    }
+
+    dispositivo.UltimaConexion = ahora;
     if (latitud != null && longitud != null) {
       dispositivo.latitud = String(latitud);
       dispositivo.longitud = String(longitud);
     }
-    await dispositivo.save();
+    await dispositivo.save({ fields: ['UltimaConexion', 'latitud', 'longitud'] });
 
     const horarioAUsar = dispositivo.HorarioPublicitario || cliente.HorarioVenta;
     const enHorario = estaEnHorario(horarioAUsar);

@@ -56,8 +56,21 @@ export const Dispositivos = sequelize.define(
       type: DataTypes.STRING(100),
       allowNull: true,
     },
+    // Link de un solo dispositivo: token de la pantalla que tiene "tomado" el
+    // link y su último latido. Mientras el latido sea reciente, otro
+    // navegador que abra el mismo link es rechazado (ver tablet.controller).
+    SesionToken: {
+      type: DataTypes.STRING(64),
+      allowNull: true,
+    },
+    SesionUltimoLatido: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     timestamps: false,
+    // El token de sesión de la pantalla no sale en las respuestas de la API.
+    defaultScope: { attributes: { exclude: ['SesionToken'] } },
   }
 );

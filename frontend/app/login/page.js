@@ -28,13 +28,53 @@ function Login() {
     }));
   };
 
+  // Segundo paso (verificación en 2 pasos): token temporal + código.
+  const [twoFactorToken, setTwoFactorToken] = useState("");
+  const [code, setCode] = useState("");
+
+  const mostrarError = (mensaje) => {
+    setStatus(mensaje);
+    setStatusClass("status-show");
+    setTimeout(() => setStatusClass("status-message"), 4000);
+  };
+
+  const guardarSesion = (data) => {
+    localStorage.setItem("authToken", data.token);
+    if (data.id) localStorage.setItem("userId", data.id);
+    localStorage.setItem("isAuthenticated", "true");
+    router.push("/admin");
+  };
+
   const loginUser = async (e) => {
     e.preventDefault();
 
+    // Paso 2: validar el código de la app de autenticación
+    if (twoFactorToken) {
+      if (!code.trim()) {
+        mostrarError("Ingresá el código de 6 dígitos");
+        return;
+      }
+      try {
+        setLoading(true);
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/login/2fa`,
+          { twoFactorToken, code: code.trim() }
+        );
+        guardarSesion(response.data);
+      } catch (error) {
+        mostrarError(error.response?.data?.message || "No se pudo verificar el código");
+        // Si el token temporal venció, vuelve al paso 1.
+        if (error.response?.status === 401 && /expir/i.test(error.response?.data?.message || "")) {
+          setTwoFactorToken("");
+          setCode("");
+        }
+        setLoading(false);
+      }
+      return;
+    }
+
     if (!loginData.Email || !loginData.Password) {
-      setStatus("Email y contraseña son obligatorios");
-      setStatusClass("status-show");
-      setTimeout(() => setStatusClass("status-message"), 3000);
+      mostrarError("Email y contraseña son obligatorios");
       return;
     }
 
@@ -46,14 +86,19 @@ function Login() {
         loginData
       );
 
-      const { token } = response.data;
-      localStorage.setItem("authToken", token);
-
-      router.push("/admin");
+      if (response.data.requires2FA) {
+        setTwoFactorToken(response.data.twoFactorToken);
+        setLoading(false);
+        return;
+      }
+      guardarSesion(response.data);
     } catch (error) {
-      setStatus("Credenciales incorrectas");
-      setStatusClass("status-show");
-      setTimeout(() => setStatusClass("status-message"), 3000);
+      const estado = error.response?.status;
+      mostrarError(
+        estado === 429 || estado === 403
+          ? error.response.data?.message || "Acceso no permitido"
+          : "Credenciales incorrectas"
+      );
       setLoading(false);
     }
   };
@@ -70,36 +115,81 @@ function Login() {
         <Image src={logo} alt="Logo" width={80} height={80} className="logo" />
 
         <form className="loginForm" onSubmit={loginUser}>
-          <div className="inputGroup">
-            <FaUserShield className="icon" />
-            <input
-              type="email"
-              placeholder="Correo electrónico"
-              name="Email"
-              value={loginData.Email}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          {!twoFactorToken ? (
+            <>
+              <div className="inputGroup">
+                <FaUserShield className="icon" />
+                <input
+                  type="email"
+                  placeholder="Correo electrónico"
+                  name="Email"
+                  autoComplete="username"
+                  value={loginData.Email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-          <div className="inputGroup">
-            <BsFillShieldLockFill className="icon" />
-            <input
-              type="password"
-              placeholder="Contraseña"
-              name="Password"
-              value={loginData.Password}
-              onChange={handleChange}
-              required
-            />
-          </div>
+              <div className="inputGroup">
+                <BsFillShieldLockFill className="icon" />
+                <input
+                  type="password"
+                  placeholder="Contraseña"
+                  name="Password"
+                  autoComplete="current-password"
+                  value={loginData.Password}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <p style={{ color: "#fff", textAlign: "center", fontSize: "0.9rem" }}>
+                Verificación en 2 pasos: ingresá el código de tu app de
+                autenticación (o un código de recuperación).
+              </p>
+              <div className="inputGroup">
+                <BsFillShieldLockFill className="icon" />
+                <input
+                  type="text"
+                  inputMode="text"
+                  autoComplete="one-time-code"
+                  autoFocus
+                  placeholder="Código de 6 dígitos"
+                  value={code}
+                  maxLength={9}
+                  onChange={(e) => setCode(e.target.value)}
+                  required
+                />
+              </div>
+            </>
+          )}
 
           <span className={statusClass}>{status}</span>
 
           <button type="submit" className="loginButton" disabled={loading}>
-            <span>{loading ? "Iniciando..." : "Iniciar sesión"}</span>
+            <span>
+              {loading
+                ? "Verificando..."
+                : twoFactorToken
+                ? "Verificar"
+                : "Iniciar sesión"}
+            </span>
             {!loading && <AiOutlineSwapRight className="btnIcon" />}
           </button>
+          {twoFactorToken && (
+            <button
+              type="button"
+              className="loginButton"
+              style={{ background: "transparent", marginTop: "0.5rem" }}
+              onClick={() => {
+                setTwoFactorToken("");
+                setCode("");
+              }}>
+              <span>Volver</span>
+            </button>
+          )}
         </form>
       </div>
     </div>

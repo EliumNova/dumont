@@ -95,7 +95,7 @@ function DeviceTable() {
 
   const handleEdit = (device) => {
     router.push(
-      `/admin/deviceMenu/Pages/EditDevice?id=${device.idDispositivos}`,
+      `/admin/devicesMenu/Pages/EditDevice?id=${device.idDispositivos}`,
     );
   };
 

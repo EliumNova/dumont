@@ -1,4 +1,5 @@
 import Navbar from "./components/Navbar";
+import AuthGuard from "./components/AuthGuard";
 
 const BackgroundImage = ({ src, style }) => {
   return (
@@ -13,7 +14,8 @@ const BackgroundImage = ({ src, style }) => {
 
 export default function Layout({ children }) {
   return (
-    // bg-[#060f3a]
+    <AuthGuard>
+    {/* bg-[#060f3a] */}
     <div className="flex flex-col w-full h-screen relative bg-[#060f3a] overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-no-repeat bg-center"
@@ -32,5 +34,6 @@ export default function Layout({ children }) {
       {/* Contenido principal */}
       <main className="z-10 flex-grow h-full">{children}</main>
     </div>
+    </AuthGuard>
   );
 }

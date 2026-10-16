@@ -20,14 +20,42 @@ import "./models/Multimedia.js";
 import "./models/MultimediaAsignacion.js";
 import "./models/index.js";
 import { sequelize } from "./db/db.js";
+import { ensureSchema } from "./db/ensureSchema.js";
+import { checkAuth } from "./middleware/auth.js";
+import { securityHeaders, rateLimit } from "../utils/utilsSeguridad.js";
 import bodyParser from "body-parser";
 dotenv.config();
+
+// Sin un secreto fuerte los JWT (y el cifrado del 2FA) no sirven: se corta el
+// arranque en vez de funcionar de forma insegura.
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET no está definido.");
+}
+if (process.env.JWT_SECRET.length < 16) {
+  console.warn(
+    "ADVERTENCIA: JWT_SECRET es corto; usá uno largo y aleatorio (32+ caracteres)."
+  );
+}
 
 const app = express();
 
 const PORT = process.env.PORT;
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
+// Render (y cualquier proxy) manda la IP real en X-Forwarded-For; sin esto
+// el límite de intentos vería a todos como la misma IP.
+app.set("trust proxy", 1);
+app.disable("x-powered-by");
+app.use(securityHeaders);
+
+// Tope general por IP (las rutas sensibles, como el login, tienen el suyo).
+// La tablet hace un sync cada 15 s, por eso el margen amplio.
+app.use(
+  "/api",
+  rateLimit({ windowMs: 60_000, max: 600, keyFn: (req) => `api|${req.ip}` })
+);
+
+app.use(bodyParser.json({ limit: "1mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "1mb" }));
 
 app.use(cookieParser());
 
@@ -80,15 +108,35 @@ app.use(express.urlencoded({ extended: true }));
 
 await sequelize.authenticate();
 await sequelize.sync();
+await ensureSchema();
+
+// Públicas: login (usuarios) y la API de la tablet (se identifica por su
+// Código Dumont). TODO lo demás exige un JWT válido de un usuario logueado.
 app.use("/api/usuarios", usuariosRouter);
-app.use("/api/clientes", clientesRouter);
-app.use("/api/dispositivos", dispositivosRouter);
-app.use("/api/files", filesRouter);
-app.use("/api/distribuidores", distribuidoresRouter);
-app.use("/api/clientes-distribuidores", clientesDistribuidoresRoutes);
-app.use("/api/multimedia", multimediaRouter);
-app.use("/api/multimedia-asignaciones", multimediaAsignacionesRouter);
 app.use("/api/tablet", tabletRouter);
+app.use("/api/clientes", checkAuth, clientesRouter);
+app.use("/api/dispositivos", checkAuth, dispositivosRouter);
+app.use("/api/files", checkAuth, filesRouter);
+app.use("/api/distribuidores", checkAuth, distribuidoresRouter);
+app.use("/api/clientes-distribuidores", checkAuth, clientesDistribuidoresRoutes);
+app.use("/api/multimedia", checkAuth, multimediaRouter);
+app.use("/api/multimedia-asignaciones", checkAuth, multimediaAsignacionesRouter);
+
+// Healthcheck liviano (útil para Render y para el monitoreo).
+app.get("/health", (_req, res) => res.send({ ok: true }));
+
+// Manejo de errores final: nunca se devuelve el stack al cliente.
+// eslint-disable-next-line no-unused-vars
+app.use((err, _req, res, _next) => {
+  if (err?.message === "Not allowed by CORS") {
+    return res.status(403).send({ message: "Origen no permitido" });
+  }
+  if (err?.type === "entity.too.large") {
+    return res.status(413).send({ message: "El pedido es demasiado grande" });
+  }
+  console.error("Error no controlado:", err);
+  return res.status(500).send({ message: "Error interno del servidor" });
+});
 
 app.listen(PORT, () => {
 });

@@ -12,6 +12,7 @@ import EditDistBtn from "./EditDistBtn";
 import { AiOutlineEye, AiOutlineDelete } from "react-icons/ai";
 import Modal from "./Modal";
 import ModalDelete from "./ModalDelete";
+import DetailGrid from "../../components/DetailGrid";
 import CarteraModal from "./CarteraModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -123,7 +124,13 @@ export default function DistribuidorTable() {
 
   const totalPages = isSearching
     ? Math.max(1, Math.ceil(filteredDistribuidores.length / pageSize))
-    : Math.ceil(totalDistribuidores / pageSize);
+    : Math.max(1, Math.ceil(totalDistribuidores / pageSize));
+
+  // Si la página quedó fuera de rango (ej. se borró el último de la página),
+  // vuelve a la última válida en vez de mostrar una tabla vacía.
+  useEffect(() => {
+    if (page > totalPages - 1) setPage(totalPages - 1);
+  }, [page, totalPages]);
 
   // Cuando se busca, paginamos localmente sobre los resultados filtrados.
   const pagedDistribuidores = isSearching
@@ -176,7 +183,7 @@ export default function DistribuidorTable() {
 
         <div className="flex gap-2 items-center">
           <button
-            className="px-2 py-1 text-sm bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+            className="mac-press rounded-lg bg-gray-200 px-3 py-1.5 text-sm hover:bg-gray-300 disabled:opacity-40"
             onClick={() => setPage((p) => Math.max(p - 1, 0))}
             disabled={page === 0}>
             Anterior
@@ -185,7 +192,7 @@ export default function DistribuidorTable() {
             Página {page + 1} de {totalPages}
           </span>
           <button
-            className="px-2 py-1 text-sm bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+            className="mac-press rounded-lg bg-gray-200 px-3 py-1.5 text-sm hover:bg-gray-300 disabled:opacity-40"
             onClick={() => setPage((p) => p + 1)}
             disabled={page + 1 >= totalPages}>
             Siguiente
@@ -207,10 +214,10 @@ export default function DistribuidorTable() {
           </thead>
           <tbody>
             {pagedDistribuidores.length > 0 ? (
-              pagedDistribuidores.map((dist, index) => (
+              pagedDistribuidores.map((dist) => (
                 <tr
-                  key={index}
-                  className="border-b transition duration-300 ease-in-out text-black hover:bg-neutral-100">
+                  key={dist.idDistribuidor}
+                  className="mac-row border-b text-black hover:bg-neutral-100">
                   <td className="whitespace-nowrap px-10 py-6 text-center font-medium">
                     {dist.NombreComercial || "No disponible"}
                   </td>
@@ -242,7 +249,7 @@ export default function DistribuidorTable() {
                       onClick={() => openDeleteModal(dist)}
                     />
                     <button
-                      className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                      className="mac-press rounded-lg bg-blue-500 px-3 py-1.5 text-white hover:bg-blue-600"
                       onClick={() => handleCartera(dist)}>
                       Ver Cartera
                     </button>
@@ -261,53 +268,25 @@ export default function DistribuidorTable() {
       </div>
 
       {/* Modales */}
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={selectedDistribuidor?.NombreComercial || "Detalles del Distribuidor"}>
         {selectedDistribuidor && (
-          <div className="mt-4 p-4 bg-white rounded shadow-lg text-center grid grid-cols-2 gap-4 text-black">
-            <h3 className="col-span-2 font-semibold text-lg mb-2">
-              Detalles del Distribuidor
-            </h3>
-            <div>
-              <p className="font-semibold">Nombre Comercial</p>
-              <p>{selectedDistribuidor.NombreComercial}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Teléfono (Jefe de Ventas)</p>
-              <p>{selectedDistribuidor.SegundoTelefono}</p>
-            </div>
-            <div>
-              <p className="font-semibold">CUIT</p>
-              <p>{selectedDistribuidor.CUIT}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Código Distribuidor</p>
-              <p>{selectedDistribuidor.CodigoDistribuidor}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Email</p>
-              <p>{selectedDistribuidor.Email}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Teléfono</p>
-              <p>{selectedDistribuidor.Telefono}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Razón Social</p>
-              <p>{selectedDistribuidor.RazonSocial}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Calle</p>
-              <p>{selectedDistribuidor.Calle}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Localidad</p>
-              <p>{selectedDistribuidor.Localidad}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Entre Calles</p>
-              <p>{selectedDistribuidor.EntreCalles}</p>
-            </div>
-          </div>
+          <DetailGrid
+            items={[
+              { label: "Nombre comercial", value: selectedDistribuidor.NombreComercial },
+              { label: "Razón social", value: selectedDistribuidor.RazonSocial },
+              { label: "CUIT", value: selectedDistribuidor.CUIT },
+              { label: "Código distribuidor", value: selectedDistribuidor.CodigoDistribuidor },
+              { label: "Email", value: selectedDistribuidor.Email },
+              { label: "Teléfono", value: selectedDistribuidor.Telefono },
+              { label: "Teléfono (jefe de ventas)", value: selectedDistribuidor.SegundoTelefono },
+              { label: "Calle", value: selectedDistribuidor.Calle },
+              { label: "Localidad", value: selectedDistribuidor.Localidad },
+              { label: "Entre calles", value: selectedDistribuidor.EntreCalles },
+            ]}
+          />
         )}
       </Modal>
 
@@ -319,20 +298,22 @@ export default function DistribuidorTable() {
       )}
 
       <ModalDelete isOpen={isDeleteModalOpen} onClose={closeDeleteModal}>
-        <div className="mt-4 p-4 bg-white rounded shadow-lg text-center">
-          <h3 className="text-lg font-bold mb-4">
-            ¿Estás seguro de que deseas eliminar este distribuidor?
-          </h3>
-          <div className="flex justify-center gap-4">
+        <div className="py-2 text-center">
+          <h3 className="mb-1 text-lg font-semibold">Eliminar distribuidor</h3>
+          <p className="mb-5 text-sm text-gray-600">
+            ¿Seguro que querés eliminar a{" "}
+            <strong>{distToDelete?.NombreComercial}</strong>? Esta acción no se puede deshacer.
+          </p>
+          <div className="flex justify-center gap-3">
             <button
-              className="flex items-center bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              onClick={() => handleDelete(distToDelete.idDistribuidor)}>
-              Eliminar
-            </button>
-            <button
-              className="flex items-center bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              className="mac-press rounded-xl border border-gray-300 px-5 py-2 text-sm font-medium hover:bg-gray-100"
               onClick={closeDeleteModal}>
               Cancelar
+            </button>
+            <button
+              className="mac-press rounded-xl bg-red-500 px-5 py-2 text-sm font-medium text-white hover:bg-red-600"
+              onClick={() => handleDelete(distToDelete.idDistribuidor)}>
+              Eliminar
             </button>
           </div>
         </div>

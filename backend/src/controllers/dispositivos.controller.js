@@ -11,6 +11,11 @@ const getDispositivos = expressAsyncHandler(async (req, res) => {
     const { count, rows } = await Dispositivos.findAndCountAll({
       limit: +pageSize,
       offset: +page * +pageSize,
+      distinct: true,
+      order: [
+        ['Marca', 'ASC'],
+        ['NumSerie', 'ASC'],
+      ],
       include: [{ model: Clientes, as: 'Cliente' }],
     });
 
@@ -95,7 +100,14 @@ const updateDispositivo = expressAsyncHandler(async (req, res) => {
   try {
     const dispositivo = await Dispositivos.findByPk(req.params.id);
     if (dispositivo) {
-      const { Marca, Modelo, NumSerie, CodigoCliente } = req.body;
+      const { Marca, Modelo, NumSerie, CodigoCliente, HorarioPublicitario } =
+        req.body;
+      if (HorarioPublicitario !== undefined) {
+        dispositivo.HorarioPublicitario =
+          HorarioPublicitario === null || HorarioPublicitario === ''
+            ? null
+            : String(HorarioPublicitario).slice(0, 100);
+      }
       const clienteCambio =
         CodigoCliente && CodigoCliente !== dispositivo.CodigoCliente;
 
@@ -127,6 +139,21 @@ const updateDispositivo = expressAsyncHandler(async (req, res) => {
   }
 });
 
+// Libera el link de la pantalla (quita al dispositivo que lo tenía tomado) para
+// que otro navegador pueda abrirlo de inmediato, sin esperar el timeout.
+const liberarSesion = expressAsyncHandler(async (req, res) => {
+  try {
+    const [n] = await Dispositivos.update(
+      { SesionToken: null, SesionUltimoLatido: null },
+      { where: { idDispositivos: req.params.id } }
+    );
+    if (!n) return res.status(404).send({ message: 'Dispositivo no encontrado' });
+    res.send({ message: 'Enlace liberado' });
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
 const deleteDispositivo = expressAsyncHandler(async (req, res) => {
   try {
     await Dispositivos.destroy({
@@ -146,6 +173,7 @@ const dispositivoController = {
   createDispositivo,
   updateDispositivo,
   deleteDispositivo,
+  liberarSesion,
   getAllDispositivosNoPaginate,
 };
 

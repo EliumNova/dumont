@@ -40,6 +40,12 @@ const getDistribuidores = expressAsyncHandler(async (req, res) => {
     const { page, pageSize } = req.query;
 
     const options = {
+      // distinct: evita que el include many-to-many infle el count.
+      distinct: true,
+      order: [
+        ["NombreComercial", "ASC"],
+        ["idDistribuidor", "ASC"],
+      ],
       include: [
         {
           model: Clientes,
