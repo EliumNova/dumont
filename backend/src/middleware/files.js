@@ -2,7 +2,8 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 import { createFolders } from "../../utils/utilsFiles.js";
-const storage = multer.diskStorage({
+import { cloudinaryEnabled } from "../../utils/utilsCloudinary.js";
+const diskStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     let dir = "public";
     const folders = {
@@ -20,6 +21,10 @@ const storage = multer.diskStorage({
     callback(null, `${fileName}.${ext}`);
   },
 });
+
+// Con Cloudinary configurado se guarda en memoria y el controlador sube el
+// buffer; si no, se guarda en disco local (public/uploads).
+const storage = cloudinaryEnabled() ? multer.memoryStorage() : diskStorage;
 
 const fileFilter = (req, file, cb) => {
   const allowedMimes = ["image", "video"];
