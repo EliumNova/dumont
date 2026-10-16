@@ -190,12 +190,12 @@ function CustomerEdition() {
   const set = (sec, campo) => (e) => handleChange(sec, campo, e.target.value);
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8 p-5 sm:p-8">
-      <h2 className="text-2xl font-semibold text-[#191920]">Edición de clientes</h2>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4 sm:px-8 sm:py-5">
+      <h2 className="text-xl font-semibold text-[#191920]">Edición de clientes</h2>
 
-      <section className="mac-fade-up flex flex-col gap-4">
+      <section className="mac-fade-up flex flex-col gap-2">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Principales</h3>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-4">
           <Field label="Nombre" value={p.NombreCompleto} onChange={set("principales", "NombreCompleto")} required />
           <Field label="Código cliente" value={p.CodigoCliente} onChange={set("principales", "CodigoCliente")} required />
           <Field label="Segmentación" value={p.Segmentacion} onChange={set("principales", "Segmentacion")} required />
@@ -215,23 +215,23 @@ function CustomerEdition() {
         </div>
       </section>
 
-      <section className="mac-fade-up flex flex-col gap-4" style={{ animationDelay: "60ms" }}>
+      <section className="mac-fade-up flex flex-col gap-2" style={{ animationDelay: "60ms" }}>
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Ubicación</h3>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-4">
           <Field label="Localidad" value={u.Localidad} onChange={set("ubicacion", "Localidad")} required />
           <Field label="Calle" value={u.Calle} onChange={set("ubicacion", "Calle")} required />
           <Field label="Altura" value={u.Altura} onChange={set("ubicacion", "Altura")} required />
           <Field label="Entre calle 1" value={u.EntreCalle1} onChange={set("ubicacion", "EntreCalle1")} required />
           <Field label="Entre calle 2" value={u.EntreCalle2} onChange={set("ubicacion", "EntreCalle2")} required />
-          <span className="hidden xl:block" />
+          
           <Field label="Latitud (respaldo mapa)" value={u.Latitud} onChange={set("ubicacion", "Latitud")} />
           <Field label="Longitud (respaldo mapa)" value={u.Longitud} onChange={set("ubicacion", "Longitud")} />
         </div>
       </section>
 
-      <section className="mac-fade-up flex flex-col gap-4" style={{ animationDelay: "120ms" }}>
+      <section className="mac-fade-up flex flex-col gap-2" style={{ animationDelay: "120ms" }}>
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Horario</h3>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-4">
           <Field
             label="Tipo"
             value={h.tipo}
@@ -252,7 +252,7 @@ function CustomerEdition() {
         </div>
       </section>
 
-      <div className="sticky bottom-0 -mx-5 flex justify-end gap-3 border-t border-black/5 bg-white/80 px-5 py-4 backdrop-blur sm:-mx-8 sm:px-8">
+      <div className="flex justify-end gap-3 border-t border-black/5 pt-3">
         <button type="button" onClick={() => router.push("/admin/clientMenu")} className="mac-press rounded-xl border border-gray-300 px-5 py-2 text-sm font-medium hover:bg-gray-100">
           Cancelar
         </button>

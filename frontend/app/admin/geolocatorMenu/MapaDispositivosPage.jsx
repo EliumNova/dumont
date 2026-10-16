@@ -6,13 +6,6 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
-// Tamaños del contenedor del mapa: normal y minimizado (esquina inferior
-// derecha, estilo "picture in picture").
-const SIZE_CLASSES = {
-  normal: "w-full h-full",
-  minimized: "w-[320px] h-[220px] fixed bottom-4 right-4 z-40 shadow-2xl",
-};
-
 // Una tablet se considera "en línea" si avisó hace menos de 3 minutos
 // (mismo criterio que la tabla de dispositivos y el backend).
 const MINUTOS_OFFLINE = 3;
@@ -105,7 +98,6 @@ export default function MapaDispositivosPage({ dispositivos }) {
   // idDispositivos -> { marker, popup, el }
   const markersRef = useRef(new Map());
   const yaEncuadro = useRef(false);
-  const [minimized, setMinimized] = useState(false);
   const [resumen, setResumen] = useState({ online: 0, offline: 0, respaldo: 0 });
 
   useEffect(() => {
@@ -129,13 +121,15 @@ export default function MapaDispositivosPage({ dispositivos }) {
     };
   }, []);
 
-  // El mapa de Mapbox no vuelve a calcular su tamaño solo cuando el
-  // contenedor cambia de medida (normal <-> minimizado), hay que avisarle.
+  // El mapa de Mapbox no recalcula su tamaño solo cuando la ventana se
+  // redimensiona, maximiza o restaura: se lo avisamos con un ResizeObserver.
   useEffect(() => {
-    if (!map.current) return;
-    const timeout = setTimeout(() => map.current?.resize(), 300);
-    return () => clearTimeout(timeout);
-  }, [minimized]);
+    const el = mapContainer.current;
+    if (!el || typeof ResizeObserver === "undefined") return undefined;
+    const obs = new ResizeObserver(() => map.current?.resize());
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   // Sincroniza los pines con la lista de dispositivos SIN borrarlos y
   // volverlos a crear en cada refresco: se mueven/actualizan en el lugar,
@@ -196,22 +190,9 @@ export default function MapaDispositivosPage({ dispositivos }) {
   }, [dispositivos]);
 
   return (
-    <div
-      className={`flex justify-center items-center transition-all duration-300 ${
-        minimized ? SIZE_CLASSES.minimized : SIZE_CLASSES.normal
-      }`}
-    >
+    <div className="w-full h-full">
       <div className="relative w-full h-full">
-        <button
-          type="button"
-          onClick={() => setMinimized((prev) => !prev)}
-          className="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white text-black text-sm px-3 py-1 rounded shadow"
-          title={minimized ? "Restaurar mapa" : "Minimizar mapa"}
-        >
-          {minimized ? "⤢ Restaurar" : "⤡ Minimizar"}
-        </button>
-
-        {!minimized && (
+        {(
           <div className="absolute top-2 left-2 z-10 bg-white/95 rounded-lg shadow px-3 py-2 text-sm text-gray-800 flex flex-col gap-1">
             {[
               ["online", "Conectados"],

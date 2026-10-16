@@ -55,8 +55,8 @@ export default function GeolocatorMenu() {
   }, [cargar]);
 
   return (
-    <div className="w-full h-[85vh] flex justify-center items-center overflow-x-hidden px-2">
-      <div className="w-[95vw] max-w-[98vw] h-[85vh] bg-white rounded-lg shadow-xl p-6 border border-gray-200 flex flex-col">
+    <div className="w-full h-full min-h-[320px] overflow-hidden">
+      <div className="w-full h-full bg-white p-4 flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold text-gray-800">Geolocalización</h1>
           <div className="flex items-center gap-2 text-sm text-gray-500">

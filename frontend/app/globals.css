@@ -64,6 +64,9 @@ html {
   animation: mac-modal-in 0.32s var(--mac-spring) both;
   transform-origin: center;
 }
+.mac-window-in {
+  animation: mac-modal-in 0.28s var(--mac-spring);
+}
 .mac-pop {
   animation: mac-pop-in 0.22s var(--mac-spring) both;
   transform-origin: top right;
@@ -100,7 +103,7 @@ html {
 .mac-row:nth-child(n + 6) { animation-delay: 150ms; }
 
 @media (prefers-reduced-motion: reduce) {
-  .mac-overlay, .mac-modal, .mac-pop, .mac-fade-up, .mac-row, .mac-shake {
+  .mac-overlay, .mac-modal, .mac-window-in, .mac-pop, .mac-fade-up, .mac-row, .mac-shake {
     animation: none !important;
   }
   .mac-press { transition: none; }

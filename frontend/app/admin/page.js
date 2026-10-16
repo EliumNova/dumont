@@ -13,11 +13,20 @@ import GeolocatorMenu from "./geolocatorMenu/page.js";
 
 import { Search } from "lucide-react";
 
+import VentanaSO, { DockVentanas } from "./components/VentanaSO";
 import ProfileModal from "./components/ProfileModal";
 import CarteraModal from "./components/CarteraModal";
 
 import { fetchClients } from "@/lib/slices/clients/clientAction";
 import { getDistribuidores } from "@/lib/slices/distribuidores/distribuidorAction";
+
+const MENUS = {
+  distributors: { titulo: "Distribuidores", Componente: DistribuidorMenu },
+  customer: { titulo: "Clientes", Componente: ClientMenu },
+  devices: { titulo: "Dispositivos", Componente: DevicesMenu },
+  geolocation: { titulo: "Geolocalización", Componente: GeolocatorMenu },
+  communication: { titulo: "Comunicación", Componente: CommunicationMenu },
+};
 
 function AdminMenu() {
   const dispatch = useDispatch();
@@ -33,7 +42,39 @@ function AdminMenu() {
   const clientsRows = clientsPage?.rows || [];
   const distribuidoresRows = distribuidoresPage?.rows || [];
 
-  const [activeMenu, setActiveMenu] = useState(null);
+  // Gestor de ventanas: cada menú se abre en su propia ventana (se pueden
+  // tener varias abiertas, mover, minimizar, maximizar y cerrar).
+  const [ventanas, setVentanas] = useState([]); // [{ id, titulo, minimizada, maximizada, z }]
+  const [idEnfocada, setIdEnfocada] = useState(null);
+  const zTop = React.useRef(100);
+
+  const traerAlFrente = (id) => {
+    zTop.current += 1;
+    const z = zTop.current;
+    setIdEnfocada(id);
+    setVentanas((vs) => vs.map((v) => (v.id === id ? { ...v, z } : v)));
+  };
+
+  const abrirVentana = (id) => {
+    zTop.current += 1;
+    const z = zTop.current;
+    setIdEnfocada(id);
+    setVentanas((vs) =>
+      vs.some((v) => v.id === id)
+        ? vs.map((v) => (v.id === id ? { ...v, minimizada: false, z } : v))
+        : [...vs, { id, minimizada: false, maximizada: false, z }]
+    );
+  };
+  const cambiar = (id, cambios) =>
+    setVentanas((vs) => vs.map((v) => (v.id === id ? { ...v, ...cambios } : v)));
+  const cerrarVentana = (id) => setVentanas((vs) => vs.filter((v) => v.id !== id));
+  const clickDock = (id) => {
+    const v = ventanas.find((x) => x.id === id);
+    if (!v) return;
+    if (v.minimizada) abrirVentana(id);
+    else if (idEnfocada === id) cambiar(id, { minimizada: true });
+    else traerAlFrente(id);
+  };
   const [openSearch, setOpenSearch] = useState(false);
 
   const [search, setSearch] = useState("");
@@ -131,7 +172,7 @@ function AdminMenu() {
           {/* Distribuidores */}
           <li
             className="relative flex flex-col items-center cursor-pointer group"
-            onClick={() => setActiveMenu("distributors")}>
+            onClick={() => abrirVentana("distributors")}>
             <div className="flex items-center justify-center w-[40px] h-[40px] p-2 bg-white rounded-full text-2xl">
               <Image
                 src="/svg/distributorsMenu.svg"
@@ -148,7 +189,7 @@ function AdminMenu() {
           {/* Clientes */}
           <li
             className="relative flex flex-col items-center cursor-pointer group"
-            onClick={() => setActiveMenu("customer")}>
+            onClick={() => abrirVentana("customer")}>
             <div className="flex items-center justify-center w-[40px] h-[40px] p-2 bg-white rounded-full text-2xl">
               <Image
                 src="/svg/clientMenu.svg"
@@ -165,7 +206,7 @@ function AdminMenu() {
           {/* Dispositivos */}
           <li
             className="relative flex flex-col items-center cursor-pointer group"
-            onClick={() => setActiveMenu("devices")}>
+            onClick={() => abrirVentana("devices")}>
             <div className="flex items-center justify-center w-[40px] h-[40px] p-2 bg-white rounded-full">
               <Image
                 src="/svg/devicesMenu.svg"
@@ -182,7 +223,7 @@ function AdminMenu() {
           {/* Geolocalización */}
           <li
             className="relative flex flex-col items-center cursor-pointer group"
-            onClick={() => setActiveMenu("geolocation")}>
+            onClick={() => abrirVentana("geolocation")}>
             <div className="flex items-center justify-center w-[40px] h-[40px] p-2 bg-white rounded-full">
               <Image
                 src="/svg/geolocationMenu.svg"
@@ -199,7 +240,7 @@ function AdminMenu() {
           {/* Comunicación */}
           <li
             className="relative flex flex-col items-center cursor-pointer group"
-            onClick={() => setActiveMenu("communication")}>
+            onClick={() => abrirVentana("communication")}>
             <div className="flex items-center justify-center w-[40px] h-[40px] p-2 bg-white rounded-full">
               <Image
                 src="/svg/communicationMenu.svg"
@@ -297,30 +338,31 @@ function AdminMenu() {
         />
       )}
 
-      {/* MENÚS */}
-      {activeMenu && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 pt-5">
-          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm pt-10"></div>
-
-          <div className="relative w-auto max-w-[95vw] bg-white rounded-md shadow-lg p-6 z-10 mt-10">
-            <button
-              className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
-              onClick={() => setActiveMenu(null)}>
-              ✕
-            </button>
-
-            <div className="overflow-y-auto">
-              {activeMenu === "customer" && <ClientMenu />}
-              {activeMenu === "devices" && <DevicesMenu />}
-              {activeMenu === "communication" && <CommunicationMenu />}
-              {activeMenu === "distributors" && <DistribuidorMenu />}
-              {activeMenu === "geolocation" && <GeolocatorMenu />}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {!activeMenu && <div className="opacity-0"></div>}
+      {/* VENTANAS */}
+      {ventanas.map((v, i) => {
+        const def = MENUS[v.id];
+        return (
+          <VentanaSO
+            key={v.id}
+            titulo={def.titulo}
+            indice={i}
+            minimizada={v.minimizada}
+            maximizada={v.maximizada}
+            z={v.z}
+            enfocada={idEnfocada === v.id}
+            onEnfocar={() => idEnfocada !== v.id && traerAlFrente(v.id)}
+            onMinimizar={() => cambiar(v.id, { minimizada: true })}
+            onMaximizar={() => cambiar(v.id, { maximizada: !v.maximizada })}
+            onCerrar={() => cerrarVentana(v.id)}>
+            <def.Componente />
+          </VentanaSO>
+        );
+      })}
+      <DockVentanas
+        ventanas={ventanas.map((v) => ({ ...v, titulo: MENUS[v.id].titulo }))}
+        idEnfocada={idEnfocada}
+        onClick={clickDock}
+      />
     </div>
   );
 }

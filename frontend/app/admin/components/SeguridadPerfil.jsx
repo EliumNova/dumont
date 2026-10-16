@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FiShield, FiCopy } from "react-icons/fi";
 import { USERS } from "@/lib/slices/constants";
 import { fetchUserData } from "@/lib/slices/authAction";
+import QrCode from "./QrCode";
 
 const campoCls =
   "w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-black outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200";
@@ -125,10 +126,18 @@ export default function SeguridadPerfil() {
 
       {fase === "configurando" && setup && (
         <form onSubmit={confirmar} className="mac-fade-up flex flex-col gap-3">
-          <ol className="list-decimal space-y-1 pl-5 text-sm text-gray-700">
-            <li>Abrí tu app de autenticación y elegí “Agregar cuenta” → “Ingresar clave de configuración”.</li>
-            <li>Cargá esta clave (cuenta: {user?.Email}, tipo: basada en tiempo):</li>
-          </ol>
+          <p className="text-sm text-gray-700">
+            Abrí tu app de autenticación (Google Authenticator, Authy, Microsoft
+            Authenticator…), elegí “Agregar cuenta” y <strong>escaneá este código QR</strong>:
+          </p>
+          <div className="flex justify-center">
+            <div className="rounded-2xl bg-white p-2 shadow-md">
+              <QrCode value={setup.otpauthUrl} size={200} />
+            </div>
+          </div>
+          <p className="text-center text-xs text-gray-500">
+            ¿No podés escanear? Ingresá esta clave a mano (tipo: basada en tiempo):
+          </p>
           <div className="flex items-center gap-2 rounded-xl bg-gray-100 px-3 py-2">
             <code className="flex-1 break-all text-sm tracking-wider">{setup.secret}</code>
             <button
