@@ -32,25 +32,37 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./public"));
 app.use(cookieParser());
 
+// Orígenes permitidos por CORS: variable CORS_ORIGINS (lista separada por comas).
+// Si no está definida se usa el comportamiento histórico (localhost:3000 y
+// dumont.onrender.com).
+const DEFAULT_CORS_ORIGINS = [
+  "http://localhost:3000",
+  "https://dumont.onrender.com",
+];
+const allowedOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((o) => o.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
+const corsOrigins = allowedOrigins.length ? allowedOrigins : DEFAULT_CORS_ORIGINS;
+
+// Para probar en dispositivos reales (tablet física, celular) se entra por la
+// IP de red local de la compu, no por "localhost". Fuera de producción se
+// permite cualquier IP de red local (192.168.x.x, 10.x.x.x, 172.16-31.x.x) con
+// el puerto 3000. Se puede forzar con CORS_ALLOW_LAN=true/false.
+const allowLan =
+  process.env.CORS_ALLOW_LAN !== undefined
+    ? process.env.CORS_ALLOW_LAN === "true"
+    : process.env.NODE_ENV !== "production";
+const redLocalPuerto3000 =
+  /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):3000$/;
+
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = [
-      "http://localhost:3000",
-      "https://dumont.onrender.com",
-    ];
-
-    // Para probar en dispositivos reales (tablet física, celular, etc.) hay
-    // que entrar por la IP de red local de esta compu (ej. 172.30.240.1),
-    // no por "localhost" — localhost en la tablet apuntaría a la tablet
-    // misma, no a tu compu. Antes eso quedaba bloqueado por CORS. Esto
-    // permite cualquier IP de red local (192.168.x.x, 10.x.x.x,
-    // 172.16-31.x.x) siempre que use el mismo puerto del frontend (3000).
-    const esRedLocalPuerto3000 =
-      /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):3000$/.test(
-        origin || "",
-      );
-
-    if (!origin || allowedOrigins.includes(origin) || esRedLocalPuerto3000) {
+    if (
+      !origin ||
+      corsOrigins.includes(origin) ||
+      (allowLan && redLocalPuerto3000.test(origin))
+    ) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));

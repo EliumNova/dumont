@@ -2,8 +2,16 @@
 const nextConfig = {
   // Permite probar la app desde otros dispositivos de la red local (tablet
   // física, celular) accediendo por la IP de esta compu en vez de
-  // "localhost". Si tu IP de red cambia (DHCP), agregala acá también.
-  allowedDevOrigins: ["172.30.240.1", "localhost", "127.0.0.1"],
+  // "localhost". Se define con ALLOWED_DEV_ORIGINS (hosts separados por comas,
+  // sin protocolo ni puerto), ej: "192.168.0.15,172.30.240.1".
+  allowedDevOrigins: [
+    "localhost",
+    "127.0.0.1",
+    ...(process.env.ALLOWED_DEV_ORIGINS || "")
+      .split(",")
+      .map((o) => o.trim())
+      .filter(Boolean),
+  ],
   async rewrites() {
     return [
       {
