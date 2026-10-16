@@ -29,7 +29,6 @@ const PORT = process.env.PORT;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static("./public"));
 app.use(cookieParser());
 
 // Orígenes permitidos por CORS: variable CORS_ORIGINS (lista separada por comas).
@@ -71,6 +70,11 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
+
+// Archivos subidos (imágenes/videos). Va DESPUÉS de cors() para que también
+// lleven los headers CORS: la app de la tablet los descarga con fetch() para
+// guardarlos en su cache local y reproducirlos sin internet.
+app.use(express.static("./public"));
 
 app.use(express.urlencoded({ extended: true }));
 

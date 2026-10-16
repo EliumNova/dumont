@@ -7,14 +7,56 @@
 // Cada tantos segundos reporta que sigue conectada (y su GPS, si el
 // navegador lo permite) y recibe de vuelta qué contenido tiene que mostrar
 // y si está en horario de publicitar o tiene que quedar en modo reposo.
+//
+// Pensada para correr 24/7:
+//  - Guarda los videos/imágenes de la playlist en el propio equipo (Cache
+//    Storage) para que sigan reproduciéndose si se corta internet. Requiere
+//    HTTPS (o localhost); sin eso reproduce directo desde la red.
+//  - Mantiene la pantalla prendida (Wake Lock).
+//  - Si un archivo falla al cargar, salta al siguiente en vez de quedarse
+//    colgada.
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
 import { TABLET } from '@/lib/slices/constants';
 
-const INTERVALO_SYNC_MS = 30000; // cada 30s avisa que sigue viva
-const INTERVALO_GPS_MS = 2 * 60 * 1000; // cada 2 min intenta actualizar el GPS
+const INTERVALO_SYNC_MS = 15000; // cada 15s avisa que sigue viva
+const NOMBRE_CACHE = 'dumont-media-v1';
+
+// ---------- Cache de archivos multimedia ----------
+
+const cacheDisponible = () =>
+  typeof window !== 'undefined' && 'caches' in window;
+
+// Devuelve una URL local (blob:) del archivo, bajándolo y guardándolo en el
+// cache la primera vez. Si algo falla, lanza el error y el llamador sigue
+// usando la URL de red.
+async function obtenerUrlLocal(url) {
+  const cache = await caches.open(NOMBRE_CACHE);
+  let respuesta = await cache.match(url);
+
+  if (!respuesta) {
+    const descarga = await fetch(url, { mode: 'cors' });
+    if (!descarga.ok) throw new Error(`HTTP ${descarga.status}`);
+    await cache.put(url, descarga.clone());
+    respuesta = descarga;
+  }
+
+  const blob = await respuesta.blob();
+  return URL.createObjectURL(blob);
+}
+
+// Borra del cache los archivos que ya no están en la playlist.
+async function limpiarCache(urlsVigentes) {
+  const cache = await caches.open(NOMBRE_CACHE);
+  const claves = await cache.keys();
+  await Promise.all(
+    claves
+      .filter((req) => !urlsVigentes.has(req.url))
+      .map((req) => cache.delete(req))
+  );
+}
 
 export default function TabletPage() {
   const { codigoDumont } = useParams();
@@ -23,8 +65,10 @@ export default function TabletPage() {
   const [errorNotFound, setErrorNotFound] = useState(false);
   const [indiceActual, setIndiceActual] = useState(0);
   const [conectado, setConectado] = useState(true);
+  // url original -> url local (blob:) ya descargada
+  const [urlsLocales, setUrlsLocales] = useState({});
   const ultimaPosicion = useRef({ lat: null, lng: null });
-  const videoRef = useRef(null);
+  const blobsRef = useRef({}); // para poder liberar los blobs
 
   const sync = useCallback(async () => {
     try {
@@ -57,43 +101,127 @@ export default function TabletPage() {
     return () => clearInterval(interval);
   }, [sync]);
 
-  // GPS periódico (si la tablet/navegador lo permite)
+  // GPS continuo (si la tablet/navegador lo permite). watchPosition mantiene
+  // siempre la última posición fresca y el sync la manda en cada aviso.
   useEffect(() => {
     if (typeof navigator === 'undefined' || !navigator.geolocation) return;
 
-    const actualizarPosicion = () => {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          ultimaPosicion.current = {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-          };
-        },
-        () => {
-          // Sin permiso de GPS: no pasa nada, se sigue usando la última
-          // ubicación conocida (o la de respaldo del cliente).
-        },
-        { enableHighAccuracy: false, timeout: 10000 }
-      );
+    const id = navigator.geolocation.watchPosition(
+      (pos) => {
+        ultimaPosicion.current = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        };
+      },
+      () => {
+        // Sin permiso de GPS: no pasa nada, se sigue usando la última
+        // ubicación conocida (o la de respaldo del cliente).
+      },
+      { enableHighAccuracy: false, maximumAge: 15000, timeout: 20000 }
+    );
+
+    return () => navigator.geolocation.clearWatch(id);
+  }, []);
+
+  // Mantener la pantalla prendida. El navegador suelta el bloqueo cuando la
+  // pestaña se oculta, así que se vuelve a pedir al volver a primer plano.
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !('wakeLock' in navigator)) return;
+
+    let lock = null;
+    const pedir = async () => {
+      try {
+        lock = await navigator.wakeLock.request('screen');
+      } catch {
+        // No soportado o denegado: no es crítico.
+      }
+    };
+    const alCambiarVisibilidad = () => {
+      if (document.visibilityState === 'visible') pedir();
     };
 
-    actualizarPosicion();
-    const interval = setInterval(actualizarPosicion, INTERVALO_GPS_MS);
-    return () => clearInterval(interval);
+    pedir();
+    document.addEventListener('visibilitychange', alCambiarVisibilidad);
+    return () => {
+      document.removeEventListener('visibilitychange', alCambiarVisibilidad);
+      lock?.release?.().catch(() => {});
+    };
   }, []);
 
   const playlist = config?.playlist || [];
-  const itemActual = playlist[indiceActual % playlist.length];
+  const itemActual = playlist.length
+    ? playlist[indiceActual % playlist.length]
+    : undefined;
+  const itemSiguiente =
+    playlist.length > 1
+      ? playlist[(indiceActual + 1) % playlist.length]
+      : undefined;
+
+  // Descarga la playlist al cache local. Mientras no esté lista, el item
+  // se reproduce directo desde la red (ver srcDe más abajo).
+  const clavePlaylist = playlist.map((i) => i.url).join('|');
+  useEffect(() => {
+    if (!cacheDisponible()) return;
+
+    const urls = clavePlaylist ? clavePlaylist.split('|') : [];
+    let cancelado = false;
+
+    (async () => {
+      for (const url of urls) {
+        if (cancelado) return;
+        if (blobsRef.current[url]) continue;
+        try {
+          const local = await obtenerUrlLocal(url);
+          if (cancelado) {
+            URL.revokeObjectURL(local);
+            return;
+          }
+          blobsRef.current[url] = local;
+          setUrlsLocales((prev) => ({ ...prev, [url]: local }));
+        } catch {
+          // Sin conexión o error de descarga: se reintenta en el próximo
+          // cambio de playlist; mientras tanto se usa la URL de red.
+        }
+      }
+
+      // Liberar memoria/espacio de lo que ya no se usa
+      const vigentes = new Set(urls);
+      Object.keys(blobsRef.current).forEach((url) => {
+        if (!vigentes.has(url)) {
+          URL.revokeObjectURL(blobsRef.current[url]);
+          delete blobsRef.current[url];
+          setUrlsLocales((prev) => {
+            const { [url]: _, ...resto } = prev;
+            return resto;
+          });
+        }
+      });
+      limpiarCache(new Set(urls.map((u) => new URL(u, location.href).href))).catch(
+        () => {}
+      );
+    })();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [clavePlaylist]);
+
+  const srcDe = (item) => (item ? urlsLocales[item.url] || item.url : undefined);
 
   const avanzar = useCallback(() => {
-    setIndiceActual((prev) => (playlist.length ? (prev + 1) % playlist.length : 0));
+    setIndiceActual((prev) =>
+      playlist.length ? (prev + 1) % playlist.length : 0
+    );
   }, [playlist.length]);
 
   // Si el contenido es una imagen, la mostramos por su duración configurada
   // y avanzamos solos. Si es un video, avanza el propio <video onEnded>.
   useEffect(() => {
     if (!itemActual || itemActual.tipo !== 'imagen') return;
-    const timeout = setTimeout(avanzar, (itemActual.duracionSegundos || 8) * 1000);
+    const timeout = setTimeout(
+      avanzar,
+      (itemActual.duracionSegundos || 8) * 1000
+    );
     return () => clearTimeout(timeout);
   }, [itemActual, avanzar]);
 
@@ -102,6 +230,12 @@ export default function TabletPage() {
   useEffect(() => {
     if (indiceActual >= playlist.length) setIndiceActual(0);
   }, [playlist.length, indiceActual]);
+
+  // Si un archivo no carga (404, formato no soportado, etc.), esperamos un
+  // momento y pasamos al siguiente en vez de dejar la pantalla congelada.
+  const alFallarArchivo = useCallback(() => {
+    setTimeout(avanzar, 2000);
+  }, [avanzar]);
 
   // ---------- Pantallas de error ----------
 
@@ -136,7 +270,11 @@ export default function TabletPage() {
   if (!config.enHorario) {
     return (
       <PantallaBase>
-        <ModoReposo cliente={config.cliente} conectado={conectado} soporte={config.soporte} />
+        <ModoReposo
+          cliente={config.cliente}
+          conectado={conectado}
+          soporte={config.soporte}
+        />
       </PantallaBase>
     );
   }
@@ -163,21 +301,29 @@ export default function TabletPage() {
         {itemActual?.tipo === 'imagen' ? (
           <img
             key={itemActual.idMultimedia}
-            src={itemActual.url}
+            src={srcDe(itemActual)}
             alt=""
+            onError={alFallarArchivo}
             className="w-full h-full object-contain"
           />
         ) : (
           <video
             key={itemActual?.idMultimedia}
-            ref={videoRef}
-            src={itemActual?.url}
+            src={srcDe(itemActual)}
             autoPlay
             muted
             playsInline
+            // Con un solo video en la playlist no hay "siguiente": se repite.
+            loop={playlist.length === 1}
             onEnded={avanzar}
+            onError={alFallarArchivo}
             className="w-full h-full object-contain"
           />
+        )}
+
+        {/* Precarga de la próxima imagen para que el corte sea instantáneo */}
+        {itemSiguiente?.tipo === 'imagen' && (
+          <img src={srcDe(itemSiguiente)} alt="" className="hidden" />
         )}
 
         <div className="absolute bottom-2 right-3 flex items-center gap-2">
