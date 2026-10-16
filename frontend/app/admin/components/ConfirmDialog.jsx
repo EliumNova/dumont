@@ -11,6 +11,8 @@ export default function ConfirmDialog({
   confirmText = "Aceptar",
   cancelText = "Cancelar",
   danger = true,
+  hideCancel = false,
+  icon = "!",
   onConfirm,
   onCancel,
 }) {
@@ -26,17 +28,19 @@ export default function ConfirmDialog({
           className={`mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full text-2xl font-bold ${
             danger ? "bg-red-100 text-red-500" : "bg-blue-100 text-blue-500"
           }`}>
-          !
+          {icon}
         </div>
         <h3 className="mb-1 text-lg font-semibold">{title}</h3>
         {message && <p className="mb-5 text-sm text-gray-600">{message}</p>}
         <div className="flex justify-center gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="mac-press rounded-xl border border-gray-300 px-5 py-2 text-sm font-medium hover:bg-gray-100">
-            {cancelText}
-          </button>
+          {!hideCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="mac-press rounded-xl border border-gray-300 px-5 py-2 text-sm font-medium hover:bg-gray-100">
+              {cancelText}
+            </button>
+          )}
           <button
             type="button"
             onClick={onConfirm}

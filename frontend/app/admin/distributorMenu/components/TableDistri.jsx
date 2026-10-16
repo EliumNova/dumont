@@ -13,6 +13,7 @@ import { AiOutlineEye, AiOutlineDelete } from "react-icons/ai";
 import Modal from "./Modal";
 import ModalDelete from "./ModalDelete";
 import DetailGrid from "../../components/DetailGrid";
+import { formatTelefono, formatCUIT } from "@/lib/formato";
 import CarteraModal from "./CarteraModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -138,9 +139,9 @@ export default function DistribuidorTable() {
     : filteredDistribuidores;
 
   return (
-    <div className="flex flex-col border border-[#F2F5F6] rounded w-auto bg-[#F2F5F6] mt-4 max-h-[600px] overflow-y-auto p-4">
+    <div className="flex w-full min-w-0 flex-col bg-[#F2F5F6] p-4">
       {/* Buscador */}
-      <div className="flex gap-2 mb-4 items-center">
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <select
           className="p-1 border rounded"
           value={searchType}
@@ -150,7 +151,7 @@ export default function DistribuidorTable() {
           <option value="CUIT">CUIT</option>
         </select>
         <input
-          className="p-2 border rounded flex-1"
+          className="min-w-[180px] flex-1 rounded border p-2"
           type="text"
           placeholder={`Buscar por ${searchType}...`}
           value={search}
@@ -162,7 +163,7 @@ export default function DistribuidorTable() {
       </div>
 
       {/* Selector de cantidad por página y paginación */}
-      <div className="flex items-center justify-between px-4 py-2 mb-2">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-3 px-4 py-2">
         <label className="text-sm text-gray-700">
           Mostrar:
           <select
@@ -201,15 +202,15 @@ export default function DistribuidorTable() {
       </div>
 
       {/* Tabla */}
-      <div className="overflow-y-auto max-h-[500px]">
+      <div className="w-full overflow-x-auto">
         <table className="min-w-full text-left text-sm font-light whitespace-nowrap">
           <thead className="border-b font-medium dark:border-[#F2F5F6] text-black">
             <tr>
-              <th className="px-10 py-6 text-center">Nombre</th>
-              <th className="px-10 py-6 text-center">Correo</th>
-              <th className="px-10 py-6 text-center">Teléfono</th>
-              <th className="px-10 py-6 text-center">Dirección</th>
-              <th className="px-10 py-6 text-center">Acciones</th>
+              <th className="px-3 py-4 xl:px-6 text-center">Nombre</th>
+              <th className="px-3 py-4 xl:px-6 text-center">Correo</th>
+              <th className="px-3 py-4 xl:px-6 text-center">Teléfono</th>
+              <th className="px-3 py-4 xl:px-6 text-center">Dirección</th>
+              <th className="px-3 py-4 xl:px-6 text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -218,21 +219,21 @@ export default function DistribuidorTable() {
                 <tr
                   key={dist.idDistribuidor}
                   className="mac-row border-b text-black hover:bg-neutral-100">
-                  <td className="whitespace-nowrap px-10 py-6 text-center font-medium">
+                  <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center font-medium">
                     {dist.NombreComercial || "No disponible"}
                   </td>
-                  <td className="whitespace-nowrap px-10 py-6 text-center">
+                  <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                     {dist.Email || "No disponible"}
                   </td>
-                  <td className="whitespace-nowrap px-10 py-6 text-center">
-                    {dist.Telefono || "No disponible"}
+                  <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
+                    {dist.Telefono ? formatTelefono(dist.Telefono) : "No disponible"}
                   </td>
-                  <td className="whitespace-nowrap px-10 py-6 text-center">
+                  <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                     {dist.Calle && dist.Localidad
                       ? `${dist.Calle}, ${dist.Localidad}`
                       : "No disponible"}
                   </td>
-                  <td className="whitespace-nowrap px-10 py-6 flex justify-center items-center gap-2 h-full">
+                  <td className="whitespace-nowrap px-3 py-4 xl:px-6 flex justify-center items-center gap-2 h-full">
                     <AiOutlineEye
                       className="cursor-pointer text-2xl"
                       onClick={() => handleView(dist)}
@@ -277,11 +278,11 @@ export default function DistribuidorTable() {
             items={[
               { label: "Nombre comercial", value: selectedDistribuidor.NombreComercial },
               { label: "Razón social", value: selectedDistribuidor.RazonSocial },
-              { label: "CUIT", value: selectedDistribuidor.CUIT },
+              { label: "CUIT", value: formatCUIT(selectedDistribuidor.CUIT) },
               { label: "Código distribuidor", value: selectedDistribuidor.CodigoDistribuidor },
               { label: "Email", value: selectedDistribuidor.Email },
-              { label: "Teléfono", value: selectedDistribuidor.Telefono },
-              { label: "Teléfono (jefe de ventas)", value: selectedDistribuidor.SegundoTelefono },
+              { label: "Teléfono", value: formatTelefono(selectedDistribuidor.Telefono) },
+              { label: "Teléfono (jefe de ventas)", value: formatTelefono(selectedDistribuidor.SegundoTelefono) },
               { label: "Calle", value: selectedDistribuidor.Calle },
               { label: "Localidad", value: selectedDistribuidor.Localidad },
               { label: "Entre calles", value: selectedDistribuidor.EntreCalles },

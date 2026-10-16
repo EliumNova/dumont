@@ -154,6 +154,35 @@ const liberarSesion = expressAsyncHandler(async (req, res) => {
   }
 });
 
+// Marcas y modelos ya cargados (para los desplegables del alta). Cada marca
+// nueva que se registra aparece sola en la lista la próxima vez.
+const MARCAS_BASE = [
+  'Samsung', 'Lenovo', 'Apple', 'Xiaomi', 'Huawei', 'Motorola', 'LG', 'Philips',
+  'TCL', 'Hisense', 'Sony', 'Noblex', 'BGH', 'Positivo BGH', 'Philco', 'Banghó',
+];
+const getOpcionesDispositivo = expressAsyncHandler(async (_req, res) => {
+  try {
+    const filas = await Dispositivos.findAll({
+      attributes: ['Marca', 'Modelo'],
+      group: ['Marca', 'Modelo'],
+      raw: true,
+    });
+    const marcas = new Set(MARCAS_BASE);
+    const modelos = {};
+    filas.forEach(({ Marca, Modelo }) => {
+      if (!Marca) return;
+      marcas.add(Marca);
+      (modelos[Marca] = modelos[Marca] || []).push(Modelo);
+    });
+    res.send({
+      marcas: [...marcas].sort((a, b) => a.localeCompare(b, 'es')),
+      modelos,
+    });
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
 const deleteDispositivo = expressAsyncHandler(async (req, res) => {
   try {
     await Dispositivos.destroy({
@@ -174,6 +203,7 @@ const dispositivoController = {
   updateDispositivo,
   deleteDispositivo,
   liberarSesion,
+  getOpcionesDispositivo,
   getAllDispositivosNoPaginate,
 };
 

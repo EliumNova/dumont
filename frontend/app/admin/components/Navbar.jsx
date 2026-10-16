@@ -9,6 +9,7 @@ import { FiUser, FiLogOut, FiUsers } from "react-icons/fi";
 import Link from "next/link";
 import MacModal from "./MacModal";
 import SeguridadPerfil from "./SeguridadPerfil";
+import { soloDigitos, formatDNI, formatTelefono, validarDNI, validarTelefono } from "@/lib/formato";
 
 // Título de la barra según la ruta (primer prefijo que coincide).
 const TITULOS = [
@@ -70,8 +71,8 @@ function Navbar() {
     setForm({
       Name: user?.Name || "",
       Email: user?.Email || "",
-      Telefono: user?.Telefono || "",
-      DNI: user?.DNI ?? "",
+      Telefono: soloDigitos(user?.Telefono),
+      DNI: soloDigitos(user?.DNI),
       Password: "",
     });
     setError("");
@@ -82,9 +83,9 @@ function Navbar() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "DNI" && !/^\d*$/.test(value)) return;
-    if (name === "Telefono" && !/^[\d+\s-]*$/.test(value)) return;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    // DNI y teléfono se muestran con formato pero se guardan solo con dígitos.
+    const limpio = name === "DNI" ? soloDigitos(value).slice(0, 8) : name === "Telefono" ? soloDigitos(value).slice(0, 13) : value;
+    setForm((prev) => ({ ...prev, [name]: limpio }));
   };
 
   const guardar = async (e) => {
@@ -98,6 +99,14 @@ function Navbar() {
     }
     if (!/^\S+@\S+\.\S+$/.test(Email.trim())) {
       setError("El correo no es válido.");
+      return;
+    }
+    if (validarDNI(DNI)) {
+      setError(validarDNI(DNI));
+      return;
+    }
+    if (Telefono && validarTelefono(Telefono)) {
+      setError(validarTelefono(Telefono));
       return;
     }
     if (Password && Password.length < 8) {
@@ -145,11 +154,11 @@ function Navbar() {
       <div className="mt-2 flex flex-row items-center justify-end gap-2 md:mt-0 md:gap-3">
         <Link href="/admin/userMenu">
           <button className="mac-press flex items-center gap-2 rounded-xl bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
-            <FiUsers /> Usuarios
+            <FiUsers /> <span className="hidden sm:inline">Usuarios</span>
           </button>
         </Link>
 
-        <div className="text-right">
+        <div className="hidden text-right sm:block">
           <p className="text-xs font-semibold md:text-base">{nombre}</p>
           {correo && <p className="text-xs opacity-60">{correo}</p>}
         </div>
@@ -215,11 +224,11 @@ function Navbar() {
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1.5 text-sm font-medium">
               DNI
-              <input name="DNI" inputMode="numeric" value={form.DNI} onChange={handleChange} className={campoCls} maxLength={10} />
+              <input name="DNI" inputMode="numeric" value={formatDNI(form.DNI)} onChange={handleChange} className={campoCls} />
             </label>
             <label className="flex flex-col gap-1.5 text-sm font-medium">
               Teléfono
-              <input name="Telefono" inputMode="tel" value={form.Telefono} onChange={handleChange} className={campoCls} maxLength={15} />
+              <input name="Telefono" inputMode="tel" value={formatTelefono(form.Telefono)} onChange={handleChange} className={campoCls} />
             </label>
           </div>
           <label className="flex flex-col gap-1.5 text-sm font-medium">

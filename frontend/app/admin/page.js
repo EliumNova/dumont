@@ -1,10 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState, useEffect, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
 
-import UserMenu from "./userMenu/page.js";
 import ClientMenu from "./clientMenu/page.js";
 import DevicesMenu from "./devicesMenu/page.js";
 import CommunicationMenu from "./communicationMenu/page.js";
@@ -14,11 +12,9 @@ import GeolocatorMenu from "./geolocatorMenu/page.js";
 import { Search } from "lucide-react";
 
 import VentanaSO, { DockVentanas } from "./components/VentanaSO";
-import ProfileModal from "./components/ProfileModal";
-import CarteraModal from "./components/CarteraModal";
+import BuscadorSO from "./components/BuscadorSO";
 
-import { fetchClients } from "@/lib/slices/clients/clientAction";
-import { getDistribuidores } from "@/lib/slices/distribuidores/distribuidorAction";
+import axios from "axios";
 
 const MENUS = {
   distributors: { titulo: "Distribuidores", Componente: DistribuidorMenu },
@@ -29,19 +25,6 @@ const MENUS = {
 };
 
 function AdminMenu() {
-  const dispatch = useDispatch();
-
-  const usuarioIniciado = useSelector((state) => state.auth.user);
-
-  // NUEVA RUTA CORRECTA
-  const clientsPage = useSelector((state) => state.clients.data);
-  const distribuidoresPage = useSelector(
-    (state) => state.distribuidores.allDistribuidores
-  );
-
-  const clientsRows = clientsPage?.rows || [];
-  const distribuidoresRows = distribuidoresPage?.rows || [];
-
   // Gestor de ventanas: cada menú se abre en su propia ventana (se pueden
   // tener varias abiertas, mover, minimizar, maximizar y cerrar).
   const [ventanas, setVentanas] = useState([]); // [{ id, titulo, minimizada, maximizada, z }]
@@ -77,64 +60,25 @@ function AdminMenu() {
   };
   const [openSearch, setOpenSearch] = useState(false);
 
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState(null);
-  const [carteraDistribuidor, setCarteraDistribuidor] = useState(null);
 
   // La sesión la restaura <AuthGuard> en app/admin/layout.js.
 
-  // 🔥 Cargar clientes + distribuidores cuando se abre el buscador
+  // Listas COMPLETAS para el buscador. Se piden al abrirlo (así están al día) y
+  // no se comparten con las tablas de Redux, que solo guardan la página actual.
+  const [todosClientes, setTodosClientes] = useState([]);
+  const [todosDistribuidores, setTodosDistribuidores] = useState([]);
   useEffect(() => {
     if (!openSearch) return;
-
-    if (!clientsRows || clientsRows.length === 0) {
-      dispatch(fetchClients({ page: 0, pageSize: 10000 })); // <- esto ya lo tenés
-    }
-
-    if (distribuidoresRows.length === 0) {
-      dispatch(getDistribuidores({ page: 0, pageSize: 10000 }));
-    }
-  }, [openSearch, dispatch]);
-
-  // 🔵 Unificar clientes + distribuidores para búsqueda
-  const combined = useMemo(() => {
-    const mClients = clientsRows.map((c) => ({
-      type: "cliente",
-      id: c.idClientes || c.id,
-      name: c.RazonSocial || c.Nombre || c.NombreCompleto || "",
-      codigo: c.CodigoCliente || c.codigo || "",
-      localidad: c.Localidad || "",
-      email: c.Email || c.CorreoElectronico || "",
-      codigoDumont: c.CodigoDumont || "",
-      raw: c,
-    }));
-
-    const mDistribs = distribuidoresRows.map((d) => ({
-      type: "distribuidor",
-      id: d.idDistribuidor || d.id,
-      name: d.NombreComercial || d.RazonSocial || "",
-      codigo: d.CodigoDistribuidor || d.codigo || "",
-      localidad: d.Localidad || "",
-      email: d.Email || d.CorreoElectronico || "",
-      raw: d,
-    }));
-
-    return [...mClients, ...mDistribs];
-  }, [clientsRows, distribuidoresRows]);
-
-  // 🔍 Buscador
-  const results = useMemo(() => {
-    const q = search.toLowerCase();
-
-    return combined.filter((item) => {
-      return (
-        (item.nombre?.toLowerCase() || "").includes(q) ||
-        (item.localidad?.toLowerCase() || "").includes(q) ||
-        (item.email?.toLowerCase() || "").includes(q) ||
-        (item.codigoDumont?.toLowerCase() || "").includes(q)
-      );
-    });
-  }, [search, combined]);
+    const base = process.env.NEXT_PUBLIC_API_URL;
+    axios
+      .get(`${base}/api/clientes`, { params: { page: 0, pageSize: 10000 } })
+      .then((r) => setTodosClientes(r.data?.rows || []))
+      .catch((e) => console.error("Buscador (clientes):", e));
+    axios
+      .get(`${base}/api/distribuidores`, { params: { page: 0, pageSize: 10000 } })
+      .then((r) => setTodosDistribuidores(r.data?.rows || []))
+      .catch((e) => console.error("Buscador (distribuidores):", e));
+  }, [openSearch]);
 
   // Atajos del teclado
   useEffect(() => {
@@ -142,11 +86,9 @@ function AdminMenu() {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         setOpenSearch(true);
-        setSearch("");
       }
       if (e.key === "Escape") {
         setOpenSearch(false);
-        setSearch("");
       }
     };
 
@@ -154,15 +96,9 @@ function AdminMenu() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  function handleSelect(item) {
-    setSelected(item);
-    setOpenSearch(false);
-    setSearch("");
-  }
-
   return (
     <div
-      className="w-full h-screen p-4 flex flex-col items-center bg-cover bg-center"
+      className="w-full h-full p-3 sm:p-4 flex flex-col items-center bg-cover bg-center"
       style={{
         backgroundImage: "url('/path/to/your/background-image.jpg')",
       }}>
@@ -260,83 +196,18 @@ function AdminMenu() {
           className="p-2 ml-3 rounded-full hover:bg-gray-200 transition"
           onClick={() => {
             setOpenSearch(true);
-            setSearch("");
           }}>
           <Search size={22} />
         </button>
       </div>
 
-      {/* SEARCH MODAL */}
-      {openSearch && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white text-black p-6 rounded-lg w-[520px] shadow-xl">
-            <input
-              className="w-full p-3 border rounded mb-4"
-              placeholder="Buscar por nombre, código, localidad, email..."
-              autoFocus
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-
-            <div className="max-h-[320px] overflow-y-auto divide-y">
-              {results.length === 0 ? (
-                <p className="text-gray-500 p-3">Sin resultados</p>
-              ) : (
-                results.map((item) => (
-                  <div
-                    key={`${item.type}-${item.id}`}
-                    onClick={() => handleSelect(item)}
-                    className="p-3 hover:bg-gray-100 cursor-pointer flex justify-between items-start">
-                    <div>
-                      <div className="font-semibold">
-                        {item.type === "cliente" ? "🏪 " : "🚚 "}
-                        {item.name}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Código: {item.codigo || "—"} •{" "}
-                        {item.localidad || "Sin localidad"}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {item.email || ""}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <button
-              className="w-full mt-4 px-4 py-2 bg-red-500 text-white rounded"
-              onClick={() => {
-                setOpenSearch(false);
-                setSearch("");
-              }}>
-              Cerrar
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* PROFILE MODAL */}
-      {selected && (
-        <ProfileModal
-          data={selected}
-          onClose={() => setSelected(null)}
-          onOpenCartera={(distRaw) => {
-            setCarteraDistribuidor(distRaw.raw || distRaw);
-            setSelected(null);
-          }}
-        />
-      )}
-
-      {/* CARTERA MODAL */}
-      {carteraDistribuidor && (
-        <CarteraModal
-          distribuidor={carteraDistribuidor}
-          clientesAll={clientsRows} // <--- pasamos todos los clientes
-          onClose={() => setCarteraDistribuidor(null)}
-        />
-      )}
+      {/* BUSCADOR (ventana con navegación buscar → perfil → cartera) */}
+      <BuscadorSO
+        isOpen={openSearch}
+        onClose={() => setOpenSearch(false)}
+        clientes={todosClientes}
+        distribuidores={todosDistribuidores}
+      />
 
       {/* VENTANAS */}
       {ventanas.map((v, i) => {

@@ -38,6 +38,23 @@ const asegurarAdmin = async () => {
   }
 };
 
+// Cambios de tipo de columnas existentes (idempotentes).
+const migrarTipos = async () => {
+  const qi = sequelize.getQueryInterface();
+  try {
+    const cols = await qi.describeTable("Clientes");
+    if (cols.Telefono && /INT/i.test(cols.Telefono.type)) {
+      await qi.changeColumn("Clientes", "Telefono", {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+      });
+      console.log("ensureSchema: Clientes.Telefono pasó a VARCHAR(20)");
+    }
+  } catch (e) {
+    console.error("ensureSchema: no se pudo migrar Clientes.Telefono:", e.message);
+  }
+};
+
 export const ensureSchema = async () => {
   const qi = sequelize.getQueryInterface();
   for (const [tabla, columnas] of Object.entries(COLUMNAS)) {
@@ -58,5 +75,6 @@ export const ensureSchema = async () => {
       }
     }
   }
+  await migrarTipos();
   await asegurarAdmin();
 };

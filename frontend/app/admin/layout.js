@@ -16,7 +16,7 @@ export default function Layout({ children }) {
   return (
     <AuthGuard>
     {/* bg-[#060f3a] */}
-    <div className="flex flex-col w-full h-screen relative bg-[#060f3a] overflow-hidden">
+    <div className="flex flex-col w-full h-[100dvh] relative bg-[#060f3a] overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-no-repeat bg-center"
         style={{

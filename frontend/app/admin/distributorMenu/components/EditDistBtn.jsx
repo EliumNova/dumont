@@ -10,6 +10,7 @@ import { AiOutlineEdit } from "react-icons/ai";
 import MacModal from "../../components/MacModal";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import Field from "../../components/Field";
+import { soloDigitos, validarTelefono } from "@/lib/formato";
 
 const VACIO = {
   NombreComercial: "",
@@ -31,7 +32,12 @@ function EditDistBtn({ datos, onEditComplete }) {
 
   const abrir = () => {
     setForm(
-      Object.fromEntries(Object.keys(VACIO).map((k) => [k, datos[k] || ""]))
+      Object.fromEntries(
+        Object.keys(VACIO).map((k) => [
+          k,
+          k === "Telefono" || k === "SegundoTelefono" ? soloDigitos(datos[k]) : datos[k] || "",
+        ])
+      )
     );
     setError("");
     setAbierto(true);
@@ -54,6 +60,11 @@ function EditDistBtn({ datos, onEditComplete }) {
     }
     if (!/^\S+@\S+\.\S+$/.test(form.Email.trim())) {
       setError("El correo no es válido.");
+      return;
+    }
+    const errTel = validarTelefono(form.Telefono) || validarTelefono(form.SegundoTelefono);
+    if (errTel) {
+      setError(errTel);
       return;
     }
     await dispatch(distribuidorUpdate(datos.idDistribuidor, form));
@@ -89,8 +100,8 @@ function EditDistBtn({ datos, onEditComplete }) {
             <Field label="Entre calles" name="EntreCalles" value={form.EntreCalles} onChange={handleChange} />
             <Field label="Localidad" name="Localidad" value={form.Localidad} onChange={handleChange} />
             <Field label="Email" name="Email" type="email" placeholder="distribuidor@email.com" value={form.Email} onChange={handleChange} />
-            <Field label="Teléfono" name="Telefono" inputMode="tel" value={form.Telefono} onChange={handleChange} />
-            <Field label="Teléfono (jefe de ventas)" name="SegundoTelefono" inputMode="tel" value={form.SegundoTelefono} onChange={handleChange} />
+            <Field label="Teléfono" name="Telefono" formato="telefono" value={form.Telefono} onChange={handleChange} />
+            <Field label="Teléfono (jefe de ventas)" name="SegundoTelefono" formato="telefono" value={form.SegundoTelefono} onChange={handleChange} />
           </div>
           {error && <p className="mac-shake rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
 

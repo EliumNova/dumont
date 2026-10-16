@@ -13,11 +13,13 @@ const {
   updateDispositivo,
   deleteDispositivo,
   liberarSesion,
+  getOpcionesDispositivo,
   getAllDispositivosNoPaginate,
 } = dispositivosController;
 
 dispositivosRouter.get('/', getDispositivos);
 dispositivosRouter.get('/all', getAllDispositivosNoPaginate);
+dispositivosRouter.get('/opciones', getOpcionesDispositivo);
 
 dispositivosRouter.get('/:id', getDispositivoById);
 dispositivosRouter.post(

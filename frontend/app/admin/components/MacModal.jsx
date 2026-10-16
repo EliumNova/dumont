@@ -20,6 +20,7 @@ export default function MacModal({
   footer = true,
   maxWidth = 'max-w-4xl',
   zIndex = 'z-50',
+  onBack,
 }) {
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -45,11 +46,22 @@ export default function MacModal({
       <div
         className={`mac-modal mac-glass relative flex max-h-[90vh] w-full ${maxWidth} flex-col rounded-3xl text-[#191920]`}>
         <div className="flex items-center justify-between gap-4 px-6 pt-5">
-          {title ? (
-            <h2 className="text-lg font-semibold sm:text-xl">{title}</h2>
-          ) : (
-            <span />
-          )}
+          <div className="flex min-w-0 items-center gap-3">
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                aria-label="Volver"
+                className="mac-press flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 text-lg leading-none text-gray-600 hover:bg-black/10">
+                ←
+              </button>
+            )}
+            {title ? (
+              <h2 className="truncate text-lg font-semibold sm:text-xl">{title}</h2>
+            ) : (
+              <span />
+            )}
+          </div>
           <button
             type="button"
             onClick={onClose}

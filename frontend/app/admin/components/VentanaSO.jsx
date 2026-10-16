@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiMinus, FiSquare, FiCopy, FiX } from "react-icons/fi";
 
 const ALTO_NAVBAR = 64; // barra superior del admin
@@ -39,9 +39,21 @@ export default function VentanaSO({
   });
   const arrastre = useRef(null);
 
+  // En pantallas chicas (celular/tablet vertical) la ventana ocupa toda la
+  // pantalla: no se arrastra ni se redimensiona.
+  const [esMovil, setEsMovil] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const actualizar = () => setEsMovil(mq.matches);
+    actualizar();
+    mq.addEventListener("change", actualizar);
+    return () => mq.removeEventListener("change", actualizar);
+  }, []);
+  const pantallaCompleta = maximizada || esMovil;
+
   const empezarArrastre = (e) => {
     onEnfocar();
-    if (maximizada || e.target.closest("button")) return;
+    if (pantallaCompleta || e.target.closest("button")) return;
     arrastre.current = { dx: e.clientX - caja.x, dy: e.clientY - caja.y };
     e.currentTarget.setPointerCapture(e.pointerId);
   };
@@ -55,13 +67,15 @@ export default function VentanaSO({
     arrastre.current = null;
   };
 
-  const estilo = maximizada
+  const estilo = esMovil
+    ? { left: 0, top: 0, right: 0, bottom: ALTO_DOCK, zIndex: z }
+    : maximizada
     ? { left: 0, top: ALTO_NAVBAR, right: 0, bottom: ALTO_DOCK, zIndex: z }
     : { left: caja.x, top: caja.y, width: caja.w, height: caja.h, zIndex: z };
 
   // Al terminar de redimensionar con la esquina, guardamos el nuevo tamaño.
   const guardarTamano = (e) => {
-    if (maximizada) return;
+    if (pantallaCompleta) return;
     const el = e.currentTarget;
     setCaja((c) =>
       c.w === el.offsetWidth && c.h === el.offsetHeight
@@ -79,11 +93,11 @@ export default function VentanaSO({
       style={{
         ...estilo,
         display: minimizada ? "none" : "flex",
-        resize: maximizada ? "none" : "both",
-        minWidth: 320,
-        minHeight: 220,
+        resize: pantallaCompleta ? "none" : "both",
+        minWidth: esMovil ? 0 : 320,
+        minHeight: esMovil ? 0 : 220,
       }}
-      className={`mac-window-in fixed flex-col overflow-hidden rounded-2xl bg-white text-[#191920] ${
+      className={`mac-window-in fixed flex-col overflow-hidden ${esMovil ? "rounded-none" : "rounded-2xl"} bg-white text-[#191920] ${
         enfocada ? "shadow-[0_25px_70px_-10px_rgba(0,0,0,0.55)]" : "shadow-xl opacity-95"
       } ring-1 ring-black/10`}>
       {/* Barra de título */}
@@ -93,7 +107,7 @@ export default function VentanaSO({
         onPointerUp={terminarArrastre}
         onDoubleClick={onMaximizar}
         className={`flex shrink-0 select-none items-center justify-between gap-3 border-b border-black/5 pl-4 ${
-          maximizada ? "cursor-default" : "cursor-grab active:cursor-grabbing"
+          pantallaCompleta ? "cursor-default" : "cursor-grab active:cursor-grabbing"
         } ${enfocada ? "bg-[#F2F5F6]" : "bg-gray-100 text-gray-500"}`}>
         <div className="flex min-w-0 items-center gap-2 py-2 text-sm font-semibold">
           {icono}
@@ -103,7 +117,7 @@ export default function VentanaSO({
           <button type="button" onClick={onMinimizar} aria-label="Minimizar" className="flex h-10 w-12 items-center justify-center transition-colors hover:bg-black/10">
             <FiMinus />
           </button>
-          <button type="button" onClick={onMaximizar} aria-label={maximizada ? "Restaurar" : "Maximizar"} className="flex h-10 w-12 items-center justify-center transition-colors hover:bg-black/10">
+          <button type="button" onClick={onMaximizar} aria-label={maximizada ? "Restaurar" : "Maximizar"} className="hidden h-10 w-12 md:flex items-center justify-center transition-colors hover:bg-black/10">
             {maximizada ? <FiCopy className="h-3.5 w-3.5" /> : <FiSquare className="h-3.5 w-3.5" />}
           </button>
           <button type="button" onClick={onCerrar} aria-label="Cerrar" className="flex h-10 w-12 items-center justify-center transition-colors hover:bg-red-500 hover:text-white">

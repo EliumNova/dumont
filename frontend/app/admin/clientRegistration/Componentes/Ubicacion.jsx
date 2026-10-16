@@ -1,278 +1,117 @@
 'use client';
-import { setUbicacion } from '@/lib/slices/clients/clientSlice'; // Importa la acción desde el slice combinado
-import React, { useState, useRef } from 'react';
+import { setUbicacion } from '@/lib/slices/clients/clientSlice';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Field from '../../components/Field';
+import AddressAutocomplete from '../../components/AddressAutocomplete';
+import { BotonesForm } from '../../components/FormCard';
+import { validarFormulario, validarRequerido } from '@/lib/formato';
 
-// Orden real de navegación (izquierda a derecha, arriba a abajo) del formulario.
-// Se usa para que la tecla Enter avance al siguiente campo en este orden, en vez
-// de disparar el submit nativo del form (que hace que el navegador salte al
-// primer campo "required" vacío, generalmente Localidad).
 // OJO: estos nombres deben coincidir EXACTO (mayúsculas incluidas) con los
-// atributos del modelo Clientes.js en el backend, si no, Sequelize los
-// ignora en silencio y el alta del cliente queda incompleta.
-const FIELD_ORDER = [
-  'Localidad',
-  'Calle',
-  'Altura',
-  'EntreCalle1',
-  'EntreCalle2',
-  'Latitud',
-  'Longitud',
-];
+// atributos del modelo Clientes.js en el backend, si no, Sequelize los ignora
+// en silencio y el alta del cliente queda incompleta.
+const REGLAS = {
+  Localidad: (v) => validarRequerido(v, 'La localidad'),
+  Calle: (v) => validarRequerido(v, 'La calle'),
+  Altura: (v) => (/^[0-9A-Za-z/ ]{1,10}$/.test(String(v).trim()) ? '' : 'Ingresá la altura (ej. 777 o S/N).'),
+  EntreCalle1: (v) => validarRequerido(v, 'La primera entre calle'),
+  EntreCalle2: (v) => validarRequerido(v, 'La segunda entre calle'),
+  Latitud: (v) => (!v || (!Number.isNaN(Number(v)) && Math.abs(Number(v)) <= 90) ? '' : 'Latitud inválida (entre -90 y 90).'),
+  Longitud: (v) => (!v || (!Number.isNaN(Number(v)) && Math.abs(Number(v)) <= 180) ? '' : 'Longitud inválida (entre -180 y 180).'),
+};
 
-// Intenta separar un pegado tipo "-34.819743, -58.636132" (formato típico al
-// copiar una ubicación de Google Maps) en sus dos componentes.
+// Separa un pegado tipo "-34.819743, -58.636132" (como se copia de Google Maps).
 const splitCoordsPaste = (text) => {
-  const match = text
-    .trim()
-    .match(/^(-?\d+\.?\d*)\s*[,;]\s*(-?\d+\.?\d*)$/);
-  if (!match) return null;
-  return { lat: match[1], lng: match[2] };
+  const m = text.trim().match(/^(-?\d+\.?\d*)\s*[,;]\s*(-?\d+\.?\d*)$/);
+  return m ? { lat: m[1], lng: m[2] } : null;
 };
 
 function Ubicacion({ onNext, onBack }) {
-  const storeUbicacion = useSelector(
-    (state) => state.clients.newCustomer.ubicacion
-  ); // Accede al estado desde el slice combinado
+  const store = useSelector((state) => state.clients.newCustomer.ubicacion);
   const dispatch = useDispatch();
 
-  const [ubicacionInfo, setUbicacionInfo] = useState({
-    Localidad: storeUbicacion?.Localidad || '',
-    Calle: storeUbicacion?.Calle || '',
-    Altura: storeUbicacion?.Altura || '',
-    EntreCalle1: storeUbicacion?.EntreCalle1 || '',
-    EntreCalle2: storeUbicacion?.EntreCalle2 || '',
-    Latitud: storeUbicacion?.Latitud || '',
-    Longitud: storeUbicacion?.Longitud || '',
+  const [info, setInfo] = useState({
+    Localidad: store?.Localidad || '',
+    Calle: store?.Calle || '',
+    Altura: store?.Altura || '',
+    EntreCalle1: store?.EntreCalle1 || '',
+    EntreCalle2: store?.EntreCalle2 || '',
+    Latitud: store?.Latitud || '',
+    Longitud: store?.Longitud || '',
   });
+  const [errores, setErrores] = useState({});
+  const [autocompletado, setAutocompletado] = useState(false);
 
-  const [errorMessage, setErrorMessage] = useState({ error: '' });
-
-  const fieldRefs = useRef({});
-
-  const handleFieldKeyDown = (e, fieldName) => {
-    if (e.key !== 'Enter') return;
-    e.preventDefault(); // Evita el submit nativo (y el salto de foco a Localidad)
-
-    const currentIndex = FIELD_ORDER.indexOf(fieldName);
-    const nextField = FIELD_ORDER[currentIndex + 1];
-
-    if (nextField && fieldRefs.current[nextField]) {
-      fieldRefs.current[nextField].focus();
-    } else {
-      // Último campo: intenta avanzar al siguiente paso
-      handleNextStep(e);
-    }
-  };
-
-  // Función para validar el input de texto (dirección)
-  const validateInput = (value) => {
-    return /^[a-zA-Z0-9@.\s-]+$/.test(value);
-  };
-
-  // Las coordenadas permiten números negativos y punto decimal
-  const validateCoord = (value) => {
-    return /^-?[0-9.]*$/.test(value);
-  };
-
-  // Función handleChange modificada
-  const handleChange = (e) => {
+  const cambiar = (e) => {
     const { name, value } = e.target;
-    const isCoordField = name === 'Latitud' || name === 'Longitud';
-
-    // Validar el input antes de actualizar el estado
-    if (isCoordField ? validateCoord(value) : validateInput(value)) {
-      // Actualizar el estado del objeto formState
-      setUbicacionInfo((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    } else {
-      setErrorMessage({ error: 'Caracteres inválidos en el campo.' });
-
-      // Limpiar el mensaje de error después de 3 segundos
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
-    }
+    setInfo((p) => ({ ...p, [name]: value }));
+    setErrores((er) => ({ ...er, [name]: '' }));
   };
 
-  // Si el vendedor pega "lat, lng" directo en el campo Latitud (formato que
-  // se copia de Google Maps), lo separamos automáticamente en los dos campos.
-  const handleLatitudPaste = (e) => {
-    const pasted = e.clipboardData.getData('text');
-    const parsed = splitCoordsPaste(pasted);
+  // Una sugerencia completa calle, altura, localidad y coordenadas de una vez.
+  const alElegirDireccion = (d) => {
+    setInfo((p) => ({
+      ...p,
+      Calle: d.Calle || p.Calle,
+      Altura: d.Altura || p.Altura,
+      Localidad: d.Localidad || p.Localidad,
+      Latitud: d.Latitud || p.Latitud,
+      Longitud: d.Longitud || p.Longitud,
+    }));
+    setErrores({});
+    setAutocompletado(true);
+  };
+
+  const pegarCoordenadas = (e) => {
+    const parsed = splitCoordsPaste(e.clipboardData.getData('text'));
     if (parsed) {
       e.preventDefault();
-      setUbicacionInfo((prev) => ({
-        ...prev,
-        Latitud: parsed.lat,
-        Longitud: parsed.lng,
-      }));
+      setInfo((p) => ({ ...p, Latitud: parsed.lat, Longitud: parsed.lng }));
     }
   };
 
-  const handleNextStep = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    const { Localidad, Calle, Altura, EntreCalle1, EntreCalle2 } =
-      ubicacionInfo;
-
-    // Validar campos obligatorios (las coordenadas son opcionales: son un
-    // respaldo, no siempre el vendedor las tiene a mano)
-    if (!Localidad || !Calle || !Altura || !EntreCalle1 || !EntreCalle2) {
-      setErrorMessage({ error: 'Todos los campos son obligatorios.' });
-      return;
-    }
-
-    // Si todas las validaciones pasan, guardar datos en Redux y avanzar al siguiente paso
-    dispatch(setUbicacion(ubicacionInfo)); // Guarda los datos en Redux
-    onNext(); // Navega al siguiente paso
+    const errs = validarFormulario(info, REGLAS);
+    setErrores(errs);
+    if (Object.keys(errs).length) return;
+    dispatch(setUbicacion(info));
+    onNext();
   };
 
   return (
-    <form
-      onSubmit={handleNextStep}
-      className="h-full mx-auto flex flex-col items-center w-full"
-    >
-      <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 w-full text-white">
-        {/** Localidad */}
-        <div className="flex flex-col w-full">
-          <label htmlFor="Localidad" className="text-sm font-semibold">
-            Localidad
-          </label>
-          <input
-            type="text"
-            name="Localidad"
-            placeholder="Ingresa tu Localidad"
-            value={ubicacionInfo?.Localidad}
-            onChange={handleChange}
-            onKeyDown={(e) => handleFieldKeyDown(e, 'Localidad')}
-            ref={(el) => (fieldRefs.current.Localidad = el)}
-            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
-          />
-        </div>
-
-        {/** Calle */}
-        <div className="flex flex-col w-full">
-          <label htmlFor="Calle" className="text-sm font-semibold">
-            Calle
-          </label>
-          <input
-            type="text"
-            name="Calle"
-            onChange={handleChange}
-            value={ubicacionInfo?.Calle}
-            placeholder="Ingresa tu Calle"
-            onKeyDown={(e) => handleFieldKeyDown(e, 'Calle')}
-            ref={(el) => (fieldRefs.current.Calle = el)}
-            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
-          />
-        </div>
-
-        {/** Altura */}
-        <div className="flex flex-col w-full">
-          <label className="text-sm font-semibold">Altura</label>
-          <input
-            onChange={handleChange}
-            value={ubicacionInfo?.Altura}
-            type="text"
-            name="Altura"
-            placeholder="Ingresa tu Altura"
-            onKeyDown={(e) => handleFieldKeyDown(e, 'Altura')}
-            ref={(el) => (fieldRefs.current.Altura = el)}
-            className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base w-full text-black"
-          />
-        </div>
-
-        {/** Entre Calles */}
-        <div className="flex flex-col w-full">
-          <label htmlFor="entreCalle" className="text-sm font-semibold">
-            Entre Calles
-          </label>
-          <div className="flex flex-row items-center gap-2">
-            <input
-              onChange={handleChange}
-              value={ubicacionInfo?.EntreCalle1}
-              type="text"
-              name="EntreCalle1"
-              placeholder="Calle 1"
-              onKeyDown={(e) => handleFieldKeyDown(e, 'EntreCalle1')}
-              ref={(el) => (fieldRefs.current.EntreCalle1 = el)}
-              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
-            />
-            <input
-              type="text"
-              name="EntreCalle2"
-              onChange={handleChange}
-              value={ubicacionInfo?.EntreCalle2}
-              placeholder="Calle 2"
-              onKeyDown={(e) => handleFieldKeyDown(e, 'EntreCalle2')}
-              ref={(el) => (fieldRefs.current.EntreCalle2 = el)}
-              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
-            />
-          </div>
-        </div>
-
-        {/** Coordenadas (respaldo para el mapa) */}
-        <div className="flex flex-col w-full sm:col-span-2">
-          <label className="text-sm font-semibold">
-            Coordenadas (opcional, respaldo para el mapa)
-          </label>
-          <div className="flex flex-row items-center gap-2">
-            <input
-              onChange={handleChange}
-              onPaste={handleLatitudPaste}
-              value={ubicacionInfo?.Latitud}
-              type="text"
-              name="Latitud"
-              placeholder="Latitud (ej. -34.819743)"
-              onKeyDown={(e) => handleFieldKeyDown(e, 'Latitud')}
-              ref={(el) => (fieldRefs.current.Latitud = el)}
-              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
-            />
-            <input
-              onChange={handleChange}
-              value={ubicacionInfo?.Longitud}
-              type="text"
-              name="Longitud"
-              placeholder="Longitud (ej. -58.636132)"
-              onKeyDown={(e) => handleFieldKeyDown(e, 'Longitud')}
-              ref={(el) => (fieldRefs.current.Longitud = el)}
-              className="w-1/2 bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
-            />
-          </div>
-          <span className="text-xs text-gray-300 mt-1">
-            Se pueden pegar juntas (ej. &quot;-34.819743, -58.636132&quot;) en el campo
-            Latitud y se separan solas.
-          </span>
-        </div>
-      </div>
-
-      <div className="mt-8">
-        {/* Mensaje de error */}
-        {errorMessage.error && (
-          <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium my-4">
-            {errorMessage.error}
-          </div>
+    <form onSubmit={handleSubmit} noValidate>
+      <section className="mb-6">
+        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Dirección</h3>
+        <AddressAutocomplete onSelect={alElegirDireccion} className="mb-3" />
+        {autocompletado && (
+          <p className="mac-fade-up mb-3 rounded-xl bg-green-50 px-4 py-2 text-xs text-green-700">
+            Dirección completada. Revisá los campos y agregá las entre calles.
+          </p>
         )}
-
-        <div className="flex flex-col md:flex-row gap-5 w-full justify-items-center">
-          <button
-            type="button"
-            onClick={onBack}
-            className="w-[15rem] h-14 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
-          >
-            Atrás
-          </button>
-          <button
-            type="submit"
-            className="w-[15rem] h-14 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold"
-          >
-            Siguiente
-          </button>
+        <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
+          <Field label="Localidad" name="Localidad" value={info.Localidad} error={errores.Localidad} onChange={cambiar} maxLength={45} />
+          <Field label="Calle" name="Calle" value={info.Calle} error={errores.Calle} onChange={cambiar} maxLength={60} />
+          <Field label="Altura" name="Altura" value={info.Altura} error={errores.Altura} onChange={cambiar} maxLength={10} placeholder="Ej. 777" />
+          <span className="hidden sm:block" />
+          <Field label="Entre calle 1" name="EntreCalle1" value={info.EntreCalle1} error={errores.EntreCalle1} onChange={cambiar} maxLength={45} />
+          <Field label="Entre calle 2" name="EntreCalle2" value={info.EntreCalle2} error={errores.EntreCalle2} onChange={cambiar} maxLength={45} />
         </div>
-      </div>
+      </section>
+
+      <section className="mb-6">
+        <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Coordenadas (opcional)</h3>
+        <p className="mb-3 text-xs text-gray-500">
+          Se completan solas al elegir una dirección. Son el respaldo para el mapa; también podés pegar
+          &quot;-34.819743, -58.636132&quot; en Latitud y se separan solas.
+        </p>
+        <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
+          <Field label="Latitud" name="Latitud" value={info.Latitud} error={errores.Latitud} onChange={cambiar} onPaste={pegarCoordenadas} placeholder="-34.819743" />
+          <Field label="Longitud" name="Longitud" value={info.Longitud} error={errores.Longitud} onChange={cambiar} placeholder="-58.636132" />
+        </div>
+      </section>
+
+      <BotonesForm onCancel={onBack} cancelText="Atrás" submitText="Siguiente" />
     </form>
   );
 }

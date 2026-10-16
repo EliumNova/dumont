@@ -2,154 +2,66 @@
 import { setHorus } from '@/lib/slices/clients/clientSlice';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Field from '../../components/Field';
+import { BotonesForm } from '../../components/FormCard';
 
-function Horus({ onSubmit, onBack, setShowModal }) {
+function Horus({ onSubmit, onBack, enviando }) {
   const storeHorus = useSelector((state) => state.clients.newCustomer.horus);
   const dispatch = useDispatch();
 
-  const [horusInfo, setHorusInfo] = useState({
+  const [info, setInfo] = useState({
     saleHorusFrom: storeHorus?.saleHorusFrom || '',
     saleHorusTo: storeHorus?.saleHorusTo || '',
     closeHorusFrom: storeHorus?.closeHorusFrom || '',
     closeHorusTo: storeHorus?.closeHorusTo || '',
   });
+  const [errores, setErrores] = useState({});
 
-  const [errorMessage, setErrorMessage] = useState({ error: '' });
-
-  const handleChange = (e) => {
+  const cambiar = (e) => {
     const { name, value } = e.target;
-    setHorusInfo((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleBack = () => {
-    onBack();
+    setInfo((p) => ({ ...p, [name]: value }));
+    setErrores((er) => ({ ...er, [name]: '', general: '' }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const { saleHorusFrom, saleHorusTo, closeHorusFrom, closeHorusTo } = info;
+    const errs = {};
+    if (!saleHorusFrom) errs.saleHorusFrom = 'Indicá la hora de apertura.';
+    if (!saleHorusTo) errs.saleHorusTo = 'Indicá la hora de cierre.';
+    // Segundo turno: o se completan ambos campos o ninguno.
+    if (closeHorusFrom && !closeHorusTo) errs.closeHorusTo = 'Completá también el cierre del segundo turno.';
+    if (!closeHorusFrom && closeHorusTo) errs.closeHorusFrom = 'Completá también la apertura del segundo turno.';
+    setErrores(errs);
+    if (Object.keys(errs).length) return;
 
-    const { saleHorusFrom, saleHorusTo, closeHorusFrom, closeHorusTo } =
-      horusInfo;
+    let horario = `${saleHorusFrom} - ${saleHorusTo}`;
+    if (closeHorusFrom && closeHorusTo) horario += ` / ${closeHorusFrom} - ${closeHorusTo}`;
 
-    // Validación: mínimo debe estar el horario de apertura completo
-    if (!saleHorusFrom || !saleHorusTo) {
-      setErrorMessage({
-        error: 'Debe completarse el horario de apertura (Desde y Hasta).',
-      });
-      return;
-    }
-
-    // Validación: si completaron solo uno de los dos campos de cierre
-    if (
-      (closeHorusFrom && !closeHorusTo) ||
-      (!closeHorusFrom && closeHorusTo)
-    ) {
-      setErrorMessage({
-        error:
-          'Debe completar ambos campos de horario de cierre (Desde y Hasta), o dejar ambos vacíos.',
-      });
-      return;
-    }
-
-    // Construimos el horarioVenta
-    let horarioVenta = `${saleHorusFrom} - ${saleHorusTo}`;
-
-    if (closeHorusFrom && closeHorusTo) {
-      horarioVenta += ` / ${closeHorusFrom} - ${closeHorusTo}`;
-    }
-
-    const formattedData = {
-      HorarioVenta: horarioVenta,
-    };
-
-    dispatch(setHorus(formattedData));
+    dispatch(setHorus({ HorarioVenta: horario }));
     onSubmit();
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="h-full flex flex-col items-center w-full"
-    >
-      <div className="flex flex-col w-full max-w-xl gap-8 text-white items-center">
-        {/* Horario de apertura */}
-        <div className="flex flex-col items-center w-full gap-4">
-          <h2 className="text-lg font-bold">Horario de apertura</h2>
-          <div className="flex flex-row justify-center items-center gap-4 w-full">
-            <div className="flex flex-col items-center">
-              <label className="text-sm">Desde</label>
-              <input
-                type="time"
-                name="saleHorusFrom"
-                value={horusInfo.saleHorusFrom}
-                onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1 text-black w-40"
-              />
-            </div>
-            <div className="flex flex-col items-center">
-              <label className="text-sm">Hasta</label>
-              <input
-                type="time"
-                name="saleHorusTo"
-                value={horusInfo.saleHorusTo}
-                onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1 text-black w-40"
-              />
-            </div>
-          </div>
+    <form onSubmit={handleSubmit} noValidate>
+      <section className="mb-6">
+        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Horario principal</h3>
+        <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
+          <Field type="time" label="Desde" name="saleHorusFrom" value={info.saleHorusFrom} error={errores.saleHorusFrom} onChange={cambiar} />
+          <Field type="time" label="Hasta" name="saleHorusTo" value={info.saleHorusTo} error={errores.saleHorusTo} onChange={cambiar} />
         </div>
+      </section>
 
-        {/* Horario de cierre */}
-        <div className="flex flex-col items-center w-full gap-4">
-          <h2 className="text-lg font-bold">Horario de cierre (opcional)</h2>
-          <div className="flex flex-row justify-center items-center gap-4 w-full">
-            <div className="flex flex-col items-center">
-              <label className="text-sm">Desde</label>
-              <input
-                type="time"
-                name="closeHorusFrom"
-                value={horusInfo.closeHorusFrom}
-                onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1 text-black w-40"
-              />
-            </div>
-            <div className="flex flex-col items-center">
-              <label className="text-sm">Hasta</label>
-              <input
-                type="time"
-                name="closeHorusTo"
-                value={horusInfo.closeHorusTo}
-                onChange={handleChange}
-                className="bg-[#E2E5E5] rounded px-2 py-1 text-black w-40"
-              />
-            </div>
-          </div>
+      <section className="mb-6">
+        <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Segundo turno (opcional)</h3>
+        <p className="mb-3 text-xs text-gray-500">Para negocios que cierran al mediodía y vuelven a abrir a la tarde.</p>
+        <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
+          <Field type="time" label="Desde" name="closeHorusFrom" value={info.closeHorusFrom} error={errores.closeHorusFrom} onChange={cambiar} />
+          <Field type="time" label="Hasta" name="closeHorusTo" value={info.closeHorusTo} error={errores.closeHorusTo} onChange={cambiar} />
         </div>
-      </div>
+      </section>
 
-      {/* Mensaje de error */}
-      {errorMessage.error && (
-        <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium my-4">
-          {errorMessage.error}
-        </div>
-      )}
-
-      {/* Botones */}
-      <div className="flex gap-5 flex-col md:flex-row my-6">
-        <button
-          type="button"
-          onClick={handleBack}
-          className="w-[15rem] h-14 bg-transparent border-principal border-2 rounded-xl text-principal text-lg tracking-wide font-semibold"
-        >
-          Atrás
-        </button>
-        <button className="w-[15rem] h-14 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold">
-          Guardar cambios
-        </button>
-      </div>
+      <BotonesForm onCancel={onBack} cancelText="Atrás" submitText="Registrar cliente" loading={enviando} />
     </form>
   );
 }

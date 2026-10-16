@@ -1,5 +1,6 @@
 import expressAsyncHandler from 'express-async-handler';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { PublishCommand } from '@aws-sdk/client-sns';
 import { Usuarios } from '../models/Usuarios.js';
 import {
@@ -9,6 +10,8 @@ import {
 } from '../../utils/utilsUsuarios.js';
 import { handleError } from '../../utils/utilsErrors.js';
 import { snsClient } from '../../utils/utilsVerify.js';
+import { enviarMail, mailConfigurado } from '../../utils/mailer.js';
+import { verificacionEmailHtml } from '../../utils/htmlEmails.js';
 import {
   generarSecreto,
   verificarTotp,
@@ -41,6 +44,30 @@ const sesion = (u) => ({ ...publico(u), token: generateToken(u) });
 
 const passwordValida = (p) => typeof p === 'string' && p.length >= PASSWORD_MIN;
 
+
+// ───────────── Verificación de correo ─────────────
+
+const HORAS_VERIFICACION = 24;
+const sha256 = (t) => crypto.createHash('sha256').update(t).digest('hex');
+
+const urlFrontend = (req) =>
+  (process.env.FRONTEND_URL || req.headers.origin || 'https://dumont.onrender.com').replace(/\/+$/, '');
+
+// Genera un token nuevo (se guarda SOLO su hash), lo manda por mail y devuelve
+// true si el mail salió. Si el mail no está configurado, no hace nada.
+const enviarVerificacion = async (req, usuario) => {
+  const token = crypto.randomBytes(32).toString('hex');
+  usuario.verifyToken = sha256(token);
+  usuario.expireToken = new Date(Date.now() + HORAS_VERIFICACION * 3600 * 1000);
+  await usuario.save();
+  const enlace = `${urlFrontend(req)}/verificar?token=${token}`;
+  await enviarMail({
+    to: usuario.Email,
+    subject: 'Verificá tu cuenta de DuMont',
+    html: verificacionEmailHtml({ nombre: usuario.Name, enlace, horas: HORAS_VERIFICACION }),
+  });
+};
+
 // ───────────────────────── CRUD ─────────────────────────
 
 const createUsuarios = expressAsyncHandler(async (req, res) => {
@@ -51,18 +78,34 @@ const createUsuarios = expressAsyncHandler(async (req, res) => {
         message: `La contraseña debe tener al menos ${PASSWORD_MIN} caracteres`,
       });
     }
-    // Lo crea un admin autenticado (ver rutas) o es el primer usuario del
-    // sistema, así que se da por verificado: el flujo por mail no está activo.
+    // Con el mail configurado, el usuario nace SIN verificar y recibe un mail
+    // con un enlace para activar la cuenta (no puede ingresar hasta hacerlo).
+    // Sin mail configurado, se da por verificado para no dejarlo bloqueado.
+    const exigeVerificacion = mailConfigurado();
     const nuevo = await Usuarios.create({
       Name,
       Email,
-      Telefono,
+      Telefono: String(Telefono ?? '').replace(/\D/g, ''),
       DNI,
       Password,
       isAdmin: !!isAdmin,
-      isVerified: true,
+      isVerified: !exigeVerificacion,
     });
-    res.status(201).send({ user: publico(nuevo) });
+
+    let verificacionEnviada = false;
+    if (exigeVerificacion) {
+      try {
+        await enviarVerificacion(req, await Usuarios.unscoped().findByPk(nuevo.idUsuarios));
+        verificacionEnviada = true;
+      } catch (err) {
+        console.error('No se pudo enviar el mail de verificación:', err.message);
+      }
+    }
+    res.status(201).send({
+      user: publico(nuevo),
+      verificacionEnviada,
+      requiereVerificacion: exigeVerificacion,
+    });
   } catch (error) {
     handleError(error, res);
   }
@@ -170,8 +213,9 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
 
     if (!usuario.isVerified) {
       return res.status(403).send({
+        code: 'NO_VERIFICADO',
         message:
-          'Tu usuario todavía no fue verificado. Pedile a un administrador que lo active.',
+          'Tu correo todavía no fue verificado. Revisá tu bandeja de entrada (y spam) o pedí que te reenviemos el mail.',
       });
     }
 
@@ -316,24 +360,52 @@ const desactivarDosPasos = expressAsyncHandler(async (req, res) => {
 
 // ───────────────────────── Verificación (legacy) ─────────────────────────
 
+// Confirma el correo con el token que llegó por mail (solo se compara el hash).
 const verifyUsuarios = expressAsyncHandler(async (req, res) => {
   try {
-    const { idUsuarios, verifyToken } = req.body;
-    const usuario = await Usuarios.unscoped().findByPk(idUsuarios);
-    if (!usuario) {
-      return res.status(404).send({ message: 'Usuario no encontrado' });
+    const token = String(req.body.token || '');
+    if (!/^[a-f0-9]{64}$/.test(token)) {
+      return res.status(400).send({ message: 'El enlace de verificación no es válido.' });
     }
-    if (!usuario.verifyToken || usuario.verifyToken !== String(verifyToken)) {
-      return res.status(401).send({ message: 'Token de verificación incorrecto' });
+    const usuario = await Usuarios.unscoped().findOne({
+      where: { verifyToken: sha256(token) },
+    });
+    if (!usuario) {
+      return res.status(400).send({ message: 'El enlace no es válido o ya fue utilizado.' });
     }
     if (usuario.expireToken && Date.now() > new Date(usuario.expireToken).getTime()) {
-      return res.status(401).send({ message: 'Token de verificación expirado' });
+      return res.status(400).send({
+        code: 'EXPIRADO',
+        message: 'El enlace venció. Pedí que te enviemos uno nuevo.',
+      });
     }
     usuario.isVerified = true;
     usuario.verifyToken = null;
     usuario.expireToken = null;
     await usuario.save();
-    return res.status(200).send({ usuario: publico(usuario), message: 'Usuario verificado' });
+    return res.status(200).send({ message: 'Correo verificado. Ya podés iniciar sesión.' });
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// Reenvía el mail de verificación. Responde siempre lo mismo para no revelar
+// qué correos están registrados.
+const reenviarVerificacion = expressAsyncHandler(async (req, res) => {
+  try {
+    const usuario = await Usuarios.unscoped().findOne({
+      where: { Email: String(req.body.Email || '') },
+    });
+    if (usuario && !usuario.isVerified && mailConfigurado()) {
+      try {
+        await enviarVerificacion(req, usuario);
+      } catch (err) {
+        console.error('Reenvío de verificación:', err.message);
+      }
+    }
+    res.status(200).send({
+      message: 'Si el correo existe y está pendiente de verificar, te enviamos un nuevo enlace.',
+    });
   } catch (error) {
     handleError(error, res);
   }
@@ -378,6 +450,7 @@ const UsuariosController = {
   activarDosPasos,
   desactivarDosPasos,
   verifyUsuarios,
+  reenviarVerificacion,
   verifySms,
 };
 

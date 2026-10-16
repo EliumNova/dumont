@@ -6,6 +6,7 @@ import { FiEdit2 } from "react-icons/fi";
 import MacModal from "../../components/MacModal";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import Field from "../../components/Field";
+import { soloDigitos, validarDNI, validarTelefono } from "@/lib/formato";
 
 function EditUserBtn({ datos, onCloseModal }) {
   const dispatch = useDispatch();
@@ -21,8 +22,8 @@ function EditUserBtn({ datos, onCloseModal }) {
     setForm({
       Name: datos.Name || "",
       Email: datos.Email || "",
-      DNI: datos.DNI ?? "",
-      Telefono: datos.Telefono || "",
+      DNI: soloDigitos(datos.DNI),
+      Telefono: soloDigitos(datos.Telefono),
       isAdmin: !!datos.isAdmin,
     });
     setError("");
@@ -37,7 +38,6 @@ function EditUserBtn({ datos, onCloseModal }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "DNI" && !/^\d*$/.test(value)) return;
     setForm((p) => ({ ...p, [name]: name === "isAdmin" ? value === "true" : value }));
   };
 
@@ -51,6 +51,9 @@ function EditUserBtn({ datos, onCloseModal }) {
       setError("El correo no es válido.");
       return;
     }
+    const errDni = validarDNI(form.DNI);
+    if (errDni) return setError(errDni);
+    if (form.Telefono && validarTelefono(form.Telefono)) return setError(validarTelefono(form.Telefono));
     const payload = {
       Name: form.Name.trim(),
       Email: form.Email.trim(),
@@ -87,8 +90,8 @@ function EditUserBtn({ datos, onCloseModal }) {
           <Field label="Nombre completo" name="Name" value={form.Name} onChange={handleChange} maxLength={45} />
           <Field label="Correo electrónico" name="Email" type="email" value={form.Email} onChange={handleChange} maxLength={45} />
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="DNI" name="DNI" inputMode="numeric" value={form.DNI} onChange={handleChange} maxLength={10} />
-            <Field label="Teléfono" name="Telefono" inputMode="tel" value={form.Telefono} onChange={handleChange} maxLength={15} />
+            <Field label="DNI" name="DNI" formato="dni" value={form.DNI} onChange={handleChange} />
+            <Field label="Teléfono" name="Telefono" formato="telefono" value={form.Telefono} onChange={handleChange} />
           </div>
           <Field
             label="Rol administrador"

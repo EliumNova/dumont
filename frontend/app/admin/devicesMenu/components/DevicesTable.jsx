@@ -238,7 +238,7 @@ function DeviceTable() {
 
 
   return (
-    <div className="flex flex-col border border-[#F2F5F6] rounded w-auto bg-[#F2F5F6] mt-4">
+    <div className="flex w-full min-w-0 flex-col bg-[#F2F5F6]">
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -251,12 +251,12 @@ function DeviceTable() {
         pauseOnHover
       />
 
-      <div className="overflow-y-auto overflow-x-hidden max-h-[500px] scrollbar-hidden-unless-needed">
-        <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8 scrollbar-hidden-unless-needed">
-          <div className="overflow-hidden">
+      <div className="w-full overflow-x-auto">
+        <div className="block min-w-full py-2 sm:px-3">
+          <div>
             {/* Filtro */}
             {/* Filtros Avanzados */}
-            <div className="flex items-center justify-between mt-4 px-4">
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-3 px-4">
               <div>
                 <label className="mr-2">Dispositivos por página:</label>
                 <select
@@ -280,7 +280,7 @@ function DeviceTable() {
                     setPaginaActual((prev) => Math.max(prev - 1, 0))
                   }
                   disabled={paginaActual === 0}
-                  className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50">
+                  className="mac-press rounded-lg bg-gray-200 px-3 py-1.5 text-sm hover:bg-gray-300 disabled:opacity-40">
                   Anterior
                 </button>
 
@@ -301,7 +301,7 @@ function DeviceTable() {
                     paginaActual + 1 >=
                     Math.ceil(totalDispositivos / tamañoPagina)
                   }
-                  className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50">
+                  className="mac-press rounded-lg bg-gray-200 px-3 py-1.5 text-sm hover:bg-gray-300 disabled:opacity-40">
                   Siguiente
                 </button>
               </div>
@@ -309,7 +309,7 @@ function DeviceTable() {
 
             <br />
 
-            <div className="mb-4 flex flex-wrap gap-4 items-center">
+            <div className="mb-4 flex flex-wrap items-center gap-3 px-4">
               <input
                 type="text"
                 placeholder="Buscar dispositivo"
@@ -356,28 +356,28 @@ function DeviceTable() {
                 <tr className="text-black">
                   <th
                     onClick={() => handleSort("idClientes")}
-                    className="px-10 py-6 text-center cursor-pointer">
+                    className="px-3 py-4 xl:px-6 text-center cursor-pointer">
                     Cliente{" "}
                     {sortColumn === "idClientes" &&
                       (sortDirection === "asc" ? "↑" : "↓")}
                   </th>
                   <th
                     onClick={() => handleSort("Marca")}
-                    className="px-10 py-6 text-center cursor-pointer">
+                    className="px-3 py-4 xl:px-6 text-center cursor-pointer">
                     Dispositivo{" "}
                     {sortColumn === "Marca" &&
                       (sortDirection === "asc" ? "↑" : "↓")}
                   </th>
                   <th
                     onClick={() => handleSort("estado")}
-                    className="px-10 py-6 text-center cursor-pointer">
+                    className="px-3 py-4 xl:px-6 text-center cursor-pointer">
                     Estado{" "}
                     {sortColumn === "estado" &&
                       (sortDirection === "asc" ? "↑" : "↓")}
                   </th>
-                  <th className="px-10 py-6 text-center">Coordenadas</th>
+                  <th className="px-3 py-4 xl:px-6 text-center">Coordenadas</th>
 
-                  <th className="px-10 py-6 text-center">Acciones</th>
+                  <th className="px-3 py-4 xl:px-6 text-center">Acciones</th>
                 </tr>
               </thead>
 
@@ -386,7 +386,7 @@ function DeviceTable() {
                   <tr
                     key={dispositivo.idDispositivos}
                     className="border-b transition duration-300 ease-in-out text-black hover:bg-neutral-100 dark:border-[#F2F5F6] dark:hover:bg-[#d2dadd]">
-                    <td className="whitespace-nowrap px-10 py-6 text-center font-medium">
+                    <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center font-medium">
                       <button
                         className="text-blue-500"
                         onClick={() =>
@@ -397,21 +397,21 @@ function DeviceTable() {
                       </button>
                     </td>
 
-                    <td className="whitespace-nowrap px-10 py-6 text-center">
+                    <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                       {dispositivo.Marca} - {dispositivo.Modelo}
                     </td>
-                    <td className="whitespace-nowrap px-10 py-6 text-center">
+                    <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                       <span className={getStatusColor(dispositivo)}>
                         ● {getEstadoTexto(dispositivo)}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-10 py-6 text-center">
+                    <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                       {dispositivo.latitud && dispositivo.longitud
                         ? `${dispositivo.latitud}, ${dispositivo.longitud}`
                         : "No disponible"}
                     </td>
 
-                    <td className="whitespace-nowrap px-10 py-6 flex justify-center items-center gap-4">
+                    <td className="whitespace-nowrap px-3 py-4 xl:px-6 flex justify-center items-center gap-4">
                       <AiOutlineEye
                         className="cursor-pointer text-2xl"
                         onClick={() => handleViewDetails(dispositivo)}

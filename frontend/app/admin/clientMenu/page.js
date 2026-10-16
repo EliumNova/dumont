@@ -3,14 +3,14 @@ import Link from 'next/link';
 
 function CustomerEdition() {
   return (
-    <div className="">
-      <div className="flex flex-col justify-center items-center ">
+    <div className="w-full min-w-0">
+      <div className="flex flex-col pb-4">
         <Table />
         <Link
           href="/admin/clientRegistration"
-          className="p-1 text-blue-500 flex items-center my-5"
+          className="mac-press mx-auto mt-4 flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-sm font-medium text-blue-600 shadow hover:shadow-md"
         >
-          <img src="/svg/addNewUser.svg" className="h-20"></img>
+          <img src="/svg/addNewUser.svg" alt="" className="h-8" />
           Agregar nuevo Cliente
         </Link>
       </div>

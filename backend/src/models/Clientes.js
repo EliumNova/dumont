@@ -42,8 +42,10 @@ export const Clientes = sequelize.define(
       type: DataTypes.BOOLEAN, // 🔥 CAMBIO
       allowNull: false,
     },
+    // Texto (solo dígitos): como INTEGER se perdían los ceros iniciales y los
+    // números largos (ej. 2234567890) desbordaban el rango de MySQL.
     Telefono: {
-      type: DataTypes.INTEGER, // 🔥 CAMBIO
+      type: DataTypes.STRING(20),
       allowNull: false,
     },
     Localidad: {

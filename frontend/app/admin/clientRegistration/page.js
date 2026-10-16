@@ -6,100 +6,104 @@ import axios from "axios";
 import Principales from "./Componentes/Principales";
 import Ubicacion from "./Componentes/Ubicacion";
 import Horus from "./Componentes/Horus";
-import CompleteModal from "./Componentes/CompleteModal";
+import FormCard, { Aviso } from "../components/FormCard";
+import ConfirmDialog from "../components/ConfirmDialog";
 import { setLoading, setError } from "@/lib/slices/clients/clientSlice";
+
+const PASOS = ["Datos principales", "Ubicación", "Horario"];
 
 function CustomerRegistration() {
   const dispatch = useDispatch();
   const router = useRouter();
   const newCustomerStore = useSelector((state) => state.clients.newCustomer);
 
-  const [step, setStep] = useState(1); // Paso actual del formulario
-  const [progress, setProgress] = useState(33); // Progreso del formulario
-  const [showModal, setShowModal] = useState(false); // Estado del modal de éxito
+  const [step, setStep] = useState(1);
+  const [exito, setExito] = useState(false);
+  const [errorGeneral, setErrorGeneral] = useState("");
+  const [enviando, setEnviando] = useState(false);
 
   const URL = `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/create`;
 
-  const handleNext = () => {
-    // Avanzar al siguiente paso sin validar campos obligatorios
-    if (step < 3) {
-      setStep(step + 1);
-      setProgress(progress + 33);
-    }
-  };
-
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-      setProgress(progress - 33);
-    }
-  };
+  const handleNext = () => step < 3 && setStep(step + 1);
+  const handleBack = () => step > 1 && setStep(step - 1);
 
   const handleSubmit = async () => {
+    setErrorGeneral("");
+    setEnviando(true);
     try {
-      // Combinar los datos de principales, ubicacion y horus en una estructura plana
+      // Plano: principales + ubicación + horario. Teléfono y demás numéricos
+      // ya vienen como dígitos puros (el formato es solo visual).
       const payload = {
         ...newCustomerStore.principales,
         ...newCustomerStore.ubicacion,
         ...newCustomerStore.horus,
-
-        // 🔥 aseguramos tipo correcto
         VentaAlcohol: Number(newCustomerStore.principales.VentaAlcohol),
       };
-
-      dispatch(setLoading(true)); // Activa el estado de carga
-
-
-      // Envía todos los datos del formulario al servidor
-      const response = await axios.post(URL, payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      dispatch(setLoading(false)); // Desactiva el estado de carga
-      setShowModal(true); // Muestra el modal de éxito
-
-      // Redirige al usuario después de 3 segundos
-      setTimeout(() => {
-        router.push("/admin");
-      }, 2500);
+      dispatch(setLoading(true));
+      await axios.post(URL, payload, { headers: { "Content-Type": "application/json" } });
+      dispatch(setLoading(false));
+      setExito(true);
     } catch (error) {
       console.error("Error al enviar datos a la API:", error);
-      dispatch(setLoading(false)); // Desactiva el estado de carga
-      dispatch(setError(error.message)); // Guarda el mensaje de error en Redux
+      dispatch(setLoading(false));
+      dispatch(setError(error.message));
+      setErrorGeneral(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          "No se pudo registrar el cliente. Revisá los datos e intentá de nuevo."
+      );
+    } finally {
+      setEnviando(false);
     }
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-start my-2 px-4 h-[90vh] overflow-y-auto">
-      <h2 className="text-white text-4xl md:text-2xl font-semibold my-1">
-        Registro de Clientes
-      </h2>
-      <div className="w-full bg-gray-300 h-1 rounded mb-2">
-        <div
-          className="h-full bg-black rounded"
-          style={{
-            width: `${progress}%`,
-            transition: "width 0.3s ease-in-out",
-          }}
-        />
-      </div>
+    <>
+      <FormCard
+        title="Registrar cliente"
+        subtitle={`Paso ${step} de 3 · ${PASOS[step - 1]}`}
+        onBack={() => (step === 1 ? router.push("/admin") : handleBack())}
+        maxWidth="max-w-4xl">
+        {/* Indicador de pasos */}
+        <ol className="mb-6 flex items-center gap-2">
+          {PASOS.map((nombre, i) => {
+            const n = i + 1;
+            const hecho = n < step;
+            const activo = n === step;
+            return (
+              <li key={nombre} className="flex flex-1 items-center gap-2">
+                <span
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors ${
+                    hecho ? "bg-green-500 text-white" : activo ? "bg-blue-500 text-white" : "bg-black/10 text-gray-500"
+                  }`}>
+                  {hecho ? "✓" : n}
+                </span>
+                <span className={`hidden text-xs font-medium sm:block ${activo ? "text-[#191920]" : "text-gray-400"}`}>{nombre}</span>
+                {n < 3 && <span className={`h-0.5 flex-1 rounded ${hecho ? "bg-green-400" : "bg-black/10"}`} />}
+              </li>
+            );
+          })}
+        </ol>
 
-      {step === 1 && (
-        <Principales onNext={handleNext} onBack={() => router.push("/admin")} />
-      )}
-      {step === 2 && <Ubicacion onNext={handleNext} onBack={handleBack} />}
-      {step === 3 && (
-        <Horus
-          onSubmit={handleSubmit} // Pasa handleSubmit como prop
-          onBack={handleBack}
-          setShowModal={setShowModal}
-        />
-      )}
+        <Aviso>{errorGeneral}</Aviso>
 
-      {showModal && <CompleteModal setShowModal={setShowModal} />}
-    </div>
+        {step === 1 && <Principales onNext={handleNext} onBack={() => router.push("/admin")} />}
+        {step === 2 && <Ubicacion onNext={handleNext} onBack={handleBack} />}
+        {step === 3 && <Horus onSubmit={handleSubmit} onBack={handleBack} enviando={enviando} />}
+      </FormCard>
+
+      <ConfirmDialog
+        isOpen={exito}
+        danger={false}
+        icon="✓"
+        hideCancel
+        title="¡Cliente registrado!"
+        message="Ya figura en la lista de clientes."
+        confirmText="Volver al menú"
+        onConfirm={() => router.push("/admin")}
+        onCancel={() => router.push("/admin")}
+      />
+    </>
   );
 }
 

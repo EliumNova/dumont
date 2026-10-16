@@ -23,6 +23,7 @@ const {
   updateUsuario,
   deleteUsuario,
   verifyUsuarios,
+  reenviarVerificacion,
   verifySms,
 } = UsuariosController;
 const usuariosRouter = Router();
@@ -67,6 +68,7 @@ const altaControlada = async (req, res, next) => {
 usuariosRouter.post('/login', limiteLoginIP, limiteLogin, validateLoginUser, loginUsuario);
 usuariosRouter.post('/login/2fa', limiteDosPasos, loginDosPasos);
 usuariosRouter.post('/confirmVerify', limiteDosPasos, verifyUsuarios);
+usuariosRouter.post('/reenviar-verificacion', limiteDosPasos, reenviarVerificacion);
 
 // Verificación en 2 pasos (del usuario logueado)
 usuariosRouter.post('/2fa/setup', checkAuth, setupDosPasos);

@@ -13,6 +13,7 @@ import {
 import Modal from "./Modal"; // Importa el componente Modal
 import ModalDelete from "./ModalDelete"; // Importa el componente Modal
 import DetailGrid from "../../components/DetailGrid";
+import { formatTelefono } from "@/lib/formato";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -91,10 +92,10 @@ function ClientTable() {
   const totalPages = Math.max(Math.ceil(totalClients / pageSize), 1);
 
   return (
-    <div className="flex flex-col border border-[#F2F5F6] rounded w-auto bg-[#F2F5F6] mt-4">
-      <div className="overflow-y-auto overflow-x-hidden max-h-[500px] scrollbar-hidden-unless-needed">
-        <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-          <div className="overflow-hidden">
+    <div className="flex w-full min-w-0 flex-col bg-[#F2F5F6]">
+      <div className="w-full overflow-x-auto">
+        <div className="block min-w-full py-2 sm:px-3">
+          <div>
             <div className="px-4 pt-2">
               <input
                 type="search"
@@ -104,7 +105,7 @@ function ClientTable() {
                 className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-black outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
               />
             </div>
-            <div className="flex items-center justify-between px-4 py-2">
+            <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2">
               <label className="text-sm text-gray-700">
                 Mostrar:
                 <select
@@ -144,16 +145,16 @@ function ClientTable() {
             <table className="min-w-full text-left text-sm font-light">
               <thead className="border-b font-medium dark:border-[#F2F5F6]">
                 <tr className="text-black">
-                  <th scope="col" className="px-10 py-6 text-center">
+                  <th scope="col" className="px-3 py-4 xl:px-6 text-center">
                     Nombre Completo
                   </th>
-                  <th scope="col" className="px-10 py-6 text-center">
+                  <th scope="col" className="px-3 py-4 xl:px-6 text-center">
                     Dirección
                   </th>
-                  <th scope="col" className="px-10 py-6 text-center">
+                  <th scope="col" className="px-3 py-4 xl:px-6 text-center">
                     Teléfono
                   </th>
-                  <th scope="col" className="px-10 py-6 text-center">
+                  <th scope="col" className="px-3 py-4 xl:px-6 text-center">
                     Acciones
                   </th>
                 </tr>
@@ -164,17 +165,17 @@ function ClientTable() {
                     <tr
                       className="mac-row border-b text-black hover:bg-neutral-100 dark:border-[#F2F5F6] dark:hover:bg-[#d2dadd]"
                       key={client.idClientes}>
-                      <td className="whitespace-nowrap px-10 py-6 text-center font-medium">
+                      <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center font-medium">
                         {client.NombreCompleto || "Nombre no disponible"}
                       </td>
-                      <td className="whitespace-nowrap px-10 py-1 text-center">
+                      <td className="whitespace-nowrap px-3 py-3 xl:px-6 text-center">
                         {`${client.Calle}, ${client.Localidad}` ||
                           "Correo no disponible"}
                       </td>
-                      <td className="whitespace-nowrap px-10 py-1 text-center">
-                        {client.Telefono || "Código no disponible"}
+                      <td className="whitespace-nowrap px-3 py-3 xl:px-6 text-center">
+                        {client.Telefono ? formatTelefono(client.Telefono) : "No disponible"}
                       </td>
-                      <td className="whitespace-nowrap px-10 py-6 flex justify-center items-center gap-4 h-full">
+                      <td className="whitespace-nowrap px-3 py-4 xl:px-6 flex justify-center items-center gap-4 h-full">
                         <div className="flex items-center h-full">
                           <AiOutlineEye
                             className="cursor-pointer text-2xl"
@@ -234,7 +235,7 @@ function ClientTable() {
                     : null,
               },
               { label: "Localidad", value: selectedClient.Localidad },
-              { label: "Teléfono", value: selectedClient.Telefono },
+              { label: "Teléfono", value: formatTelefono(selectedClient.Telefono) },
               { label: "Venta de alcohol", value: selectedClient.VentaAlcohol ? "Sí" : "No" },
               {
                 label: "Página web",

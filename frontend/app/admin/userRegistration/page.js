@@ -1,250 +1,145 @@
 "use client";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import PhoneInput from "./PhoneInput";
-import InputField from "../components/InputField";
-import PasswordField from "../components/PasswordField";
-import ModalWindow from "../components/ModalWindow";
-import { Griffy } from "next/font/google";
-import { userCreate } from "@/lib/slices/users/userAction";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { USERS } from "@/lib/slices/constants";
+import FormCard, { Seccion, BotonesForm, Aviso } from "../components/FormCard";
+import Field from "../components/Field";
+import CampoPassword from "../components/CampoPassword";
+import ConfirmDialog from "../components/ConfirmDialog";
+import {
+  validarFormulario,
+  validarNombre,
+  validarEmail,
+  validarDNI,
+  validarTelefono,
+  validarPassword,
+} from "@/lib/formato";
+
+const INICIAL = {
+  Name: "",
+  DNI: "",
+  Email: "",
+  Telefono: "",
+  Password: "",
+  ValidatePassword: "",
+  isAdmin: "false",
+};
+
+const REGLAS = {
+  Name: (v) => validarNombre(v, "El nombre"),
+  DNI: validarDNI,
+  Email: validarEmail,
+  Telefono: validarTelefono,
+  Password: validarPassword,
+  ValidatePassword: (v, todos) => (v === todos.Password ? "" : "Las contraseñas no coinciden."),
+};
 
 function UserRegistration() {
-  const dispatch = useDispatch();
-  const [showPassword, setShowPassword] = useState({
-    first: false,
-    second: false,
-  });
-  const [errorMessage, setErrorMessage] = useState("");
-  const [registerUser, setRegisterUser] = useState({
-    Name: "",
-    Email: "",
-    Password: "",
-    ValidatePassword: "",
-    isAdmin: false,
-    DNI: "",
-    Telefono: "",
-  });
-  const [modal, setModal] = useState(false);
+  const router = useRouter();
+  const [form, setForm] = useState(INICIAL);
+  const [errores, setErrores] = useState({});
+  const [errorGeneral, setErrorGeneral] = useState("");
+  const [guardando, setGuardando] = useState(false);
+  const [resultado, setResultado] = useState(null); // respuesta del alta
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const { Name, Email, Password, ValidatePassword, DNI, Telefono } =
-      registerUser;
-
-    // Validar que todos los campos están llenos
-    if (
-      !Name ||
-      !Email ||
-      !Password ||
-      !ValidatePassword ||
-      !DNI ||
-      !Telefono
-    ) {
-      setErrorMessage("Todos los campos son obligatorios.");
-      setTimeout(() => setErrorMessage(""), 3000);
-      return;
-    }
-
-    // Validar que las contraseñas coincidan
-    if (Password !== ValidatePassword) {
-      setErrorMessage("Las contraseñas no coinciden.");
-      setTimeout(() => setErrorMessage(""), 3000);
-      return;
-    }
-
-    // Validar la contraseña
-    const passwordRegex =
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{10,}$/;
-    if (!passwordRegex.test(Password)) {
-      setErrorMessage(
-        "La contraseña debe tener al menos 10 caracteres, una letra, un número y un símbolo."
-      );
-      setTimeout(() => setErrorMessage(""), 3000);
-      return;
-    }
-
-    // Validar el formato del teléfono
-    const phoneRegex = /^\(\d{3}\) \d{4}-\d{4}$/;
-    if (!phoneRegex.test(Telefono)) {
-      setErrorMessage("Número de teléfono inválido.");
-      setTimeout(() => setErrorMessage(""), 3000);
-      return;
-    }
-
-    dispatch(userCreate(registerUser));
-
-    // Resetear el formulario
-    setRegisterUser({
-      Name: "",
-      Email: "",
-      Password: "",
-      ValidatePassword: "",
-      isAdmin: false,
-      DNI: "",
-      Telefono: "",
-    });
-
-    setModal(true);
-    setTimeout(() => {
-      setModal(false);
-    }, 3000);
-  };
-
-  const handleChange = (e) => {
+  const cambiar = (e) => {
     const { name, value } = e.target;
+    setForm((p) => ({ ...p, [name]: value }));
+    setErrores((er) => ({ ...er, [name]: "" }));
+    setErrorGeneral("");
+  };
 
-    const processedValue = name === "admin" ? value === "true" : value;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errs = validarFormulario(form, REGLAS);
+    setErrores(errs);
+    if (Object.keys(errs).length) return;
 
-    const validations = {
-      DNI: /^[0-9]*$/,
-      Telefono: /^[0-9\s()]*$/,
-      Name: /^[a-zA-Z\s]*$/,
-      Email: /^[a-zA-Z0-9@.\s]*$/,
-      Password: /^[A-Za-z\d\W_]*$/,
-      ValidatePassword: /^[A-Za-z\d\W_]*$/,
-    };
-
-    if (name === "Telefono") {
-      const maskedValue = e.target.inputElement
-        ? e.target.inputElement.value
-        : value;
-      registrar(name, maskedValue);
-    } else if (name in validations) {
-      if (value === "" || validateInput(processedValue, validations[name])) {
-        registrar(name, processedValue);
-      } else {
-        errorMessageBox();
-      }
-    } else {
-      registrar(name, processedValue);
+    setGuardando(true);
+    try {
+      // DNI y teléfono viajan como dígitos puros (el formato es solo visual).
+      const { data } = await axios.post(`${USERS}/create`, {
+        Name: form.Name.trim(),
+        Email: form.Email.trim().toLowerCase(),
+        DNI: Number(form.DNI),
+        Telefono: form.Telefono,
+        Password: form.Password,
+        isAdmin: form.isAdmin === "true",
+      });
+      setResultado(data);
+      setForm(INICIAL);
+    } catch (err) {
+      const r = err.response;
+      setErrorGeneral(
+        r?.status === 409
+          ? "Ya existe un usuario con ese correo o DNI."
+          : r?.status === 403
+          ? "Solo un administrador puede crear usuarios."
+          : r?.data?.message || "No se pudo crear el usuario."
+      );
+    } finally {
+      setGuardando(false);
     }
   };
 
-  const errorMessageBox = () => {
-    setErrorMessage("Caracteres inválidos en el campo.");
-    setTimeout(() => setErrorMessage(""), 3000);
-  };
-
-  const validateInput = (value, regex) => regex.test(value);
-
-  const registrar = (name, processedValue) => {
-    return setRegisterUser((prev) => ({
-      ...prev,
-      [name]: processedValue,
-    }));
-  };
+  const mensajeExito = !resultado
+    ? ""
+    : resultado.requiereVerificacion
+    ? resultado.verificacionEnviada
+      ? "Le enviamos un correo para que confirme su cuenta. No podrá ingresar hasta hacerlo."
+      : "El usuario se creó, pero no pudimos enviar el correo de verificación. Podrá pedirlo de nuevo desde el login."
+    : "El usuario ya puede iniciar sesión.";
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center my-5">
-      {modal ? (
-        <ModalWindow text={"¡Usuario creado con èxito!"} />
-      ) : (
-        <div></div>
-      )}
+    <>
+      <FormCard
+        title="Crear una cuenta"
+        subtitle="La persona recibirá un correo para verificar su cuenta antes de poder ingresar."
+        onBack={() => router.push("/admin")}
+        maxWidth="max-w-3xl">
+        <form onSubmit={handleSubmit} noValidate autoComplete="off">
+          <Aviso>{errorGeneral}</Aviso>
 
-      <h2 className="text-white text-3xl md:text-5xl font-semibold my-2 place-self-center xl:place-self-start xl:pl-[11%] 2xl:pl-[14%]">
-        Crear una cuenta
-      </h2>
+          <Seccion titulo="Datos personales">
+            <Field label="Nombre completo" name="Name" value={form.Name} error={errores.Name} onChange={cambiar} maxLength={45} placeholder="Ej. Ana García" />
+            <Field label="DNI" name="DNI" formato="dni" value={form.DNI} error={errores.DNI} onChange={cambiar} placeholder="12.345.678" />
+            <Field label="Correo electrónico" name="Email" type="email" value={form.Email} error={errores.Email} onChange={cambiar} maxLength={45} placeholder="nombre@dominio.com" />
+            <Field label="Teléfono" name="Telefono" formato="telefono" value={form.Telefono} error={errores.Telefono} onChange={cambiar} placeholder="11 5555-5555" />
+          </Seccion>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col items-center w-full lg:w-9/12 xl:w-10/12 px-4 text-white">
-        <div className="container mx-auto grid grid-cols-1 w-full  items-center xl:grid-cols-2 justify-items-center xl:items-center ">
-          <InputField
-            label="Nombre Completo"
-            id="Name"
-            value={registerUser.Name}
-            onChange={handleChange}
-            placeholder="Ingresa tu nombre completo"
-            required
-            className="col-span-1 xl:col-start-1 row-start-1 lg:w-[32rem] gap-3 font-semibold px-4"
-            inputClassName="font-light text-black"
-          />
-          <InputField
-            label="DNI"
-            id="DNI"
-            value={registerUser.DNI}
-            onChange={handleChange}
-            placeholder="Ingresa tu documento"
-            required
-            className="col-span-1 xl:col-start-2 xl:row-start-1 lg:w-[32rem] font-semibold px-4"
-            inputClassName="font-light text-black"
-          />
-          <InputField
-            label="Email"
-            id="Email"
-            value={registerUser.Email}
-            onChange={handleChange}
-            placeholder="Ingresa tu email"
-            type="email"
-            required
-            className="col-span-1 xl:col-start-1 xl:row-start-2 lg:w-[32rem] font-semibold px-4"
-            inputClassName="font-light text-black"
-          />
-          <div className="col-span-1 xl:col-start-2 xl:row-start-2 flex flex-col w-full lg:w-[32rem] px-4">
-            <PhoneInput
-              label="Número de teléfono"
-              name="Telefono"
-              value={registerUser.Telefono}
-              onChange={handleChange}
-              className="col-span-1 xl:col-start-2 xl:row-start-2 lg:w-[32rem] px-4"
-              inputClassName="font-light text-black"
-            />
-          </div>
-
-          <PasswordField
-            label="Password"
-            name="Password"
-            value={registerUser.Password}
-            showPassword={showPassword.first}
-            togglePassword={() =>
-              setShowPassword((prev) => ({ ...prev, first: !prev.first }))
-            }
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-1 xl:row-start-3"
-          />
-          <PasswordField
-            label="Repetir Password"
-            name="ValidatePassword"
-            value={registerUser.ValidatePassword}
-            showPassword={showPassword.second}
-            togglePassword={() =>
-              setShowPassword((prev) => ({ ...prev, second: !prev.second }))
-            }
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-2 xl:row-start-3"
-          />
-          <div className="col-span-1 xl:col-start-1 xl:row-start-4 flex flex-col w-full lg:w-[32rem] px-4">
-            <label htmlFor="admin" className="text-sm font-semibold">
-              Administrador
-            </label>
-            <select
-              id="admin"
+          <Seccion titulo="Acceso">
+            <CampoPassword label="Contraseña" name="Password" value={form.Password} error={errores.Password} onChange={cambiar} medidor autoComplete="new-password" />
+            <CampoPassword label="Repetir contraseña" name="ValidatePassword" value={form.ValidatePassword} error={errores.ValidatePassword} onChange={cambiar} autoComplete="new-password" />
+            <Field
+              label="Rol"
               name="isAdmin"
-              value={registerUser.isAdmin.toString()}
-              onChange={handleChange}
-              className="bg-[#E2E5E5] h-14 rounded-lg p-4 text-base text-black"
-              required>
-              <option value="true">Sí</option>
-              <option value="false">No</option>
-            </select>
-          </div>
-        </div>
-        {errorMessage && (
-          <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium relative">
-            {errorMessage}
-          </div>
-        )}
-        <button
-          type="submit"
-          className="w-11/12 lg:w-[30rem] p-4 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold">
-          Registrarse
-        </button>
-      </form>
-    </div>
+              value={form.isAdmin}
+              onChange={cambiar}
+              hint="Los administradores pueden gestionar otros usuarios."
+              options={[
+                { value: "false", label: "Usuario" },
+                { value: "true", label: "Administrador" },
+              ]}
+            />
+          </Seccion>
+
+          <BotonesForm onCancel={() => router.push("/admin")} submitText="Crear cuenta" loading={guardando} />
+        </form>
+      </FormCard>
+
+      <ConfirmDialog
+        isOpen={!!resultado}
+        danger={false}
+        icon="✓"
+        hideCancel
+        title="¡Usuario creado!"
+        message={mensajeExito}
+        confirmText="Entendido"
+        onConfirm={() => setResultado(null)}
+        onCancel={() => setResultado(null)}
+      />
+    </>
   );
 }
 

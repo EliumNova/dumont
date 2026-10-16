@@ -6,6 +6,7 @@ import axios from "axios";
 import { setLoading, setError } from "@/lib/slices/clients/clientSlice";
 import CompleteModal from "../../components/CompleteModal_Update";
 import Field from "../../../components/Field";
+import { soloDigitos, validarTelefono, validarEmail } from "@/lib/formato";
 
 function CustomerEdition() {
   const dispatch = useDispatch();
@@ -83,7 +84,7 @@ function CustomerEdition() {
             CondicionFiscal: data.CondicionFiscal ?? "",
             CodigoDistribuidor: data.CodigoDistribuidor ?? "",
             CorreoElectronico: data.CorreoElectronico ?? "",
-            Telefono: data.Telefono ?? "",
+            Telefono: soloDigitos(data.Telefono),
             VentaAlcohol: Boolean(data.VentaAlcohol),
           },
           ubicacion: {
@@ -134,6 +135,13 @@ function CustomerEdition() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const errValidacion = validarTelefono(customerInfo.principales.Telefono) || validarEmail(customerInfo.principales.CorreoElectronico);
+    if (errValidacion) {
+      dispatch(setError(errValidacion));
+      window.alert(errValidacion);
+      return;
+    }
 
     const payload = {
       NombreCompleto: customerInfo.principales.NombreCompleto,
@@ -202,7 +210,7 @@ function CustomerEdition() {
           <Field label="Condición fiscal" value={p.CondicionFiscal} onChange={set("principales", "CondicionFiscal")} required />
           <Field label="Código distribuidor" value={p.CodigoDistribuidor} onChange={set("principales", "CodigoDistribuidor")} required />
           <Field label="Email" type="email" value={p.CorreoElectronico} onChange={set("principales", "CorreoElectronico")} required />
-          <Field label="Teléfono" inputMode="tel" value={p.Telefono} onChange={set("principales", "Telefono")} required />
+          <Field label="Teléfono" formato="telefono" value={p.Telefono} onChange={set("principales", "Telefono")} required />
           <label className="flex items-center gap-2 self-end pb-2.5 text-sm font-medium text-[#191920]">
             <input
               type="checkbox"

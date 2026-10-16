@@ -1,274 +1,144 @@
 "use client";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import InputField from "../components/InputField";
-import ModalWindow from "../components/ModalWindow";
-import { distribuidorCreate } from "@/lib/slices/distribuidores/distribuidorAction";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { DISTRIBUIDORES } from "@/lib/slices/constants";
+import FormCard, { Seccion, BotonesForm, Aviso } from "../components/FormCard";
+import Field from "../components/Field";
+import AddressAutocomplete from "../components/AddressAutocomplete";
+import ConfirmDialog from "../components/ConfirmDialog";
+import {
+  validarFormulario,
+  validarRequerido,
+  validarEmail,
+  validarTelefono,
+  validarCUIT,
+} from "@/lib/formato";
+
+const INICIAL = {
+  NombreComercial: "",
+  RazonSocial: "",
+  CodigoDistribuidor: "",
+  CUIT: "",
+  Email: "",
+  Telefono: "",
+  SegundoTelefono: "",
+  Calle: "",
+  EntreCalles: "",
+  Localidad: "",
+};
+
+const REGLAS = {
+  NombreComercial: (v) => validarRequerido(v, "El nombre comercial"),
+  RazonSocial: (v) => validarRequerido(v, "La razón social"),
+  CodigoDistribuidor: (v) => (/^\d{1,9}$/.test(String(v)) ? "" : "Ingresá un código numérico (hasta 9 dígitos)."),
+  CUIT: validarCUIT,
+  Email: validarEmail,
+  Telefono: validarTelefono,
+  SegundoTelefono: validarTelefono,
+  Calle: (v) => validarRequerido(v, "La calle"),
+  EntreCalles: (v) => validarRequerido(v, "Las entre calles"),
+  Localidad: (v) => validarRequerido(v, "La localidad"),
+};
 
 function DistribuidorRegistration() {
-  const dispatch = useDispatch();
-  const [errorMessage, setErrorMessage] = useState("");
-  const [registerDist, setRegisterDist] = useState({
-    NombreComercial: "",
-    RazonSocial: "", // ⬅️ NUEVO CAMPO
-    Email: "",
-    CodigoDistribuidor: "",
-    CUIT: "",
-    Calle: "",
-    EntreCalles: "",
-    Localidad: "",
-    Telefono: "",
-    SegundoTelefono: "",
-    JefeDeVentas: "",
-  });
-  const [modal, setModal] = useState(false);
+  const router = useRouter();
+  const [form, setForm] = useState(INICIAL);
+  const [errores, setErrores] = useState({});
+  const [errorGeneral, setErrorGeneral] = useState("");
+  const [guardando, setGuardando] = useState(false);
+  const [exito, setExito] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const {
-      NombreComercial,
-      RazonSocial, // ⬅️ VALIDADO
-      Email,
-      CodigoDistribuidor,
-      CUIT,
-      Calle,
-      EntreCalles,
-      Localidad,
-      Telefono,
-      SegundoTelefono,
-    } = registerDist;
-
-    if (
-      !NombreComercial ||
-      !RazonSocial ||
-      !Email ||
-      !CodigoDistribuidor ||
-      !CUIT ||
-      !Calle ||
-      !EntreCalles ||
-      !Localidad ||
-      !Telefono ||
-      !SegundoTelefono
-    ) {
-      setErrorMessage("Todos los campos son obligatorios.");
-      setTimeout(() => setErrorMessage(""), 3000);
-      return;
-    }
-
-    dispatch(distribuidorCreate(registerDist));
-
-    // Reset
-    setRegisterDist({
-      NombreComercial: "",
-      RazonSocial: "",
-      Email: "",
-      CodigoDistribuidor: "",
-      CUIT: "",
-      Calle: "",
-      EntreCalles: "",
-      Localidad: "",
-      Telefono: "",
-      SegundoTelefono: "",
-      JefeDeVentas: "",
-    });
-
-    setModal(true);
-    setTimeout(() => {
-      setModal(false);
-    }, 3000);
-  };
-
-  const handleChange = (e) => {
+  const cambiar = (e) => {
     const { name, value } = e.target;
-
-    const processedValue = name === "admin" ? value === "true" : value;
-
-    const validations = {
-      CUIT: /^[0-9.-]*$/,
-      Telefono: /^[0-9\s()]*$/,
-      SegundoTelefono: /^[0-9\s()]*$/,
-      NombreComercial: /^[a-zA-ZÀ-ÿ0-9\s.-]*$/,
-      RazonSocial: /^[a-zA-ZÀ-ÿ0-9\s.-]*$/, // ⬅️ VALIDACIÓN NUEVA
-      Email: /^[a-zA-Z0-9@.\s]*$/,
-    };
-
-    if (name in validations) {
-      if (value === "" || validateInput(processedValue, validations[name])) {
-        registrar(name, processedValue);
-      } else {
-        errorMessageBox();
-      }
-    } else {
-      registrar(name, processedValue);
-    }
+    setForm((p) => ({ ...p, [name]: value }));
+    setErrores((er) => ({ ...er, [name]: "" }));
+    setErrorGeneral("");
   };
 
-  const errorMessageBox = () => {
-    setErrorMessage("Caracteres inválidos en el campo.");
-    setTimeout(() => setErrorMessage(""), 3000);
-  };
-
-  const validateInput = (value, regex) => regex.test(value);
-
-  const registrar = (name, processedValue) => {
-    return setRegisterDist((prev) => ({
-      ...prev,
-      [name]: processedValue,
+  // Al elegir una sugerencia se completan calle y localidad.
+  const alElegirDireccion = (d) => {
+    setForm((p) => ({
+      ...p,
+      Calle: [d.Calle, d.Altura].filter(Boolean).join(" "),
+      Localidad: d.Localidad || p.Localidad,
     }));
+    setErrores((er) => ({ ...er, Calle: "", Localidad: "" }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errs = validarFormulario(form, REGLAS);
+    setErrores(errs);
+    if (Object.keys(errs).length) return;
+
+    setGuardando(true);
+    try {
+      // Teléfonos y CUIT se guardan solo con dígitos.
+      await axios.post(`${DISTRIBUIDORES}/create`, {
+        ...form,
+        NombreComercial: form.NombreComercial.trim(),
+        RazonSocial: form.RazonSocial.trim(),
+        Email: form.Email.trim().toLowerCase(),
+      });
+      setExito(true);
+      setForm(INICIAL);
+    } catch (err) {
+      setErrorGeneral(err.response?.data?.message || "No se pudo crear el distribuidor.");
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center my-5">
-      {modal ? (
-        <ModalWindow text={"¡Usuario creado con èxito!"} />
-      ) : (
-        <div></div>
-      )}
+    <>
+      <FormCard
+        title="Registrar distribuidor"
+        subtitle="Buscá la dirección para completar calle y localidad automáticamente."
+        onBack={() => router.push("/admin")}
+        maxWidth="max-w-4xl">
+        <form onSubmit={handleSubmit} noValidate>
+          <Aviso>{errorGeneral}</Aviso>
 
-      <h2 className="text-white text-3xl md:text-5xl font-semibold my-2 place-self-center xl:place-self-start xl:pl-[11%] 2xl:pl-[14%]">
-        Crear una cuenta
-      </h2>
+          <Seccion titulo="Datos del distribuidor">
+            <Field label="Nombre comercial" name="NombreComercial" value={form.NombreComercial} error={errores.NombreComercial} onChange={cambiar} maxLength={45} />
+            <Field label="Razón social" name="RazonSocial" value={form.RazonSocial} error={errores.RazonSocial} onChange={cambiar} maxLength={45} />
+            <Field label="Código de distribuidor" name="CodigoDistribuidor" formato="numero" value={form.CodigoDistribuidor} error={errores.CodigoDistribuidor} onChange={cambiar} placeholder="Ej. 136008" />
+            <Field label="CUIT" name="CUIT" formato="cuit" value={form.CUIT} error={errores.CUIT} onChange={cambiar} placeholder="20-12345678-9" />
+          </Seccion>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col items-center w-full lg:w-9/12 xl:w-10/12 px-4 text-white">
-        <div className="container mx-auto grid grid-cols-1 w-full items-center xl:grid-cols-2 justify-items-center xl:items-center">
-          {/* Nombre Comercial */}
-          <InputField
-            label="Distribuidor"
-            id="NombreComercial"
-            name="NombreComercial"
-            value={registerDist.NombreComercial}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-1 row-start-1 lg:w-[32rem] gap-3 font-semibold px-4"
-            inputClassName="font-light text-black"
-          />
+          <Seccion titulo="Contacto">
+            <Field label="Email" name="Email" type="email" value={form.Email} error={errores.Email} onChange={cambiar} maxLength={45} placeholder="ventas@distribuidor.com" />
+            <Field label="Teléfono" name="Telefono" formato="telefono" value={form.Telefono} error={errores.Telefono} onChange={cambiar} placeholder="11 5555-5555" />
+            <Field label="Teléfono del jefe de ventas" name="SegundoTelefono" formato="telefono" value={form.SegundoTelefono} error={errores.SegundoTelefono} onChange={cambiar} placeholder="11 5555-5555" className="sm:col-span-2" />
+          </Seccion>
 
-          {/* Email */}
-          <InputField
-            label="Email"
-            id="Email"
-            name="Email"
-            value={registerDist.Email}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-2 xl:row-start-1 flex flex-col w-full lg:w-[32rem] px-4"
-            inputClassName="font-light text-black"
-          />
+          <section className="mb-6">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Dirección</h3>
+            <AddressAutocomplete onSelect={alElegirDireccion} className="mb-3" />
+            <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
+              <Field label="Calle y altura" name="Calle" value={form.Calle} error={errores.Calle} onChange={cambiar} maxLength={45} />
+              <Field label="Localidad" name="Localidad" value={form.Localidad} error={errores.Localidad} onChange={cambiar} maxLength={45} />
+              <Field label="Entre calles" name="EntreCalles" value={form.EntreCalles} error={errores.EntreCalles} onChange={cambiar} maxLength={45} placeholder="Ej. Mendoza y San Juan" className="sm:col-span-2" />
+            </div>
+          </section>
 
-          {/* Código Distribuidor */}
-          <InputField
-            label="Código Distribuidor"
-            id="CodigoDistribuidor"
-            name="CodigoDistribuidor"
-            type="number"
-            value={registerDist.CodigoDistribuidor}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-1 xl:row-start-2 lg:w-[32rem] font-semibold px-4"
-            inputClassName="font-light text-black"
-          />
+          <BotonesForm onCancel={() => router.push("/admin")} submitText="Guardar distribuidor" loading={guardando} />
+        </form>
+      </FormCard>
 
-          {/* CUIT */}
-          <InputField
-            label="CUIT"
-            id="CUIT"
-            name="CUIT"
-            value={registerDist.CUIT}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-2 xl:row-start-2 flex flex-col w-full lg:w-[32rem] px-4"
-            inputClassName="font-light text-black"
-          />
-
-          {/* Calle */}
-          <InputField
-            label="Calle"
-            id="Calle"
-            name="Calle"
-            value={registerDist.Calle}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-1 xl:row-start-3 flex flex-col w-full lg:w-[32rem] px-4"
-            inputClassName="font-light text-black"
-          />
-
-          {/* Entre Calles */}
-          <InputField
-            label="EntreCalles"
-            id="EntreCalles"
-            name="EntreCalles"
-            value={registerDist.EntreCalles}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-2 xl:row-start-3 flex flex-col w-full lg:w-[32rem] px-4"
-            inputClassName="font-light text-black"
-          />
-
-          {/* Localidad */}
-          <InputField
-            label="Localidad"
-            id="Localidad"
-            name="Localidad"
-            value={registerDist.Localidad}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-1 xl:row-start-4 flex flex-col w-full lg:w-[32rem] px-4"
-            inputClassName="font-light text-black"
-          />
-
-          {/* Teléfono */}
-          <InputField
-            label="Teléfono"
-            id="Telefono"
-            name="Telefono"
-            value={registerDist.Telefono}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-2 xl:row-start-4 flex flex-col w-full lg:w-[32rem] px-4"
-            inputClassName="font-light text-black"
-          />
-
-          {/* Segundo Teléfono */}
-          <InputField
-            label="Segundo Teléfono (Jefe de Ventas)"
-            id="SegundoTelefono"
-            name="SegundoTelefono"
-            value={registerDist.SegundoTelefono}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-2 xl:row-start-5 flex flex-col w-full lg:w-[32rem] px-4"
-            inputClassName="font-light text-black"
-          />
-
-          {/* Razón Social – NUEVO CAMPO */}
-          <InputField
-            label="Razón Social"
-            id="RazonSocial"
-            name="RazonSocial"
-            value={registerDist.RazonSocial}
-            onChange={handleChange}
-            required
-            className="col-span-1 xl:col-start-1 xl:row-start-5 flex flex-col w-full lg:w-[32rem] px-4"
-            inputClassName="font-light text-black"
-          />
-        </div>
-
-        {errorMessage && (
-          <div className="p-2 h-8 text-xs rounded flex justify-center items-center bg-red-700 text-white font-medium relative">
-            {errorMessage}
-          </div>
-        )}
-
-        <button
-          type="submit"
-          className="w-11/12 lg:w-[30rem] p-4 relative top-11 bg-[#427EF3] rounded-xl text-white text-lg tracking-wide font-semibold">
-          Guardar
-        </button>
-      </form>
-    </div>
+      <ConfirmDialog
+        isOpen={exito}
+        danger={false}
+        icon="✓"
+        hideCancel
+        title="¡Distribuidor creado!"
+        message="Ya figura en la lista de distribuidores."
+        confirmText="Entendido"
+        onConfirm={() => setExito(false)}
+        onCancel={() => setExito(false)}
+      />
+    </>
   );
 }
 

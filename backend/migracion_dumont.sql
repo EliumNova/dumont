@@ -57,6 +57,10 @@ CALL dumont_add_column('Usuarios', 'TwoFactorEnabled', 'TINYINT(1) NOT NULL DEFA
 CALL dumont_add_column('Usuarios', 'TwoFactorRecovery', 'TEXT NULL');
 CALL dumont_add_column('Usuarios', 'TwoFactorLastStep', 'INT NULL');
 
+-- Teléfono de clientes: de INT a texto (los números largos desbordaban el INT
+-- y se perdían los ceros iniciales). Seguro de correr más de una vez.
+ALTER TABLE Clientes MODIFY Telefono VARCHAR(20) NOT NULL;
+
 DROP PROCEDURE IF EXISTS dumont_add_column;
 
 -- ---------- Multimedia ----------
