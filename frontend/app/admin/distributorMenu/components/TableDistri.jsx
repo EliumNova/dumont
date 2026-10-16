@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { DISTRIBUIDORES } from "@/lib/slices/constants";
 import {
   getDistribuidores,
   distribuidorDelete,
@@ -42,6 +44,18 @@ export default function DistribuidorTable() {
     dispatch(getDistribuidores({ page, pageSize }));
   }, [dispatch, refresh, page, pageSize]);
 
+  // Lista completa (sin paginar) para que el buscador encuentre cualquier
+  // distribuidor, incluso uno recién creado que todavía no aparece en la
+  // página actual de la tabla paginada.
+  const [fullList, setFullList] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`${DISTRIBUIDORES}?page=0&pageSize=10000`)
+      .then((res) => setFullList(res.data.rows || []))
+      .catch((err) => console.log(err));
+  }, [refresh]);
+
   const forceRender = () => setRefresh(!refresh);
 
   const handleView = (dist) => {
@@ -75,10 +89,14 @@ export default function DistribuidorTable() {
     closeDeleteModal();
   };
 
-  const totalPages = Math.ceil(totalDistribuidores / pageSize);
+  const isSearching = search.trim() !== "";
 
-  // Filtrado
-  const filteredDistribuidores = distribuidores.filter((dist) => {
+  // Mientras se busca, filtramos sobre la lista completa (fullList) para no
+  // quedar limitados a la página actual (de 5, 10, etc.). Sin búsqueda activa,
+  // se usa la lista paginada normal que viene del servidor.
+  const sourceList = isSearching ? fullList : distribuidores;
+
+  const filteredDistribuidores = sourceList.filter((dist) => {
     const q = search.toLowerCase();
     if (!q) return true;
 
@@ -103,6 +121,15 @@ export default function DistribuidorTable() {
     }
   });
 
+  const totalPages = isSearching
+    ? Math.max(1, Math.ceil(filteredDistribuidores.length / pageSize))
+    : Math.ceil(totalDistribuidores / pageSize);
+
+  // Cuando se busca, paginamos localmente sobre los resultados filtrados.
+  const pagedDistribuidores = isSearching
+    ? filteredDistribuidores.slice(page * pageSize, page * pageSize + pageSize)
+    : filteredDistribuidores;
+
   return (
     <div className="flex flex-col border border-[#F2F5F6] rounded w-auto bg-[#F2F5F6] mt-4 max-h-[600px] overflow-y-auto p-4">
       {/* Buscador */}
@@ -120,7 +147,10 @@ export default function DistribuidorTable() {
           type="text"
           placeholder={`Buscar por ${searchType}...`}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setPage(0);
+            setSearch(e.target.value);
+          }}
         />
       </div>
 
@@ -176,8 +206,8 @@ export default function DistribuidorTable() {
             </tr>
           </thead>
           <tbody>
-            {filteredDistribuidores.length > 0 ? (
-              filteredDistribuidores.map((dist, index) => (
+            {pagedDistribuidores.length > 0 ? (
+              pagedDistribuidores.map((dist, index) => (
                 <tr
                   key={index}
                   className="border-b transition duration-300 ease-in-out text-black hover:bg-neutral-100">

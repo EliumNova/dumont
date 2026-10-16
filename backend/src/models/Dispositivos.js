@@ -23,9 +23,14 @@ export const Dispositivos = sequelize.define(
       allowNull: false,
       unique: true, // opcional si querés que no se repitan
     },
+    // Guarda el CÓDIGO DE NEGOCIO del cliente (ej. "1002"), NO el idClientes
+    // (UUID) — confirmado por la constraint real de la base:
+    // "FOREIGN KEY (CodigoCliente) REFERENCES Clientes (CodigoCliente)".
+    // (Un intento previo asumió que guardaba el UUID; ese insert falla
+    // porque el FK apunta a Clientes.CodigoCliente, no a Clientes.idClientes.)
     CodigoCliente: {
-      type: DataTypes.UUID,
-      allowNull: false,
+      type: DataTypes.STRING(45),
+      allowNull: true,
     },
     CodigoDumont: {
       type: DataTypes.STRING(45),
@@ -37,6 +42,18 @@ export const Dispositivos = sequelize.define(
     },
     longitud: {
       type: DataTypes.STRING(45),
+      allowNull: true,
+    },
+    // Última vez que la app de la tablet avisó que sigue conectada (ver
+    // tablet.controller.js). Se usa para saber si está "online"/"offline".
+    UltimaConexion: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    // Ventana horaria en la que la tablet debe mostrar publicidad. Si queda
+    // vacío, se usa el HorarioVenta del cliente asociado como respaldo.
+    HorarioPublicitario: {
+      type: DataTypes.STRING(100),
       allowNull: true,
     },
   },

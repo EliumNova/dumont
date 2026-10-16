@@ -23,11 +23,12 @@ const getDispositivos = expressAsyncHandler(async (req, res) => {
 
 export const getAllDispositivosNoPaginate = async (req, res) => {
   try {
+    // Antes se filtraba a solo dispositivos con latitud/longitud propias,
+    // pero eso deja afuera a los que dependen de la coordenada de respaldo
+    // del cliente (ver Clientes.Latitud/Longitud). El mapa ahora decide él
+    // mismo qué mostrar, así que acá mandamos todos los que tengan AL MENOS
+    // una de las dos fuentes de ubicación.
     const dispositivos = await Dispositivos.findAll({
-      where: {
-        latitud: { [Op.ne]: null },
-        longitud: { [Op.ne]: null },
-      },
       include: [
         {
           model: Clientes,
@@ -36,7 +37,13 @@ export const getAllDispositivosNoPaginate = async (req, res) => {
       ],
     });
 
-    res.status(200).json(dispositivos);
+    const conUbicacion = dispositivos.filter(
+      (d) =>
+        (d.latitud && d.longitud) ||
+        (d.Cliente?.Latitud && d.Cliente?.Longitud)
+    );
+
+    res.status(200).json(conUbicacion);
   } catch (error) {
     console.error('Error al obtener dispositivos sin paginación:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
@@ -54,24 +61,28 @@ const getDispositivoById = expressAsyncHandler(async (req, res) => {
 
 const createDispositivo = expressAsyncHandler(async (req, res) => {
   try {
-    const { Marca, Modelo, NumSerie, CodigoCliente, CodigoDumont } = req.body;
+    const { Marca, Modelo, NumSerie, CodigoCliente } = req.body;
 
-    const cliente = await Clientes.findOne({
-      where: { CodigoCliente },
-    });
+    // CodigoCliente acá es el CÓDIGO DE NEGOCIO del cliente (ej. "1002"),
+    // no su idClientes (UUID) — confirmado por la constraint real de la
+    // base (FK Dispositivos.CodigoCliente -> Clientes.CodigoCliente).
+    const cliente = await Clientes.findOne({ where: { CodigoCliente } });
 
     if (!cliente) {
       return res.status(404).send({ message: 'Cliente no encontrado' });
     }
 
+    // El Código Dumont no lo elige el usuario: es el mismo que ya tiene
+    // asignado el cliente (se generó al darlo de alta), así se garantiza
+    // que dispositivo y cliente queden unívocamente vinculados.
     const newDispositivo = await Dispositivos.create({
       Marca,
       Modelo,
       NumSerie,
       CodigoCliente,
-      CodigoDumont,
-      latitud: cliente.latitud,
-      longitud: cliente.longitud,
+      CodigoDumont: cliente.CodigoDumont,
+      latitud: cliente.Latitud,
+      longitud: cliente.Longitud,
     });
 
     res.send(newDispositivo);
@@ -84,20 +95,26 @@ const updateDispositivo = expressAsyncHandler(async (req, res) => {
   try {
     const dispositivo = await Dispositivos.findByPk(req.params.id);
     if (dispositivo) {
-      const { Marca, Modelo, NumSerie, CodigoCliente, CodigoDumont } = req.body;
+      const { Marca, Modelo, NumSerie, CodigoCliente } = req.body;
+      const clienteCambio =
+        CodigoCliente && CodigoCliente !== dispositivo.CodigoCliente;
 
       dispositivo.Marca = Marca ?? dispositivo.Marca;
       dispositivo.Modelo = Modelo ?? dispositivo.Modelo;
       dispositivo.NumSerie = NumSerie ?? dispositivo.NumSerie;
       dispositivo.CodigoCliente = CodigoCliente ?? dispositivo.CodigoCliente;
-      dispositivo.CodigoDumont = CodigoDumont ?? dispositivo.CodigoDumont;
 
-      if (CodigoDumont) {
-        const cliente = await Clientes.findOne({ where: { CodigoDumont } });
-        if (cliente) {
-          dispositivo.latitud = cliente.latitud;
-          dispositivo.longitud = cliente.longitud;
+      // Si cambió el cliente asociado, el Código Dumont y la ubicación se
+      // vuelven a derivar del nuevo cliente (idem lógica del alta): el
+      // usuario nunca los edita a mano.
+      if (clienteCambio) {
+        const cliente = await Clientes.findOne({ where: { CodigoCliente } });
+        if (!cliente) {
+          return res.status(404).send({ message: 'Cliente no encontrado' });
         }
+        dispositivo.CodigoDumont = cliente.CodigoDumont;
+        dispositivo.latitud = cliente.Latitud;
+        dispositivo.longitud = cliente.Longitud;
       }
 
       await dispositivo.save();

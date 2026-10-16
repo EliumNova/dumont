@@ -10,6 +10,12 @@ import { ClientesDistribuidores } from "../models/ClientesDistribuidores.js";
 const createCliente = expressAsyncHandler(async (req, res) => {
   console.log("Solicitud recibida en /api/clientes/create", req.body);
   try {
+    // OJO: los nombres de estos campos deben coincidir EXACTO (mayúsculas
+    // incluidas) con los atributos definidos en el modelo Clientes.js. Antes
+    // se recibían en minúscula (localidad, calle, altura, entreCalle1,
+    // entreCalle2) y Sequelize los ignoraba en silencio por no matchear con
+    // el modelo (Localidad, Calle, Altura, EntreCalle1, EntreCalle2), lo que
+    // rompía el alta de cualquier cliente nuevo.
     const {
       NombreCompleto,
       CodigoCliente,
@@ -20,13 +26,13 @@ const createCliente = expressAsyncHandler(async (req, res) => {
       CorreoElectronico,
       VentaAlcohol,
       Telefono,
-      localidad,
-      calle,
-      altura,
-      entreCalle1,
-      entreCalle2,
-      latitud,
-      longitud,
+      Localidad,
+      Calle,
+      Altura,
+      EntreCalle1,
+      EntreCalle2,
+      Latitud,
+      Longitud,
       HorarioVenta,
     } = req.body;
 
@@ -40,21 +46,36 @@ const createCliente = expressAsyncHandler(async (req, res) => {
       CorreoElectronico,
       VentaAlcohol,
       Telefono,
-      localidad,
-      calle,
-      altura,
-      entreCalle1,
-      entreCalle2,
-      latitud,
-      longitud,
+      Localidad,
+      Calle,
+      Altura,
+      EntreCalle1,
+      EntreCalle2,
+      Latitud,
+      Longitud,
       HorarioVenta,
     });
 
-    await ClientesDistribuidores.create({
-      ClienteIdClientes: CodigoCliente,
-      DistribuidorIdDistribuidores: CodigoDistribuidor,
-      CodigoDumont,
+    // Vincula el cliente con su distribuidor en la tabla intermedia. OJO:
+    // confirmado con DESCRIBE + datos reales que esta tabla guarda los
+    // CÓDIGOS DE NEGOCIO (CodigoCliente / CodigoDistribuidor), no las claves
+    // primarias UUID — a pesar de que los nombres de columna sugieran lo
+    // contrario (ver comentario en el modelo ClientesDistribuidores.js).
+    const distribuidorAsociado = await Distribuidores.findOne({
+      where: { CodigoDistribuidor },
     });
+
+    if (distribuidorAsociado) {
+      await ClientesDistribuidores.create({
+        ClienteIdClientes: newCliente.CodigoCliente,
+        DistribuidorIdDistribuidores: CodigoDistribuidor,
+        CodigoDumont: newCliente.CodigoDumont,
+      });
+    } else {
+      console.warn(
+        `No se encontró el distribuidor con CodigoDistribuidor=${CodigoDistribuidor}; el cliente se creó pero sin vincular en ClientesDistribuidores.`
+      );
+    }
 
     console.log("Cliente creado:", newCliente);
     res.send({ cliente: newCliente });
@@ -106,8 +127,11 @@ const getClienteById = expressAsyncHandler(async (req, res) => {
 
 const getClienteByCodigoDumont = expressAsyncHandler(async (req, res) => {
   try {
+    // Bug previo: buscaba por CodigoCliente en vez de CodigoDumont, así que
+    // esta ruta (/dumont/:codigoDumont) nunca encontraba nada salvo por
+    // coincidencia.
     const cliente = await Clientes.findOne({
-      where: { CodigoCliente: req.params.codigoDumont },
+      where: { CodigoDumont: req.params.codigoDumont },
     });
 
     if (cliente) {
@@ -123,6 +147,9 @@ const getClienteByCodigoDumont = expressAsyncHandler(async (req, res) => {
 
 const updateCliente = expressAsyncHandler(async (req, res) => {
   try {
+    // Mismo criterio que en createCliente: los campos deben llegar con la
+    // misma capitalización que el modelo (Localidad, Calle, Altura,
+    // EntreCalle1, EntreCalle2), si no, Sequelize no los persiste.
     const {
       NombreCompleto,
       CodigoCliente,
@@ -132,11 +159,13 @@ const updateCliente = expressAsyncHandler(async (req, res) => {
       CorreoElectronico,
       VentaAlcohol,
       Telefono,
-      localidad,
-      calle,
-      altura,
-      entreCalle1,
-      entreCalle2,
+      Localidad,
+      Calle,
+      Altura,
+      EntreCalle1,
+      EntreCalle2,
+      Latitud,
+      Longitud,
       HorarioVenta,
     } = req.body;
 
@@ -158,11 +187,13 @@ const updateCliente = expressAsyncHandler(async (req, res) => {
     cliente.VentaAlcohol = Boolean(VentaAlcohol);
 
     cliente.Telefono = Telefono ? String(Telefono) : cliente.Telefono;
-    cliente.localidad = localidad ?? cliente.localidad;
-    cliente.calle = calle ?? cliente.calle;
-    cliente.altura = altura ? String(altura) : cliente.altura;
-    cliente.entreCalle1 = entreCalle1 ?? cliente.entreCalle1;
-    cliente.entreCalle2 = entreCalle2 ?? cliente.entreCalle2;
+    cliente.Localidad = Localidad ?? cliente.Localidad;
+    cliente.Calle = Calle ?? cliente.Calle;
+    cliente.Altura = Altura ? String(Altura) : cliente.Altura;
+    cliente.EntreCalle1 = EntreCalle1 ?? cliente.EntreCalle1;
+    cliente.EntreCalle2 = EntreCalle2 ?? cliente.EntreCalle2;
+    cliente.Latitud = Latitud ?? cliente.Latitud;
+    cliente.Longitud = Longitud ?? cliente.Longitud;
     cliente.HorarioVenta = HorarioVenta ?? cliente.HorarioVenta;
 
     const updatedCliente = await cliente.save();
@@ -199,7 +230,7 @@ const getDispositivosByCliente = expressAsyncHandler(async (req, res) => {
     };
     const { count, rows } = await Dispositivos.findAndCountAll({
       where: {
-        idClientes: req.params.id,
+        CodigoCliente: req.params.id,
       },
       limit: options.limit,
       offset: options.offset,

@@ -1,43 +1,44 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getDispositivos,
   dispositivoDelete,
-} from '@/lib/slices/dispositivos/dispositivoAction';
-import { useRouter } from 'next/navigation';
-import { fetchClients } from '@/lib/slices/clients/clientAction';
-import { fetchRelacionesClientesDistribuidores } from '@/lib/slices/dispositivos/clientesDistribuidoresAction';
+} from "@/lib/slices/dispositivos/dispositivoAction";
+import { useRouter } from "next/navigation";
+import { fetchClients } from "@/lib/slices/clients/clientAction";
+import { fetchRelacionesClientesDistribuidores } from "@/lib/slices/dispositivos/clientesDistribuidoresAction";
 import {
   AiOutlineEye,
   AiOutlineDelete,
   AiOutlineEdit,
   AiOutlineCopy,
   AiOutlinePhone,
-} from 'react-icons/ai';
+  AiOutlineLink,
+} from "react-icons/ai";
 
-import { FaPhotoFilm } from 'react-icons/fa6';
-import Modal from './Modal';
-import ModalDelete from './ModalDelete';
-import MultimediaModal from './MultimediaModal.jsx';
+import { FaPhotoFilm } from "react-icons/fa6";
+import Modal from "./Modal";
+import ModalDelete from "./ModalDelete";
+import MultimediaModal from "./MultimediaModal.jsx";
 
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 function DeviceTable() {
   const dispatch = useDispatch();
   const router = useRouter();
   const dispositivos = useSelector(
-    (state) => state.dispositivos.allDispositivos.rows || []
+    (state) => state.dispositivos.allDispositivos.rows || [],
   );
   const totalDispositivos = useSelector(
-    (state) => state.dispositivos.allDispositivos.count || 0
+    (state) => state.dispositivos.allDispositivos.count || 0,
   );
 
   const { rows: clients = [], count: totalClients = 0 } = useSelector(
-    (state) => state.clients.allClients || {}
+    (state) => state.clients.allClients || {},
   );
 
   const [selectedDevice, setSelectedDevice] = useState(null);
@@ -47,16 +48,16 @@ function DeviceTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState("");
   const [sortColumn, setSortColumn] = useState(null);
-  const [sortDirection, setSortDirection] = useState('asc');
-  const [filtroPermisoAlcohol, setFiltroPermisoAlcohol] = useState('');
-  const [filtroSegmentacion, setFiltroSegmentacion] = useState('');
-  const [filtroCondicionFiscal, setFiltroCondicionFiscal] = useState('');
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [filtroPermisoAlcohol, setFiltroPermisoAlcohol] = useState("");
+  const [filtroSegmentacion, setFiltroSegmentacion] = useState("");
+  const [filtroCondicionFiscal, setFiltroCondicionFiscal] = useState("");
   const [isMultimediaModalOpen, setIsMultimediaModalOpen] = useState(false);
   const [currentMultimediaDevice, setCurrentMultimediaDevice] = useState(null);
   const relaciones = useSelector(
-    (state) => state.clientesDistribuidores.allRelaciones || []
+    (state) => state.clientesDistribuidores.allRelaciones || [],
   );
 
   const [paginaActual, setPaginaActual] = useState(0); // página empieza en 0
@@ -68,13 +69,25 @@ function DeviceTable() {
     dispatch(fetchRelacionesClientesDistribuidores());
   }, [dispatch, refresh, paginaActual, tamañoPagina]);
 
+  // El backend sí actualiza UltimaConexion en cada sync de la tablet (ver
+  // tablet.controller.js), pero esta pantalla solo pedía los dispositivos
+  // una vez al entrar — el estado "Conectado/Sin conexión" quedaba
+  // congelado hasta que el usuario forzaba un refetch a mano (cambiando de
+  // página, etc). Con este polling se actualiza solo cada 20s.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(getDispositivos({ page: paginaActual, pageSize: tamañoPagina }));
+    }, 20000);
+    return () => clearInterval(interval);
+  }, [dispatch, paginaActual, tamañoPagina]);
+
   const forceRender = () => {
     setRefresh(!refresh);
   };
 
   const handleDelete = (id) => {
     dispatch(dispositivoDelete(id)).then(() => {
-      toast.success('Dispositivo eliminado');
+      toast.success("Dispositivo eliminado");
       forceRender();
       setIsDeleteModalOpen(false);
     });
@@ -82,7 +95,7 @@ function DeviceTable() {
 
   const handleEdit = (device) => {
     router.push(
-      `/admin/deviceMenu/Pages/EditDevice?id=${device.idDispositivos}`
+      `/admin/deviceMenu/Pages/EditDevice?id=${device.idDispositivos}`,
     );
   };
 
@@ -94,17 +107,17 @@ function DeviceTable() {
   const handleViewClientDetails = async (codigoDumont) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/dumont/${codigoDumont}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/dumont/${codigoDumont}`,
       );
 
       setSelectedClient(response.data);
       setIsClientModalOpen(true);
     } catch (error) {
-      toast.error('Error al obtener los detalles del cliente');
+      toast.error("Error al obtener los detalles del cliente");
     }
   };
 
-  console.log('Dispositivos cargados:', dispositivos);
+  console.log("Dispositivos cargados:", dispositivos);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -126,45 +139,62 @@ function DeviceTable() {
     setDeviceToDelete(null);
   };
 
+  // "Online" si la app de la tablet avisó (heartbeat, ver tablet.controller.js
+  // en el backend) hace menos de 3 minutos. Antes esto miraba campos
+  // (estado/signal/battery) que nunca existieron en el modelo, así que
+  // siempre mostraba "Desconocido" en rojo.
+  const MINUTOS_OFFLINE = 3;
+
+  const estaOnline = (device) => {
+    if (!device.UltimaConexion) return false;
+    const minutos =
+      (Date.now() - new Date(device.UltimaConexion).getTime()) / 60000;
+    return minutos < MINUTOS_OFFLINE;
+  };
+
+  const getEstadoTexto = (device) =>
+    device.UltimaConexion
+      ? estaOnline(device)
+        ? "Conectado"
+        : "Sin conexión"
+      : "Nunca conectado";
+
   const getStatusColor = (device) => {
-    if (device.estado === 'Apagado') return 'text-yellow-500';
-    if (device.estado === 'En suspensión') return 'text-blue-500';
-    if (device.signal === 'Wi-Fi' && device.battery === 'OK')
-      return 'text-green-500';
-    if (device.signal === 'Falla' && device.battery === 'OK')
-      return 'text-yellow-500';
-    return 'text-red-500';
+    if (!device.UltimaConexion) return "text-gray-400";
+    return estaOnline(device) ? "text-green-500" : "text-red-500";
   };
 
   useEffect(() => {
     axios
-      .get('${process.env.NEXT_PUBLIC_API_URL}/api/clientes-distribuidores')
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/api/clientes-distribuidores`)
       .then((res) => {
-        console.log('Data sin Redux:', res.data);
+        console.log("Data sin Redux:", res.data);
       });
   }, []);
 
   const filterDevices = () => {
     return dispositivos
       .filter((device) => {
+        // OJO: antes esto descartaba por completo cualquier dispositivo sin
+        // Cliente asociado. Eso hacía desaparecer dispositivos legítimos que
+        // quedaron con CodigoCliente en NULL (p. ej. creados mientras el
+        // código todavía usaba el nombre de campo viejo "idClientes").
+        // Ahora se muestran igual, con los datos del cliente vacíos.
         const cliente = device.Cliente;
-        if (!cliente) return false;
-
-        if (!cliente) return false; // Evita errores si el cliente no está
 
         const relacion = relaciones.find(
-          (r) => r.Cliente?.idClientes === cliente.idClientes
+          (r) => r.Cliente?.idClientes === cliente?.idClientes,
         );
 
         const segundoTelefono = relacion?.Distribuidor?.SegundoTelefono;
 
         const matchesSearch = [device.Marca, device.Modelo, device.NumSerie]
-          .join(' ')
+          .join(" ")
           .toLowerCase()
           .includes(filter.toLowerCase());
 
         const matchesAlcohol =
-          filtroPermisoAlcohol !== ''
+          filtroPermisoAlcohol !== ""
             ? String(cliente?.VentaAlcohol) === filtroPermisoAlcohol
             : true;
 
@@ -185,9 +215,9 @@ function DeviceTable() {
       })
       .sort((a, b) => {
         if (!sortColumn) return 0;
-        const aValue = (a[sortColumn] || '').toString().toLowerCase();
-        const bValue = (b[sortColumn] || '').toString().toLowerCase();
-        return sortDirection === 'asc'
+        const aValue = (a[sortColumn] || "").toString().toLowerCase();
+        const bValue = (b[sortColumn] || "").toString().toLowerCase();
+        return sortDirection === "asc"
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue);
       });
@@ -195,11 +225,19 @@ function DeviceTable() {
 
   const handleSort = (column) => {
     if (sortColumn === column) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortColumn(column);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
+  };
+
+  const copiarLinkTablet = (device) => {
+    const url = `${window.location.origin}/tablet/${device.CodigoDumont}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => toast.success("Link de la tablet copiado: " + url))
+      .catch(() => toast.error("No se pudo copiar el link"));
   };
 
   const openMultimediaModal = (device) => {
@@ -207,7 +245,7 @@ function DeviceTable() {
     setIsMultimediaModalOpen(true);
   };
 
-  console.log('Relaciones cliente-distribuidor:', relaciones);
+  console.log("Relaciones cliente-distribuidor:", relaciones);
 
   return (
     <div className="flex flex-col border border-[#F2F5F6] rounded w-auto bg-[#F2F5F6] mt-4">
@@ -237,8 +275,7 @@ function DeviceTable() {
                     setPaginaActual(0); // volvés a la página 0 si cambia el tamaño
                     setTamañoPagina(Number(e.target.value));
                   }}
-                  className="p-2 border rounded"
-                >
+                  className="p-2 border rounded">
                   {[5, 10, 20, 50, 100].map((size) => (
                     <option key={size} value={size}>
                       {size}
@@ -253,13 +290,12 @@ function DeviceTable() {
                     setPaginaActual((prev) => Math.max(prev - 1, 0))
                   }
                   disabled={paginaActual === 0}
-                  className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
-                >
+                  className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50">
                   Anterior
                 </button>
 
                 <span>
-                  Página {paginaActual + 1} de{' '}
+                  Página {paginaActual + 1} de{" "}
                   {Math.ceil(totalDispositivos / tamañoPagina)}
                 </span>
 
@@ -268,15 +304,14 @@ function DeviceTable() {
                     setPaginaActual((prev) =>
                       prev + 1 < Math.ceil(totalDispositivos / tamañoPagina)
                         ? prev + 1
-                        : prev
+                        : prev,
                     )
                   }
                   disabled={
                     paginaActual + 1 >=
                     Math.ceil(totalDispositivos / tamañoPagina)
                   }
-                  className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
-                >
+                  className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50">
                   Siguiente
                 </button>
               </div>
@@ -296,8 +331,7 @@ function DeviceTable() {
               <select
                 value={filtroPermisoAlcohol}
                 onChange={(e) => setFiltroPermisoAlcohol(e.target.value)}
-                className="p-2 border rounded"
-              >
+                className="p-2 border rounded">
                 <option value="">Permiso Alcohol</option>
                 <option value="1">Sí</option>
                 <option value="0">No</option>
@@ -306,8 +340,7 @@ function DeviceTable() {
               <select
                 value={filtroSegmentacion}
                 onChange={(e) => setFiltroSegmentacion(e.target.value)}
-                className="p-2 border rounded"
-              >
+                className="p-2 border rounded">
                 <option value="">Segmentación</option>
                 <option value="Kiosco">Kiosco</option>
                 <option value="Almacén">Almacén</option>
@@ -317,8 +350,7 @@ function DeviceTable() {
               <select
                 value={filtroCondicionFiscal}
                 onChange={(e) => setFiltroCondicionFiscal(e.target.value)}
-                className="p-2 border rounded"
-              >
+                className="p-2 border rounded">
                 <option value="">Cond. Fiscal</option>
                 <option value="Monotributo">Monotributo</option>
                 <option value="Responsable Inscripto">
@@ -333,28 +365,25 @@ function DeviceTable() {
               <thead className="border-b font-medium dark:border-[#F2F5F6]">
                 <tr className="text-black">
                   <th
-                    onClick={() => handleSort('idClientes')}
-                    className="px-10 py-6 text-center cursor-pointer"
-                  >
-                    Cliente{' '}
-                    {sortColumn === 'idClientes' &&
-                      (sortDirection === 'asc' ? '↑' : '↓')}
+                    onClick={() => handleSort("idClientes")}
+                    className="px-10 py-6 text-center cursor-pointer">
+                    Cliente{" "}
+                    {sortColumn === "idClientes" &&
+                      (sortDirection === "asc" ? "↑" : "↓")}
                   </th>
                   <th
-                    onClick={() => handleSort('Marca')}
-                    className="px-10 py-6 text-center cursor-pointer"
-                  >
-                    Dispositivo{' '}
-                    {sortColumn === 'Marca' &&
-                      (sortDirection === 'asc' ? '↑' : '↓')}
+                    onClick={() => handleSort("Marca")}
+                    className="px-10 py-6 text-center cursor-pointer">
+                    Dispositivo{" "}
+                    {sortColumn === "Marca" &&
+                      (sortDirection === "asc" ? "↑" : "↓")}
                   </th>
                   <th
-                    onClick={() => handleSort('estado')}
-                    className="px-10 py-6 text-center cursor-pointer"
-                  >
-                    Estado{' '}
-                    {sortColumn === 'estado' &&
-                      (sortDirection === 'asc' ? '↑' : '↓')}
+                    onClick={() => handleSort("estado")}
+                    className="px-10 py-6 text-center cursor-pointer">
+                    Estado{" "}
+                    {sortColumn === "estado" &&
+                      (sortDirection === "asc" ? "↑" : "↓")}
                   </th>
                   <th className="px-10 py-6 text-center">Coordenadas</th>
 
@@ -366,17 +395,15 @@ function DeviceTable() {
                 {filterDevices().map((dispositivo) => (
                   <tr
                     key={dispositivo.idDispositivos}
-                    className="border-b transition duration-300 ease-in-out text-black hover:bg-neutral-100 dark:border-[#F2F5F6] dark:hover:bg-[#d2dadd]"
-                  >
+                    className="border-b transition duration-300 ease-in-out text-black hover:bg-neutral-100 dark:border-[#F2F5F6] dark:hover:bg-[#d2dadd]">
                     <td className="whitespace-nowrap px-10 py-6 text-center font-medium">
                       <button
                         className="text-blue-500"
                         onClick={() =>
-                          handleViewClientDetails(dispositivo.CodigoCliente)
-                        }
-                      >
-                        {dispositivo.CodigoCliente || 'Sin código'} -{' '}
-                        {dispositivo.Cliente?.NombreCompleto || 'Sin nombre'}
+                          handleViewClientDetails(dispositivo.CodigoDumont)
+                        }>
+                        {dispositivo.Cliente?.CodigoCliente || "Sin código"} -{" "}
+                        {dispositivo.Cliente?.NombreCompleto || "Sin nombre"}
                       </button>
                     </td>
 
@@ -385,13 +412,13 @@ function DeviceTable() {
                     </td>
                     <td className="whitespace-nowrap px-10 py-6 text-center">
                       <span className={getStatusColor(dispositivo)}>
-                        {dispositivo.estado || 'Desconocido'}
+                        ● {getEstadoTexto(dispositivo)}
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-10 py-6 text-center">
                       {dispositivo.latitud && dispositivo.longitud
                         ? `${dispositivo.latitud}, ${dispositivo.longitud}`
-                        : 'No disponible'}
+                        : "No disponible"}
                     </td>
 
                     <td className="whitespace-nowrap px-10 py-6 flex justify-center items-center gap-4">
@@ -410,6 +437,12 @@ function DeviceTable() {
                       <FaPhotoFilm
                         className="cursor-pointer text-2xl"
                         onClick={() => openMultimediaModal(dispositivo)}
+                        title="Multimedia"
+                      />
+                      <AiOutlineLink
+                        className="cursor-pointer text-2xl"
+                        onClick={() => copiarLinkTablet(dispositivo)}
+                        title="Copiar link de la tablet"
                       />
                     </td>
                   </tr>
@@ -448,8 +481,12 @@ function DeviceTable() {
       <Modal isOpen={isClientModalOpen} onClose={closeClientModal}>
         {selectedClient &&
           (() => {
+            // ClienteIdClientes en realidad guarda el CodigoCliente (código
+            // de negocio), no el idClientes (UUID).
             const relacion = relaciones.find(
-              (r) => r.ClienteIdClientes === selectedClient.CodigoCliente
+              (r) =>
+                String(r.ClienteIdClientes) ===
+                String(selectedClient.CodigoCliente),
             );
             const segundoTelefono = relacion?.Distribuidor?.SegundoTelefono;
 
@@ -471,11 +508,11 @@ function DeviceTable() {
                     <AiOutlineCopy
                       onClick={() => {
                         navigator.clipboard.writeText(
-                          selectedClient.CodigoDumont
+                          selectedClient.CodigoDumont,
                         );
-                        toast.info('📋 Código Dumont copiado', {
+                        toast.info("📋 Código Dumont copiado", {
                           autoClose: 2000,
-                          position: 'top-right',
+                          position: "top-right",
                         });
                       }}
                       className="cursor-pointer text-blue-600 hover:text-blue-800"
@@ -488,8 +525,7 @@ function DeviceTable() {
                   <span className="font-medium">Teléfono (Cliente):</span>
                   <a
                     href={`tel:${selectedClient.Telefono}`}
-                    className="text-green-600 hover:text-green-800 flex items-center gap-2"
-                  >
+                    className="text-green-600 hover:text-green-800 flex items-center gap-2">
                     {selectedClient.Telefono}
                     <AiOutlinePhone />
                   </a>
@@ -497,20 +533,20 @@ function DeviceTable() {
 
                 <div className="flex justify-between">
                   <span className="font-medium">Permiso Venta Alcohol:</span>
-                  <span>{selectedClient.VentaAlcohol === 1 ? 'Sí' : 'No'}</span>
+                  <span>{selectedClient.VentaAlcohol === 1 ? "Sí" : "No"}</span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className="font-medium">Segmentación:</span>
                   <span>
-                    {selectedClient.Segmentacion || 'No especificado'}
+                    {selectedClient.Segmentacion || "No especificado"}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className="font-medium">Condición Fiscal:</span>
                   <span>
-                    {selectedClient.CondicionFiscal || 'No especificado'}
+                    {selectedClient.CondicionFiscal || "No especificado"}
                   </span>
                 </div>
 
@@ -519,13 +555,12 @@ function DeviceTable() {
                     <span className="font-medium">WhatsApp Distribuidor:</span>
                     <a
                       href={`https://wa.me/${segundoTelefono}?text=${encodeURIComponent(
-                        `Hola! Me contacto para consultarte acerca de un dispositivo asociado al cliente ${selectedClient.NombreCompleto} con código ${selectedClient.CodigoCliente}.`
+                        `Hola! Me contacto para consultarte acerca de un dispositivo asociado al cliente ${selectedClient.NombreCompleto} con código ${selectedClient.CodigoCliente}.`,
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-green-600 hover:text-green-800 flex items-center gap-2"
-                      title="Enviar WhatsApp"
-                    >
+                      title="Enviar WhatsApp">
                       {segundoTelefono}
                       <AiOutlinePhone />
                     </a>

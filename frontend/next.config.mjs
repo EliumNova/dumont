@@ -1,9 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Permite probar la app desde otros dispositivos de la red local (tablet
+  // física, celular) accediendo por la IP de esta compu en vez de
+  // "localhost". Si tu IP de red cambia (DHCP), agregala acá también.
+  allowedDevOrigins: ["172.30.240.1", "localhost", "127.0.0.1"],
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
+        source: "/api/:path*",
         //url de back en .env
         destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
       },
@@ -12,18 +16,18 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/api/:path*',
+        source: "/api/:path*",
         headers: [
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: "Access-Control-Allow-Credentials", value: "true" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
           {
-            key: 'Access-Control-Allow-Methods',
-            value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+            key: "Access-Control-Allow-Methods",
+            value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
           },
           {
-            key: 'Access-Control-Allow-Headers',
+            key: "Access-Control-Allow-Headers",
             value:
-              'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
           },
         ],
       },

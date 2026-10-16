@@ -7,21 +7,28 @@ import { fileError, handleError } from "../../utils/utilsErrors.js";
 import fs from "fs";
 import path from "path";
 
+// En Windows, file.path viene con backslashes (ej. "public\\uploads\\videos\\
+// x.mp4"). El .replace("public/", "") viejo buscaba forward slash y nunca
+// matcheaba en Windows, así que "public" quedaba pegado en la URL final y
+// las barras invertidas se mandaban tal cual dentro de una URL (inválido) —
+// por eso los videos/imágenes tiraban 404 al cargarlos en el navegador.
+const toPublicUrlPath = (filePath) =>
+  filePath.replace(/\\/g, "/").replace(/^public\//, "");
+
 const createFile = expressAsyncHandler(async (req, res) => {
   try {
-    let replaceDirName = "public/";
     const { file } = req;
     if (req.fileValidationError) throw new Error(req.fileValidationError);
     console.log(file);
     if (req.file) {
-      const createdFile = req.file.path.replace(replaceDirName, "");
+      const createdFile = toPublicUrlPath(req.file.path);
       console.log(createdFile);
       res.status(200).send({ url: `${process.env.API_URL}/${createdFile}` });
     } else if (req.files) {
       const files = Object.values(req.files).flat();
 
       const uploadPromises = files.map(async (file) => {
-        const createdFile = file.path.replace(replaceDirName, "");
+        const createdFile = toPublicUrlPath(file.path);
         return `${process.env.API_URL}/${createdFile}`;
       });
 

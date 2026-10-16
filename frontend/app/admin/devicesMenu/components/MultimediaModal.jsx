@@ -1,450 +1,391 @@
 // components/MultimediaModal.jsx
-import React, { useState, useRef, useEffect } from 'react';
-import Modal from './Modal';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+//
+// Antes esto era un prototipo de "editor de video" (timeline, drag & drop de
+// clips) que nunca llegó a subir ni guardar nada en el backend. Se reemplaza
+// por lo que realmente pidió el cliente: subir una imagen o video, y elegir
+// a qué tablets se les manda (un dispositivo puntual, todo un distribuidor,
+// o todo un segmento).
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import axios from "axios";
+import Modal from "./Modal";
+import {
+  FILES,
+  MULTIMEDIA,
+  MULTIMEDIA_ASIGNACIONES,
+} from "@/lib/slices/constants";
 
-const ItemTypes = { CLIP: 'clip' };
-
-function DraggableClip({ clip, index, moveClip, updateDuration, zoom }) {
-  const ref = useRef(null);
-  const [, drop] = useDrop({
-    accept: ItemTypes.CLIP,
-    hover(item) {
-      if (item.index !== index) {
-        moveClip(item.index, index);
-        item.index = index;
-      }
-    },
-  });
-  const [, drag] = useDrag({
-    type: ItemTypes.CLIP,
-    item: { index },
-  });
-  drag(drop(ref));
-
-  const handleResize = (e) => {
-    e.stopPropagation();
-    const startX = e.clientX;
-    const startDuration = clip.duration || 5;
-    const onMouseMove = (e) => {
-      const delta = e.clientX - startX;
-      const newDuration = Math.max(1, startDuration + Math.floor(delta / zoom));
-      updateDuration(index, newDuration);
-    };
-    const onMouseUp = () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  };
-
-  const times = Math.floor((clip.duration || 5) / 5);
-
-  return (
-    <div
-      ref={ref}
-      className={`rounded text-xs text-white flex items-center justify-start cursor-move select-none ${
-        clip.type === 'image'
-          ? 'bg-purple-600'
-          : clip.type === 'audio'
-          ? 'bg-green-600'
-          : 'bg-blue-600'
-      }`}
-      style={{
-        width: `${(clip.duration || 5) * zoom}px`,
-        marginLeft: 4,
-        height: '70%',
-      }}
-      title={`${clip.type.charAt(0).toUpperCase() + clip.type.slice(1)} - ${
-        clip.duration || 5
-      }s`}
-    >
-      {clip.type === 'image' ? (
-        <div className="flex h-full">
-          {Array.from({ length: times }).map((_, idx) => (
-            <img
-              key={idx}
-              src={clip.url}
-              className="h-full w-8 object-cover"
-              alt="thumb"
-            />
-          ))}
-        </div>
-      ) : clip.type === 'audio' ? (
-        <span className="px-2">🔊 Audio</span>
-      ) : (
-        <span className="px-2">🎬 Video</span>
-      )}
-      <div
-        onMouseDown={handleResize}
-        className="w-2 h-full bg-white opacity-80 cursor-ew-resize ml-auto"
-      />
-    </div>
-  );
-}
+const authHeaders = () => {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 function MultimediaModal({ isOpen, onClose, device }) {
-  const [clips, setClips] = useState([]);
+  const [biblioteca, setBiblioteca] = useState([]);
+  const [asignaciones, setAsignaciones] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef(null);
-  const [dragActive, setDragActive] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const videoRef = useRef(null);
-  const [timelineWidth, setTimelineWidth] = useState(800); // valor por defecto seguro
 
-  const [zoom, setZoom] = useState(10);
-  const [playhead, setPlayhead] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const playheadRef = useRef(null);
+  const [seleccionados, setSeleccionados] = useState([]); // ids de Multimedia elegidos para enviar
+  const [destino, setDestino] = useState({
+    dispositivo: true,
+    distribuidor: false,
+    segmento: false,
+  });
 
-  useEffect(() => {
-    const updateWidth = () => setTimelineWidth(window.innerWidth - 100);
+  const cliente = device?.Cliente || null;
 
-    if (typeof window !== 'undefined') {
-      updateWidth(); // setea el valor inicial basado en el ancho real
-      window.addEventListener('resize', updateWidth);
-      return () => window.removeEventListener('resize', updateWidth);
+  const cargarDatos = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [resMedia, resAsignaciones] = await Promise.all([
+        axios.get(MULTIMEDIA),
+        axios.get(MULTIMEDIA_ASIGNACIONES),
+      ]);
+      setBiblioteca(resMedia.data || []);
+      setAsignaciones(resAsignaciones.data || []);
+    } catch (err) {
+      console.error("Error cargando multimedia", err);
+      setErrorMessage("No se pudo cargar la biblioteca multimedia.");
+    } finally {
+      setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (device?.multimedia) {
-      setClips(device.multimedia.map((item) => ({ ...item, duration: 5 })));
-      setSelectedIndex(0);
-      setPlayhead(0);
-    } else {
-      setClips([]);
-      setSelectedIndex(0);
-      setPlayhead(0);
+    if (isOpen) {
+      cargarDatos();
+      setSeleccionados([]);
     }
-  }, [device]);
+  }, [isOpen, cargarDatos]);
 
-  // Actualiza playhead cada segundo si está reproduciendo
-  useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setPlayhead((prev) => {
-        const total = clips.reduce(
-          (acc, clip) => acc + (clip.duration || 5),
-          0
-        );
-        return prev < total ? prev + 1 : 0;
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const esImagen = file.type.startsWith("image");
+    const esVideo = file.type.startsWith("video");
+
+    if (!esImagen && !esVideo) {
+      setErrorMessage("Solo se aceptan imágenes o videos.");
+      return;
+    }
+
+    setUploading(true);
+    setErrorMessage("");
+
+    try {
+      const formData = new FormData();
+      formData.append(esImagen ? "image" : "video", file);
+
+      const resUpload = await axios.post(`${FILES}/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [clips, isPlaying]);
 
-  // Sincroniza preview con playhead
-  useEffect(() => {
-    let acc = 0;
-    let foundIndex = 0;
-    for (let i = 0; i < clips.length; i++) {
-      acc += clips[i].duration || 5;
-      if (playhead < acc) {
-        foundIndex = i;
-        break;
-      }
+      // OJO: /api/files/upload usa upload.fields([...]) en el backend, así
+      // que siempre llena req.files (nunca req.file) y el controller
+      // createFile devuelve { urls: [...] } (plural), nunca { url }.
+      const url = resUpload.data?.urls?.[0] || resUpload.data?.url;
+      if (!url) throw new Error("El servidor no devolvió una URL");
+
+      await axios.post(
+        MULTIMEDIA,
+        {
+          url,
+          tipo: esImagen ? "imagen" : "video",
+          nombreArchivo: file.name,
+        },
+        { headers: authHeaders() },
+      );
+
+      await cargarDatos();
+    } catch (err) {
+      console.error("Error subiendo archivo", err);
+      setErrorMessage(
+        err.response?.data?.message || "Error al subir el archivo.",
+      );
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
-    setSelectedIndex(foundIndex);
+  };
 
-    // Si es video, sincroniza el tiempo del video
-    const currentClip = clips[foundIndex];
-    if (videoRef.current && currentClip?.type === 'video') {
-      const clipStart = acc - (currentClip.duration || 5);
-      const currentTime = playhead - clipStart;
-      if (!isNaN(currentTime)) {
-        videoRef.current.currentTime = currentTime;
-        if (isPlaying) videoRef.current.play();
-        else videoRef.current.pause();
-      }
+  const toggleSeleccion = (idMultimedia) => {
+    setSeleccionados((prev) =>
+      prev.includes(idMultimedia)
+        ? prev.filter((id) => id !== idMultimedia)
+        : [...prev, idMultimedia],
+    );
+  };
+
+  const handleEliminarMultimedia = async (idMultimedia) => {
+    try {
+      await axios.delete(`${MULTIMEDIA}/${idMultimedia}`, {
+        headers: authHeaders(),
+      });
+      await cargarDatos();
+    } catch (err) {
+      console.error("Error eliminando multimedia", err);
+      setErrorMessage("No se pudo eliminar el contenido.");
     }
-  }, [playhead, clips, isPlaying]);
+  };
 
-  const handleFiles = (files) => {
-    const newClips = [];
-    for (let file of files) {
-      const url = URL.createObjectURL(file);
-      const type = file.type.startsWith('image')
-        ? 'image'
-        : file.type.startsWith('video')
-        ? 'video'
-        : file.type.startsWith('audio')
-        ? 'audio'
-        : null;
-      if (!type) continue;
-      newClips.push({ url, type, file, duration: 5 });
+  const handleEnviar = async () => {
+    if (seleccionados.length === 0) {
+      setErrorMessage("Elegí al menos un contenido para enviar.");
+      return;
     }
-    setClips((c) => [...c, ...newClips]);
-    if (newClips.length > 0) setSelectedIndex(clips.length);
-  };
+    if (!destino.dispositivo && !destino.distribuidor && !destino.segmento) {
+      setErrorMessage("Elegí al menos un destino.");
+      return;
+    }
 
-  const moveClip = (from, to) => {
-    const updated = [...clips];
-    const [moved] = updated.splice(from, 1);
-    updated.splice(to, 0, moved);
-    setClips(updated);
-  };
+    setErrorMessage("");
 
-  const updateDuration = (index, newDuration) => {
-    setClips((prev) => {
-      const updated = [...prev];
-      updated[index].duration = newDuration;
-      return updated;
-    });
-  };
+    try {
+      await Promise.all(
+        seleccionados.map((MultimediaId) =>
+          axios.post(
+            MULTIMEDIA_ASIGNACIONES,
+            {
+              MultimediaId,
+              dispositivos: destino.dispositivo ? [device.CodigoDumont] : [],
+              distribuidores:
+                destino.distribuidor && cliente?.CodigoDistribuidor
+                  ? [cliente.CodigoDistribuidor]
+                  : [],
+              segmentos:
+                destino.segmento && cliente?.Segmentacion
+                  ? [cliente.Segmentacion]
+                  : [],
+            },
+            { headers: authHeaders() },
+          ),
+        ),
+      );
 
-  const onDragOver = (e) => {
-    e.preventDefault();
-    setDragActive(true);
-  };
-
-  const onDragLeave = (e) => {
-    e.preventDefault();
-    setDragActive(false);
-  };
-
-  const onDrop = (e) => {
-    e.preventDefault();
-    setDragActive(false);
-    if (e.dataTransfer.files?.length) handleFiles(e.dataTransfer.files);
-  };
-
-  const openFileDialog = () => fileInputRef.current?.click();
-  const currentClip = clips[selectedIndex];
-  const totalDuration = clips.reduce(
-    (acc, clip) => acc + (clip.duration || 5),
-    0
-  );
-
-  const togglePlay = () => setIsPlaying((prev) => !prev);
-  const resetPlayhead = () => setPlayhead(0);
-  const seek = (seconds) => {
-    setPlayhead((prev) => {
-      let newTime = prev + seconds;
-      if (newTime < 0) newTime = 0;
-      const total = clips.reduce((acc, clip) => acc + (clip.duration || 5), 0);
-      if (newTime > total) newTime = total;
-      return newTime;
-    });
-  };
-
-  // Render ticks / números de tiempo arriba del timeline
-  const renderTimeTicks = () => {
-    const ticks = [];
-    for (let i = 0; i <= totalDuration; i += 5) {
-      ticks.push(
-        <div
-          key={i}
-          className="absolute text-xs text-gray-400 select-none"
-          style={{
-            left: i * zoom - 10,
-            top: 0,
-            width: 20,
-            textAlign: 'center',
-          }}
-        >
-          {i}s
-        </div>
+      setSeleccionados([]);
+      await cargarDatos();
+    } catch (err) {
+      console.error("Error enviando a tablets", err);
+      setErrorMessage(
+        err.response?.data?.message || "No se pudo enviar el contenido.",
       );
     }
-    return ticks;
   };
+
+  const handleQuitarAsignacion = async (idAsignacion) => {
+    try {
+      await axios.delete(`${MULTIMEDIA_ASIGNACIONES}/${idAsignacion}`, {
+        headers: authHeaders(),
+      });
+      await cargarDatos();
+    } catch (err) {
+      console.error("Error quitando asignación", err);
+      setErrorMessage("No se pudo quitar la asignación.");
+    }
+  };
+
+  // Asignaciones que aplican a ESTE dispositivo puntual (por CodigoDumont,
+  // por su distribuidor, o por su segmento), para mostrar "qué le llega hoy".
+  const asignacionesDeEsteDispositivo = asignaciones.filter((a) => {
+    if (!device) return false;
+    return (
+      a.CodigoDumont === device.CodigoDumont ||
+      (cliente?.CodigoDistribuidor &&
+        a.CodigoDistribuidor === cliente.CodigoDistribuidor) ||
+      (cliente?.Segmentacion && a.Segmentacion === cliente.Segmentacion)
+    );
+  });
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <DndProvider backend={HTML5Backend}>
-        <div className="bg-gray-900 text-white rounded-lg shadow-lg max-w-6xl mx-auto max-h-[95vh] overflow-y-auto flex flex-col p-6 space-y-6">
-          <div className="flex space-x-6">
-            <div className="w-1/4 h-full bg-gray-800 rounded-md p-3 overflow-y-auto border border-gray-700">
-              <h3 className="text-lg font-semibold mb-4">Media Bin</h3>
-              <div
-                onDragOver={onDragOver}
-                onDragLeave={onDragLeave}
-                onDrop={onDrop}
-                className={`grid grid-cols-2 gap-2 p-2 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300 ${
-                  dragActive
-                    ? 'border-blue-400 bg-blue-900/40'
-                    : 'border-gray-600'
-                }`}
-                onClick={openFileDialog}
-              >
-                {clips.map((clip, i) => (
+      <div className="text-black max-h-[80vh] overflow-y-auto">
+        <h2 className="text-2xl font-semibold mb-1">Multimedia para tablets</h2>
+        {device && (
+          <p className="text-sm text-gray-500 mb-4">
+            Dispositivo: {device.Marca} {device.Modelo} — Código Dumont:{" "}
+            <strong>{device.CodigoDumont}</strong>
+            {cliente && (
+              <>
+                {" "}
+                · Distribuidor: {cliente.CodigoDistribuidor || "—"} · Segmento:{" "}
+                {cliente.Segmentacion || "—"}
+              </>
+            )}
+          </p>
+        )}
+
+        {errorMessage && (
+          <div className="p-2 mb-4 text-sm rounded bg-red-100 text-red-700">
+            {errorMessage}
+          </div>
+        )}
+
+        {/* Subir contenido nuevo */}
+        <div className="mb-6 p-4 border-2 border-dashed rounded-lg border-gray-300">
+          <label className="block font-semibold mb-2">
+            Subir imagen o video nuevo
+          </label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,video/*"
+            onChange={handleFileChange}
+            disabled={uploading}
+          />
+          {uploading && (
+            <p className="text-sm text-gray-500 mt-2">Subiendo archivo...</p>
+          )}
+        </div>
+
+        {/* Biblioteca */}
+        <div className="mb-6">
+          <h3 className="font-semibold mb-2">
+            Biblioteca ({biblioteca.length})
+          </h3>
+          {loading ? (
+            <p className="text-sm text-gray-500">Cargando...</p>
+          ) : biblioteca.length === 0 ? (
+            <p className="text-sm text-gray-500">
+              Todavía no subiste nada. Usá el campo de arriba.
+            </p>
+          ) : (
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {biblioteca.map((item) => {
+                const marcado = seleccionados.includes(item.idMultimedia);
+                return (
                   <div
-                    key={i}
-                    className={`relative w-full aspect-video bg-black overflow-hidden rounded-md border-4 cursor-pointer ${
-                      i === selectedIndex
-                        ? 'border-blue-500'
-                        : 'border-transparent'
-                    }`}
-                    onClick={() => setSelectedIndex(i)}
-                  >
-                    {clip.type === 'image' ? (
+                    key={item.idMultimedia}
+                    onClick={() => toggleSeleccion(item.idMultimedia)}
+                    className={`relative cursor-pointer rounded-md overflow-hidden border-4 aspect-video bg-black ${
+                      marcado ? "border-blue-500" : "border-transparent"
+                    }`}>
+                    {item.tipo === "imagen" ? (
                       <img
-                        src={clip.url}
-                        alt={`Clip ${i + 1}`}
+                        src={item.url}
+                        alt={item.nombreArchivo || "imagen"}
                         className="object-cover w-full h-full"
                       />
                     ) : (
                       <video
-                        src={clip.url}
+                        src={item.url}
                         muted
                         preload="metadata"
                         className="object-cover w-full h-full"
                       />
                     )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEliminarMultimedia(item.idMultimedia);
+                      }}
+                      className="absolute top-1 right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                      title="Eliminar de la biblioteca">
+                      ×
+                    </button>
                   </div>
-                ))}
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*,video/*,audio/*"
-                  ref={fileInputRef}
-                  className="hidden"
-                  onChange={(e) => handleFiles(e.target.files)}
-                />
-              </div>
+                );
+              })}
             </div>
-
-            <div className="flex-grow flex flex-col items-center justify-center text-center space-y-4">
-              <h2 className="text-2xl text-gray-300 font-semibold mb-2">
-                Preview
-              </h2>
-              <div className="w-full max-w-4xl bg-black rounded-md overflow-hidden shadow-lg max-h-[40vh]">
-                {currentClip?.type === 'image' ? (
-                  <img
-                    src={currentClip.url}
-                    alt="Preview"
-                    className="w-full h-full object-contain"
-                  />
-                ) : currentClip?.type === 'audio' ? (
-                  <audio
-                    ref={videoRef}
-                    src={currentClip.url}
-                    controls
-                    autoPlay={isPlaying}
-                  />
-                ) : (
-                  <video
-                    ref={videoRef}
-                    src={currentClip?.url}
-                    className="w-full h-full"
-                    controls
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="w-full flex items-center space-x-4 px-4">
-            <button
-              onClick={() => seek(-5)}
-              className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
-              title="Retroceder 5 segundos"
-            >
-              ⏪ -5s
-            </button>
-            <button
-              onClick={togglePlay}
-              className="px-3 py-1 bg-blue-600 rounded hover:bg-blue-700"
-              title={isPlaying ? 'Pausar' : 'Reproducir'}
-            >
-              {isPlaying ? '⏸️ Pausa' : '▶️ Reproducir'}
-            </button>
-            <button
-              onClick={() => seek(5)}
-              className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
-              title="Avanzar 5 segundos"
-            >
-              ⏩ +5s
-            </button>
-            <button
-              onClick={resetPlayhead}
-              className="px-3 py-1 bg-gray-600 rounded hover:bg-gray-700"
-              title="Reiniciar reproducción"
-            >
-              🔄 Reiniciar
-            </button>
-            <label htmlFor="zoom" className="text-sm text-gray-400 ml-auto">
-              Zoom:
-            </label>
-            <input
-              id="zoom"
-              type="range"
-              min="5"
-              max="40"
-              step="1"
-              value={zoom}
-              onChange={(e) => setZoom(Number(e.target.value))}
-            />
-            <span className="text-sm text-gray-400">{zoom}px/s</span>
-          </div>
-
-          {/* Timeline */}
-          <div className="w-full overflow-x-auto">
-            <div
-              className="bg-gray-800 rounded-md p-3 border border-gray-700 relative mx-auto"
-              style={{ width: '90%' }}
-              onClick={(e) => {
-                // Permitir click para mover playhead
-                const rect = e.currentTarget.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const time = Math.floor(clickX / zoom);
-                setPlayhead(time);
-              }}
-            >
-              {/* Time ticks */}
-              <div className="relative h-6 border-b border-gray-600">
-                {renderTimeTicks()}
-              </div>
-
-              {/* Playhead line */}
-              <div
-                className="absolute top-6 left-0 h-14 border-l-2 border-red-500 z-10"
-                style={{ left: `${playhead * zoom}px` }}
-              />
-
-              {/* Imágenes y videos */}
-              <div className="text-gray-300 mb-1 font-semibold mt-2">
-                Imágenes & Videos
-              </div>
-              <div className="relative h-14 bg-gray-700 rounded flex items-center mb-4">
-                {clips
-                  .map((clip, i) => ({ ...clip, index: i }))
-                  .filter((clip) => clip.type !== 'audio')
-                  .map((clip) => (
-                    <DraggableClip
-                      key={clip.index}
-                      index={clip.index}
-                      clip={clip}
-                      moveClip={moveClip}
-                      updateDuration={updateDuration}
-                      zoom={zoom}
-                    />
-                  ))}
-              </div>
-
-              {/* Audios */}
-              <div className="text-gray-300 mb-1 font-semibold">Audios</div>
-              <div className="relative h-14 bg-gray-700 rounded flex items-center">
-                {clips
-                  .map((clip, i) => ({ ...clip, index: i }))
-                  .filter((clip) => clip.type === 'audio')
-                  .map((clip) => (
-                    <DraggableClip
-                      key={clip.index}
-                      index={clip.index}
-                      clip={clip}
-                      moveClip={moveClip}
-                      updateDuration={updateDuration}
-                      zoom={zoom}
-                    />
-                  ))}
-              </div>
-            </div>
-          </div>
+          )}
         </div>
-      </DndProvider>
+
+        {/* Destino y envío */}
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <h3 className="font-semibold mb-2">¿A quién se lo mandamos?</h3>
+          <div className="flex flex-col gap-2 mb-3 text-sm">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={destino.dispositivo}
+                onChange={(e) =>
+                  setDestino((prev) => ({
+                    ...prev,
+                    dispositivo: e.target.checked,
+                  }))
+                }
+              />
+              Solo este dispositivo ({device?.CodigoDumont})
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                disabled={!cliente?.CodigoDistribuidor}
+                checked={destino.distribuidor}
+                onChange={(e) =>
+                  setDestino((prev) => ({
+                    ...prev,
+                    distribuidor: e.target.checked,
+                  }))
+                }
+              />
+              Todo el distribuidor ({cliente?.CodigoDistribuidor || "sin datos"}
+              )
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                disabled={!cliente?.Segmentacion}
+                checked={destino.segmento}
+                onChange={(e) =>
+                  setDestino((prev) => ({
+                    ...prev,
+                    segmento: e.target.checked,
+                  }))
+                }
+              />
+              Todo el segmento ({cliente?.Segmentacion || "sin datos"})
+            </label>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleEnviar}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Enviar ({seleccionados.length} seleccionado
+            {seleccionados.length === 1 ? "" : "s"})
+          </button>
+        </div>
+
+        {/* Lo que ya le llega a este dispositivo */}
+        <div>
+          <h3 className="font-semibold mb-2">
+            Contenido asignado a este dispositivo
+          </h3>
+          {asignacionesDeEsteDispositivo.length === 0 ? (
+            <p className="text-sm text-gray-500">
+              Todavía no tiene contenido asignado.
+            </p>
+          ) : (
+            <ul className="divide-y">
+              {asignacionesDeEsteDispositivo.map((a) => (
+                <li
+                  key={a.idAsignacion}
+                  className="flex items-center justify-between py-2 text-sm">
+                  <span>
+                    {a.Multimedia?.nombreArchivo || a.Multimedia?.tipo} —{" "}
+                    {a.CodigoDumont
+                      ? "directo a este dispositivo"
+                      : a.CodigoDistribuidor
+                        ? `todo el distribuidor ${a.CodigoDistribuidor}`
+                        : `todo el segmento ${a.Segmentacion}`}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleQuitarAsignacion(a.idAsignacion)}
+                    className="text-red-600 hover:underline">
+                    Quitar
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </Modal>
   );
 }

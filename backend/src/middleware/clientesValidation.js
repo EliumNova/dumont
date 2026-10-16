@@ -34,20 +34,31 @@ const validateCreateClientes = [
     .notEmpty()
     .withMessage("El teléfono es obligatorio")
     .isString(),
-  check("localidad")
+  // OJO: estos nombres deben coincidir exacto (mayúsculas incluidas) con los
+  // atributos del modelo Clientes.js, si no, el alta/edición de cliente
+  // queda bloqueada por esta validación aunque el front mande bien los datos.
+  check("Localidad")
     .notEmpty()
     .withMessage("La localidad es obligatoria")
     .isString(),
-  check("calle").notEmpty().withMessage("La calle es obligatoria").isString(),
-  check("altura").notEmpty().withMessage("La altura es obligatoria").isString(),
-  check("entreCalle1")
+  check("Calle").notEmpty().withMessage("La calle es obligatoria").isString(),
+  check("Altura").notEmpty().withMessage("La altura es obligatoria").isString(),
+  check("EntreCalle1")
     .notEmpty()
     .withMessage("La entrecalle 1 es obligatoria")
     .isString(),
-  check("entreCalle2")
+  check("EntreCalle2")
     .notEmpty()
     .withMessage("La entrecalle 2 es obligatoria")
     .isString(),
+  check("Latitud")
+    .optional({ checkFalsy: true })
+    .isString()
+    .withMessage("Latitud debe ser numérico"),
+  check("Longitud")
+    .optional({ checkFalsy: true })
+    .isString()
+    .withMessage("Longitud debe ser numérico"),
   check("HorarioVenta")
     .notEmpty()
     .withMessage("El horario de venta es obligatorio")

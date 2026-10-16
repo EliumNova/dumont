@@ -31,6 +31,8 @@ function CustomerEdition() {
       Altura: "",
       EntreCalle1: "",
       EntreCalle2: "",
+      Latitud: "",
+      Longitud: "",
     },
     horus: {
       tipo: "corrido",
@@ -89,6 +91,8 @@ function CustomerEdition() {
             Altura: data.Altura ?? "",
             EntreCalle1: data.EntreCalle1 ?? "",
             EntreCalle2: data.EntreCalle2 ?? "",
+            Latitud: data.Latitud ?? "",
+            Longitud: data.Longitud ?? "",
           },
           horus: {
             tipo: horario.tipo || "corrido",
@@ -143,12 +147,17 @@ function CustomerEdition() {
 
       Telefono: String(customerInfo.principales.Telefono),
 
-      // 🔥 FIX 2: MINÚSCULAS
-      localidad: customerInfo.ubicacion.Localidad,
-      calle: customerInfo.ubicacion.Calle,
-      altura: String(customerInfo.ubicacion.Altura),
-      entreCalle1: customerInfo.ubicacion.EntreCalle1,
-      entreCalle2: customerInfo.ubicacion.EntreCalle2,
+      // Estos nombres deben coincidir tal cual con el modelo del backend
+      // (mayúsculas incluidas). Antes se mandaban en minúscula pensando que
+      // era el fix correcto, pero el modelo espera Localidad/Calle/Altura/
+      // EntreCalle1/EntreCalle2, así que la dirección nunca se guardaba.
+      Localidad: customerInfo.ubicacion.Localidad,
+      Calle: customerInfo.ubicacion.Calle,
+      Altura: String(customerInfo.ubicacion.Altura),
+      EntreCalle1: customerInfo.ubicacion.EntreCalle1,
+      EntreCalle2: customerInfo.ubicacion.EntreCalle2,
+      Latitud: customerInfo.ubicacion.Latitud,
+      Longitud: customerInfo.ubicacion.Longitud,
 
       HorarioVenta: buildHorario(),
     };
@@ -182,7 +191,7 @@ function CustomerEdition() {
       <form onSubmit={handleSubmit}>
         {/* PRINCIPALES */}
         <h3 className="text-white text-xl mb-2">Principales</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
             label="Nombre"
             value={customerInfo.principales.NombreCompleto}
@@ -247,7 +256,7 @@ function CustomerEdition() {
 
         {/* UBICACION */}
         <h3 className="text-white text-xl mt-6 mb-2">Ubicación</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
             label="Localidad"
             value={customerInfo.ubicacion.Localidad}
@@ -281,6 +290,22 @@ function CustomerEdition() {
               handleChange("ubicacion", "EntreCalle2", e.target.value)
             }
           />
+          <Input
+            label="Latitud (respaldo mapa)"
+            value={customerInfo.ubicacion.Latitud}
+            onChange={(e) =>
+              handleChange("ubicacion", "Latitud", e.target.value)
+            }
+            required={false}
+          />
+          <Input
+            label="Longitud (respaldo mapa)"
+            value={customerInfo.ubicacion.Longitud}
+            onChange={(e) =>
+              handleChange("ubicacion", "Longitud", e.target.value)
+            }
+            required={false}
+          />
         </div>
 
         {/* HORARIO */}
@@ -293,7 +318,7 @@ function CustomerEdition() {
           <option value="doble">Doble turno</option>
         </select>
 
-        <div className="grid grid-cols-2 gap-4 mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
           <Input
             type="time"
             label="Desde"
@@ -341,7 +366,7 @@ function CustomerEdition() {
 
 export default CustomerEdition;
 
-const Input = ({ label, value, onChange, type = "text" }) => (
+const Input = ({ label, value, onChange, type = "text", required = true }) => (
   <div className="flex flex-col">
     <label className="text-white">{label}</label>
     <input
@@ -349,7 +374,7 @@ const Input = ({ label, value, onChange, type = "text" }) => (
       value={value || ""}
       onChange={onChange}
       className="h-10 px-2 rounded text-black"
-      required
+      required={required}
     />
   </div>
 );

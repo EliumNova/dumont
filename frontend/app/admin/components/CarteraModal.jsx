@@ -20,14 +20,13 @@ export default function CarteraModal({ distribuidor, clientesAll, onClose }) {
         return true;
 
       // 2️⃣ Por array Distribuidores
+      // OJO: DistribuidorIdDistribuidores en realidad guarda el
+      // CodigoDistribuidor (código de negocio), no el idDistribuidor (UUID).
       if (Array.isArray(c.Distribuidores)) {
         return c.Distribuidores.some((d) => {
           const distribId =
             d.ClientesDistribuidores?.DistribuidorIdDistribuidores;
-          return (
-            String(distribId) === String(distribuidorId) ||
-            String(distribId) === String(distribuidorCodigo)
-          );
+          return String(distribId) === String(distribuidorCodigo);
         });
       }
 
@@ -57,7 +56,7 @@ export default function CarteraModal({ distribuidor, clientesAll, onClose }) {
                   <strong>{c.NombreCompleto || "—"}</strong>
                 </p>
                 <p>
-                  {c.localidad || "—"} — {c.calle || "—"} {c.altura || ""}
+                  {c.Localidad || "—"} — {c.Calle || "—"} {c.Altura || ""}
                 </p>
                 <p>
                   <strong>Tel:</strong> {c.Telefono || "—"}

@@ -27,11 +27,11 @@ const validateCreateDispositivos = [
     .isString()
     .withMessage('Número de serie debe ser un string'),
 
-  check('CodigoDumont')
+  check('CodigoCliente')
     .notEmpty()
-    .withMessage('CodigoDumont es requerido')
+    .withMessage('Debes seleccionar un cliente')
     .isString()
-    .withMessage('CodigoDumont debe ser un string'),
+    .withMessage('CodigoCliente debe ser un string'),
 
   check('latitud')
     .optional()

@@ -70,6 +70,17 @@ export const Clientes = sequelize.define(
       type: DataTypes.STRING(45),
       allowNull: false,
     },
+    // Coordenadas manuales de respaldo (las carga el vendedor al dar de alta
+    // el negocio). Sirven para ubicar el pin del negocio en el mapa cuando el
+    // dispositivo está apagado o no reporta su propio GPS.
+    Latitud: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+    },
+    Longitud: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+    },
   },
   {
     timestamps: false,

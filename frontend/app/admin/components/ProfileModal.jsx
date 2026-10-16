@@ -25,10 +25,10 @@ export default function ProfileModal({ data, onClose, onOpenCartera }) {
             </p>
             <p>
               <strong>Dirección:</strong>{" "}
-              {raw.calle && raw.altura ? `${raw.calle} ${raw.altura}` : "—"}
+              {raw.Calle && raw.Altura ? `${raw.Calle} ${raw.Altura}` : "—"}
             </p>
             <p>
-              <strong>Localidad:</strong> {raw.localidad || "—"}
+              <strong>Localidad:</strong> {raw.Localidad || "—"}
             </p>
 
             <p>
