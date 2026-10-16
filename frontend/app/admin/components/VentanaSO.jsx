@@ -68,7 +68,7 @@ export default function VentanaSO({
   };
 
   const estilo = esMovil
-    ? { left: 0, top: 0, right: 0, bottom: ALTO_DOCK, zIndex: z }
+    ? { left: 0, top: 0, right: 0, bottom: ALTO_DOCK, zIndex: 100 + z }
     : maximizada
     ? { left: 0, top: ALTO_NAVBAR, right: 0, bottom: ALTO_DOCK, zIndex: z }
     : { left: caja.x, top: caja.y, width: caja.w, height: caja.h, zIndex: z };
