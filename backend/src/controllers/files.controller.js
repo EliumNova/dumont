@@ -17,25 +17,41 @@ import {
 const toPublicUrlPath = (filePath) =>
   filePath.replace(/\\/g, "/").replace(/^public\//, "");
 
-const apiBase = () => (process.env.API_URL || "").replace(/\/+$/, "");
+// Dominio público de ESTE backend, para armar las URLs de los archivos. Se
+// toma del propio pedido (así nunca queda apuntando al frontend ni a
+// localhost por una variable mal configurada). Detrás del proxy de Render el
+// protocolo y el host reales vienen en los headers x-forwarded-*. Si hace
+// falta forzarlo, se puede definir PUBLIC_BASE_URL.
+const apiBase = (req) => {
+  if (process.env.PUBLIC_BASE_URL) {
+    return process.env.PUBLIC_BASE_URL.replace(/\/+$/, "");
+  }
+  const proto = (req.get("x-forwarded-proto") || req.protocol || "http")
+    .split(",")[0]
+    .trim();
+  const host = (req.get("x-forwarded-host") || req.get("host") || "")
+    .split(",")[0]
+    .trim();
+  return `${proto}://${host}`;
+};
 
 // Devuelve la URL pública del archivo: Cloudinary si está configurado
 // (file.buffer), o disco local si no.
-const saveAndGetUrl = async (file) => {
+const saveAndGetUrl = async (file, req) => {
   if (file.buffer) return uploadToCloudinary(file);
-  return `${apiBase()}/${toPublicUrlPath(file.path)}`;
+  return `${apiBase(req)}/${toPublicUrlPath(file.path)}`;
 };
 
 const createFile = expressAsyncHandler(async (req, res) => {
   try {
     if (req.fileValidationError) throw new Error(req.fileValidationError);
     if (req.file) {
-      const url = await saveAndGetUrl(req.file);
+      const url = await saveAndGetUrl(req.file, req);
       res.status(200).send({ url });
     } else if (req.files) {
       const files = Object.values(req.files).flat();
       //Si files es un array de archivos, urls tendrá el mismo orden que el array que se manden los archivos.
-      const urls = await Promise.all(files.map(saveAndGetUrl));
+      const urls = await Promise.all(files.map((f) => saveAndGetUrl(f, req)));
       return res.status(200).send({ urls });
     }
   } catch (error) {
@@ -50,9 +66,16 @@ const removeByUrl = async (url) => {
     await deleteFromCloudinary(url);
     return;
   }
-  const base = apiBase();
-  if (!base || !url.startsWith(base)) return;
-  const relative = url.slice(base.length).replace(/^\/+/, "");
+  // Solo se borran archivos locales servidos desde /uploads/ (sin importar
+  // el dominio con el que se guardó la URL).
+  let pathname;
+  try {
+    pathname = decodeURIComponent(new URL(url, "http://localhost").pathname);
+  } catch {
+    return;
+  }
+  if (!pathname.startsWith("/uploads/")) return;
+  const relative = pathname.replace(/^\/+/, "");
   const target = path.join("public", relative);
   // Evita salir de public/ con rutas tipo "../"
   if (!path.resolve(target).startsWith(path.resolve("public") + path.sep)) return;
