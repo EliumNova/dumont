@@ -19,7 +19,7 @@ function Table() {
   return (
     <div className="mac-fade-up overflow-hidden rounded-3xl bg-white/90 shadow-xl backdrop-blur">
       <div className="max-h-[70vh] overflow-auto">
-        <table className="min-w-full text-left text-sm text-[#191920]">
+        <table className="tabla-resp min-w-full text-left text-sm text-[#191920]">
           <thead className="sticky top-0 bg-[#F2F5F6] text-xs uppercase tracking-wide text-gray-500">
             <tr>
               <th className="px-6 py-4 font-semibold">Nombre completo</th>
@@ -32,10 +32,10 @@ function Table() {
           <tbody>
             {users.map((user) => (
               <tr key={user.idUsuarios} className="mac-row border-t border-black/5 hover:bg-blue-50/60">
-                <td className="whitespace-nowrap px-6 py-4 font-medium">{user.Name}</td>
-                <td className="whitespace-nowrap px-6 py-4">{user.Email}</td>
-                <td className="whitespace-nowrap px-6 py-4">{user.DNI}</td>
-                <td className="whitespace-nowrap px-6 py-4">
+                <td data-label="Nombre" className="whitespace-nowrap px-6 py-4 font-medium">{user.Name}</td>
+                <td data-label="Correo" className="whitespace-nowrap px-6 py-4">{user.Email}</td>
+                <td data-label="DNI" className="whitespace-nowrap px-6 py-4">{user.DNI}</td>
+                <td data-label="Rol" className="whitespace-nowrap px-6 py-4">
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                       user.isAdmin ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"
@@ -43,7 +43,7 @@ function Table() {
                     {user.isAdmin ? "Administrador" : "Usuario"}
                   </span>
                 </td>
-                <td className="whitespace-nowrap px-6 py-3 text-right">
+                <td data-label="" className="acciones whitespace-nowrap px-6 py-3 text-right">
                   <EditUserBtn datos={user} onCloseModal={forceRender} />
                 </td>
               </tr>

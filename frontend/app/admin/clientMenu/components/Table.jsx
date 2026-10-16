@@ -142,7 +142,7 @@ function ClientTable() {
                 </button>
               </div>
             </div>
-            <table className="min-w-full text-left text-sm font-light">
+            <table className="tabla-resp min-w-full text-left text-sm font-light">
               <thead className="border-b font-medium dark:border-[#F2F5F6]">
                 <tr className="text-black">
                   <th scope="col" className="px-3 py-4 xl:px-6 text-center">
@@ -165,17 +165,17 @@ function ClientTable() {
                     <tr
                       className="mac-row border-b text-black hover:bg-neutral-100 dark:border-[#F2F5F6] dark:hover:bg-[#d2dadd]"
                       key={client.idClientes}>
-                      <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center font-medium">
+                      <td data-label="Cliente" className="whitespace-nowrap px-3 py-4 xl:px-6 text-center font-medium">
                         {client.NombreCompleto || "Nombre no disponible"}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 xl:px-6 text-center">
+                      <td data-label="Dirección" className="whitespace-nowrap px-3 py-3 xl:px-6 text-center">
                         {`${client.Calle}, ${client.Localidad}` ||
                           "Correo no disponible"}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 xl:px-6 text-center">
+                      <td data-label="Teléfono" className="whitespace-nowrap px-3 py-3 xl:px-6 text-center">
                         {client.Telefono ? formatTelefono(client.Telefono) : "No disponible"}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 xl:px-6 flex justify-center items-center gap-4 h-full">
+                      <td data-label="" className="acciones whitespace-nowrap px-3 py-4 xl:px-6 flex justify-center items-center gap-4 h-full">
                         <div className="flex items-center h-full">
                           <AiOutlineEye
                             className="cursor-pointer text-2xl"

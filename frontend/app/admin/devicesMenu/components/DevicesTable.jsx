@@ -351,7 +351,7 @@ function DeviceTable() {
             </div>
 
             {/* Tabla */}
-            <table className="min-w-full text-left text-sm font-light">
+            <table className="tabla-resp min-w-full text-left text-sm font-light">
               <thead className="border-b font-medium dark:border-[#F2F5F6]">
                 <tr className="text-black">
                   <th
@@ -386,7 +386,7 @@ function DeviceTable() {
                   <tr
                     key={dispositivo.idDispositivos}
                     className="border-b transition duration-300 ease-in-out text-black hover:bg-neutral-100 dark:border-[#F2F5F6] dark:hover:bg-[#d2dadd]">
-                    <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center font-medium">
+                    <td data-label="Cliente" className="whitespace-nowrap px-3 py-4 xl:px-6 text-center font-medium">
                       <button
                         className="text-blue-500"
                         onClick={() =>
@@ -397,21 +397,21 @@ function DeviceTable() {
                       </button>
                     </td>
 
-                    <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
+                    <td data-label="Dispositivo" className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                       {dispositivo.Marca} - {dispositivo.Modelo}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
+                    <td data-label="Estado" className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                       <span className={getStatusColor(dispositivo)}>
                         ● {getEstadoTexto(dispositivo)}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
+                    <td data-label="Coordenadas" className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                       {dispositivo.latitud && dispositivo.longitud
                         ? `${dispositivo.latitud}, ${dispositivo.longitud}`
                         : "No disponible"}
                     </td>
 
-                    <td className="whitespace-nowrap px-3 py-4 xl:px-6 flex justify-center items-center gap-4">
+                    <td data-label="" className="acciones whitespace-nowrap px-3 py-4 xl:px-6 flex justify-center items-center gap-4">
                       <AiOutlineEye
                         className="cursor-pointer text-2xl"
                         onClick={() => handleViewDetails(dispositivo)}

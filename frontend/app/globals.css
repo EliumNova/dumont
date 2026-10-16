@@ -125,3 +125,27 @@ html {
     @apply absolute text-text-icon text-xs md:text-sm w-5/6 top-[7.2rem] md:top-28;
   }
 }
+
+/* Tablas en tarjetas en celular */
+@media (max-width: 767px) {
+  .tabla-resp { min-width: 0 !important; width: 100%; white-space: normal !important; }
+  .tabla-resp thead { display: none; }
+  .tabla-resp, .tabla-resp tbody, .tabla-resp tr, .tabla-resp td { display: block; width: 100%; }
+  .tabla-resp tr {
+    background: #fff; border: 1px solid rgba(0,0,0,.06) !important; border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06); margin-bottom: 12px; padding: 8px 14px;
+  }
+  .tabla-resp td {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 7px 0 !important; text-align: right !important; white-space: normal !important;
+    word-break: break-word; border: 0;
+  }
+  .tabla-resp td[data-label]::before {
+    content: attr(data-label); font-weight: 600; color: #6b7280; text-align: left; flex-shrink: 0; font-size: 12px;
+  }
+  .tabla-resp td[colspan] { display: block; text-align: center !important; }
+  .tabla-resp td.acciones {
+    flex-wrap: wrap; justify-content: flex-end; border-top: 1px solid rgba(0,0,0,.06); margin-top: 4px; padding-top: 10px !important;
+  }
+  .tabla-resp td.acciones::before { content: none; }
+}

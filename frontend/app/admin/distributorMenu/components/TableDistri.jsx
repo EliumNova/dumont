@@ -203,7 +203,7 @@ export default function DistribuidorTable() {
 
       {/* Tabla */}
       <div className="w-full overflow-x-auto">
-        <table className="min-w-full text-left text-sm font-light whitespace-nowrap">
+        <table className="tabla-resp min-w-full text-left text-sm font-light whitespace-nowrap">
           <thead className="border-b font-medium dark:border-[#F2F5F6] text-black">
             <tr>
               <th className="px-3 py-4 xl:px-6 text-center">Nombre</th>
@@ -219,21 +219,21 @@ export default function DistribuidorTable() {
                 <tr
                   key={dist.idDistribuidor}
                   className="mac-row border-b text-black hover:bg-neutral-100">
-                  <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center font-medium">
+                  <td data-label="Nombre" className="whitespace-nowrap px-3 py-4 xl:px-6 text-center font-medium">
                     {dist.NombreComercial || "No disponible"}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
+                  <td data-label="Correo" className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                     {dist.Email || "No disponible"}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
+                  <td data-label="Teléfono" className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                     {dist.Telefono ? formatTelefono(dist.Telefono) : "No disponible"}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
+                  <td data-label="Dirección" className="whitespace-nowrap px-3 py-4 xl:px-6 text-center">
                     {dist.Calle && dist.Localidad
                       ? `${dist.Calle}, ${dist.Localidad}`
                       : "No disponible"}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 xl:px-6 flex justify-center items-center gap-2 h-full">
+                  <td data-label="" className="acciones whitespace-nowrap px-3 py-4 xl:px-6 flex justify-center items-center gap-2 h-full">
                     <AiOutlineEye
                       className="cursor-pointer text-2xl"
                       onClick={() => handleView(dist)}
