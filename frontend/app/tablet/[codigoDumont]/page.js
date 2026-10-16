@@ -335,7 +335,84 @@ export default function TabletPage() {
 }
 
 function PantallaBase({ children }) {
-  return <div className="w-screen h-screen bg-black">{children}</div>;
+  return (
+    <div className="w-screen h-screen bg-black">
+      {children}
+      <ControlPantallaCompleta />
+    </div>
+  );
+}
+
+// Los navegadores NO permiten entrar en pantalla completa solos al cargar la
+// página: exigen un gesto del usuario. Por eso se entra con el primer toque
+// (o tecla) en cualquier parte de la pantalla, y queda un botón discreto por
+// si alguien sale. Si el navegador no soporta la API (ej. iPhone), no se
+// muestra nada. Para arrancar sin tocar nada, instalar la página como app
+// ("Agregar a pantalla de inicio") o usar Fully Kiosk Browser.
+function ControlPantallaCompleta() {
+  const [soportado, setSoportado] = useState(false);
+  const [activa, setActiva] = useState(false);
+
+  useEffect(() => {
+    const el = document.documentElement;
+    const puede = !!(el.requestFullscreen || el.webkitRequestFullscreen);
+    setSoportado(puede);
+    if (!puede) return;
+
+    const hayPantallaCompleta = () =>
+      !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+    const entrar = () => {
+      if (hayPantallaCompleta()) return;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen;
+      try {
+        const p = req.call(el);
+        if (p && p.catch) p.catch(() => {});
+      } catch {
+        // El navegador la rechazó: queda el botón manual.
+      }
+    };
+
+    const alCambiar = () => setActiva(hayPantallaCompleta());
+    alCambiar();
+
+    // Primer gesto del usuario: entra en pantalla completa.
+    const eventos = ['pointerdown', 'touchend', 'keydown'];
+    const alPrimerGesto = () => {
+      entrar();
+      eventos.forEach((ev) => window.removeEventListener(ev, alPrimerGesto));
+    };
+    eventos.forEach((ev) => window.addEventListener(ev, alPrimerGesto));
+
+    document.addEventListener('fullscreenchange', alCambiar);
+    document.addEventListener('webkitfullscreenchange', alCambiar);
+    return () => {
+      eventos.forEach((ev) => window.removeEventListener(ev, alPrimerGesto));
+      document.removeEventListener('fullscreenchange', alCambiar);
+      document.removeEventListener('webkitfullscreenchange', alCambiar);
+    };
+  }, []);
+
+  if (!soportado || activa) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const el = document.documentElement;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen;
+        try {
+          const p = req.call(el);
+          if (p && p.catch) p.catch(() => {});
+        } catch {
+          // sin soporte real
+        }
+      }}
+      className="absolute left-3 top-3 rounded-md bg-white/15 px-3 py-1.5 text-xs text-white/80 backdrop-blur hover:bg-white/25"
+    >
+      Tocá para pantalla completa
+    </button>
+  );
 }
 
 function EstadoConexion({ conectado, compact }) {
