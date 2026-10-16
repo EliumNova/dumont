@@ -48,11 +48,7 @@ function CustomerRegistration() {
       };
 
       dispatch(setLoading(true)); // Activa el estado de carga
-      console.log("Enviando solicitud a la API:", URL);
-      console.log("Datos enviados:", payload);
 
-      console.log("TIPO VentaAlcohol:", typeof payload.VentaAlcohol);
-      console.log("VALOR VentaAlcohol:", payload.VentaAlcohol);
 
       // Envía todos los datos del formulario al servidor
       const response = await axios.post(URL, payload, {
@@ -61,7 +57,6 @@ function CustomerRegistration() {
         },
       });
 
-      console.log("Respuesta de la API:", response.data);
       dispatch(setLoading(false)); // Desactiva el estado de carga
       setShowModal(true); // Muestra el modal de éxito
 

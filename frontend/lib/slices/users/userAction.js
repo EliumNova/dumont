@@ -3,7 +3,6 @@ import { USERS } from '../constants';
 import { allUsers, newUser, updateUser, deleteUsuario } from './userSlice';
 
 export const userCreate = (payload) => {
-  console.log(payload);
 
   return (dispatch) => {
     axios
@@ -23,7 +22,6 @@ export const getAllUsers = () => {
 };
 
 export const userUpdate = (id, payload) => {
-  console.log(id, payload);
 
   return async (dispatch) => {
     await axios
@@ -34,7 +32,6 @@ export const userUpdate = (id, payload) => {
 };
 
 export const usuarioDelete = (id) => {
-  console.log(id);
 
   return (dispatch) => {
     axios

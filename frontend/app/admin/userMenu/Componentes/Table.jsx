@@ -50,8 +50,6 @@ function Table() {
   const forceRender = () => {
     setRefresh(!refresh);
   };
-  console.log(refresh);
-  console.log(userLogueado);
 
   // ✅ En su lugar, agregamos John Doe manualmente:
   const filterUsers = [
@@ -64,9 +62,7 @@ function Table() {
     ...users,
   ];
 
-  console.log(filterUsers);
 
-  //console.log('aca tienen que estar todos los usuarios', users);
 
   return (
     <div className="flex flex-col border border-[#12141D] rounded bg-[#12141D] text-center">

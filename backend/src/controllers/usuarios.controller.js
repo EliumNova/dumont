@@ -87,7 +87,6 @@ const loginUsuario = expressAsyncHandler(async (req, res) => {
   try {
     const { Email, Password } = req.body;
     const usuario = await Usuarios.findOne({ where: { Email } });
-    console.log(usuario.Password);
 
     if (!usuario) {
       return res
@@ -158,7 +157,6 @@ const verifySms = expressAsyncHandler(async (req, res) => {
   try {
     const { idUsuarios } = req.body;
     const usuario = await Usuarios.findByPk(idUsuarios);
-    console.log(usuario.Telefono);
 
     const formattedPhoneNumber = usuario.Telefono.startsWith('+')
       ? usuario.Telefono
@@ -173,7 +171,6 @@ const verifySms = expressAsyncHandler(async (req, res) => {
 
     const command = new PublishCommand(params);
     const data = await snsClient.send(command);
-    console.log(data);
 
     res.status(200).send(codeVerify);
   } catch (err) {

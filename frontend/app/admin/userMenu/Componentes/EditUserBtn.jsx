@@ -9,7 +9,6 @@ function EditUserBtn({ datos, onCloseModal }) {
   const dispatch = useDispatch();
   //const router = useRouter();
   //const {id} = router.query
-  //console.log("Datos de Usuarios", datos.idUsuarios);
 
   const [editUser, setEditUser] = useState(false);
   const [userDelete, setUserDelete] = useState(false);
@@ -35,7 +34,6 @@ function EditUserBtn({ datos, onCloseModal }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log('handleChange', name, value);
 
     const processedValue = name === 'admin' ? value === 'true' : value;
 
@@ -59,7 +57,6 @@ function EditUserBtn({ datos, onCloseModal }) {
   const validateInput = (value, regex) => regex.test(value);
 
   const registrar = (name, processedValue) => {
-    console.log('Registrar', name, processedValue);
 
     return setRegisterUser((prev) => ({
       ...prev,
@@ -88,7 +85,6 @@ function EditUserBtn({ datos, onCloseModal }) {
   };
 
   const handleDelete = () => {
-    console.log('boton eliminar', datos.idUsuarios);
     setUserDelete(!userDelete);
     setEditUser(!editUser);
 

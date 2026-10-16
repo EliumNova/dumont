@@ -162,7 +162,6 @@ function CustomerEdition() {
       HorarioVenta: buildHorario(),
     };
 
-    console.log("📦 PAYLOAD:", payload);
 
     try {
       dispatch(setLoading(true));

@@ -33,7 +33,6 @@ function ClientTable() {
   }, [dispatch, page, pageSize, refresh]);
 
   useEffect(() => {
-    console.log("Clients:", clients); // Log para verificar los datos de clientes
   }, [clients]);
 
   const forceRender = () => {
@@ -41,7 +40,6 @@ function ClientTable() {
   };
 
   const handleDelete = (id) => {
-    console.log("Delete client ID:", id); // Log para verificar la ID del cliente a eliminar
     dispatch(deleteClient(id)).then(() => {
       toast.success("Usuario eliminado");
       forceRender();
@@ -50,12 +48,10 @@ function ClientTable() {
   };
 
   const handleEdit = (client) => {
-    console.log("Edit client:", client); // Log para verificar los datos del cliente a editar
     window.location.href = `admin/clientMenu/Pages/EditClient?id=${client.idClientes}`;
   };
 
   const handleViewDetails = (client) => {
-    console.log("View details for client:", client); // Log para verificar los datos del cliente seleccionado
     setSelectedClient(client);
     setIsModalOpen(true); // Abre el modal
   };

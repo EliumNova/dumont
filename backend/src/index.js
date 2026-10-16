@@ -87,6 +87,4 @@ app.use("/api/multimedia-asignaciones", multimediaAsignacionesRouter);
 app.use("/api/tablet", tabletRouter);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
 });
-console.log("Connection has been established successfully.");

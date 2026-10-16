@@ -37,7 +37,6 @@ function EditDeviceBtn({ datos, onCloseModal }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log('handleChange', name, value);
 
     const processedValue = name === 'admin' ? value === 'true' : value;
 
@@ -61,7 +60,6 @@ function EditDeviceBtn({ datos, onCloseModal }) {
   const validateInput = (value, regex) => regex.test(value);
 
   const registrar = (name, processedValue) => {
-    console.log('Registrar', name, processedValue);
 
     return setRegisterDevice((prev) => ({
       ...prev,
@@ -85,15 +83,12 @@ function EditDeviceBtn({ datos, onCloseModal }) {
       return;
     }
 
-    console.log('boton guardar', datos.idDispositivo);
-    console.log('boton guardar', registerDevice);
 
     dispatch(deviceUpdate(datos.idDispositivo, registerDevice));
     handleCloseModal();
   };
 
   const handleDelete = () => {
-    console.log('boton eliminar', datos.idDispositivo);
     setDeviceDelete(!deviceDelete);
     setEditDevice(!editDevice);
 

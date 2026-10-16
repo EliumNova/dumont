@@ -71,7 +71,6 @@ function UserRegistration() {
       setTimeout(() => setErrorMessage(""), 3000);
       return;
     }
-    console.log(JSON.stringify(registerUser, null, 2));
 
     dispatch(userCreate(registerUser));
 

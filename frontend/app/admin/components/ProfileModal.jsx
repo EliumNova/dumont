@@ -3,7 +3,6 @@
 export default function ProfileModal({ data, onClose, onOpenCartera }) {
   const raw = data.raw || {};
 
-  console.log("RAW DATA:", data.raw);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

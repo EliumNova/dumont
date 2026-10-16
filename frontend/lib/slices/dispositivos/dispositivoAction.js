@@ -8,7 +8,6 @@ import {
 } from './dispositivoSlice';
 
 export const dispositivoCreate = (payload) => {
-  console.log(payload);
 
   return (dispatch) => {
     axios
@@ -32,7 +31,6 @@ export const getDispositivos = ({ page = 0, pageSize = 5 } = {}) => {
 };
 
 export const dispositivoUpdate = (id, payload) => {
-  console.log(id, payload);
 
   return async (dispatch) => {
     await axios
@@ -43,7 +41,6 @@ export const dispositivoUpdate = (id, payload) => {
 };
 
 export const dispositivoDelete = (id) => {
-  console.log(id);
 
   return (dispatch) => {
     axios

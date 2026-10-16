@@ -8,7 +8,6 @@ import { ClientesDistribuidores } from "../models/ClientesDistribuidores.js";
 // import { handleError } from '../../utils/utilsErrors.js';
 
 const createCliente = expressAsyncHandler(async (req, res) => {
-  console.log("Solicitud recibida en /api/clientes/create", req.body);
   try {
     // OJO: los nombres de estos campos deben coincidir EXACTO (mayúsculas
     // incluidas) con los atributos definidos en el modelo Clientes.js. Antes
@@ -77,7 +76,6 @@ const createCliente = expressAsyncHandler(async (req, res) => {
       );
     }
 
-    console.log("Cliente creado:", newCliente);
     res.send({ cliente: newCliente });
   } catch (error) {
     console.error("Error en createCliente:", error);
@@ -88,7 +86,6 @@ const createCliente = expressAsyncHandler(async (req, res) => {
 const getClientes = expressAsyncHandler(async (req, res) => {
   try {
     const { page = 0, pageSize = 5 } = req.query;
-    console.log({ page, pageSize });
     let options = {
       limit: +pageSize,
       offset: +page * +pageSize,
@@ -223,7 +220,6 @@ const deleteCliente = expressAsyncHandler(async (req, res) => {
 const getDispositivosByCliente = expressAsyncHandler(async (req, res) => {
   try {
     const { page = 0, pageSize = 5 } = req.query;
-    console.log({ page, pageSize });
     let options = {
       limit: +pageSize,
       offset: +page * +pageSize,
@@ -253,7 +249,6 @@ const getDispositivosByClienteByParams = expressAsyncHandler(
       //transformar query params en objeto
       const query = JSON.parse(req.params.options);
       const { page = 0, pageSize = 5 } = req.query;
-      console.log({ page, pageSize, ...query });
       let options = {
         limit: +pageSize,
         offset: +page * +pageSize,
@@ -267,7 +262,6 @@ const getDispositivosByClienteByParams = expressAsyncHandler(
           limit: options.limit,
           offset: options.offset,
         });
-        console.log(dispositivo);
         res.send(dispositivo);
       } else {
         res.status(404).send({ message: "Cliente no encontrado" });

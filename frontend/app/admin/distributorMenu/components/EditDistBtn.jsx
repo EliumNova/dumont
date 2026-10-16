@@ -13,7 +13,6 @@ function EditDistBtn({ datos, onEditComplete }) {
   const dispatch = useDispatch();
   //const router = useRouter();
   //const {id} = router.query
-  //console.log("Datos de Usuarios", datos.idUsuarios);
 
   const [editDist, setEditDist] = useState(false);
   const [distDelete, setDistDelete] = useState(false);
@@ -47,7 +46,6 @@ function EditDistBtn({ datos, onEditComplete }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log("handleChange", name, value);
 
     const processedValue = name === "admin" ? value === "true" : value;
 
@@ -71,7 +69,6 @@ function EditDistBtn({ datos, onEditComplete }) {
   const validateInput = (value, regex) => regex.test(value);
 
   const registrar = (name, processedValue) => {
-    console.log("Registrar", name, processedValue);
 
     return setRegisterDist((prev) => ({
       ...prev,
@@ -112,15 +109,12 @@ function EditDistBtn({ datos, onEditComplete }) {
       setTimeout(() => setErrorMessage(""), 3000);
       return;
     }
-    console.log("boton guardar", datos.idDistribuidor);
-    console.log("boton guardar", registerDist);
 
     dispatch(distribuidorUpdate(datos.idDistribuidor, registerDist));
     handleCloseModal();
   };
 
   const handleDelete = () => {
-    console.log("boton eliminar", datos.idDistribuidor);
     setDistDelete(!distDelete);
     setEditDist(!editDist);
 

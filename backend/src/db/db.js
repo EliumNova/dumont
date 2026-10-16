@@ -10,7 +10,8 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST, // Asegúrate de que esto sea 'db'
     dialect: 'mysql',
-    logging: console.log,
+    // Log de SQL solo si DB_LOGGING=true
+    logging: process.env.DB_LOGGING === 'true' ? console.log : false,
   }
 );
 

@@ -28,7 +28,6 @@ export const createClient = (payload) => {
           "Content-Type": "application/json",
         },
       });
-      console.log("Respuesta de la API:", res.data);
       dispatch(addClient(res.data));
     } catch (err) {
       console.error("Error al enviar datos a la API:", err);
@@ -41,7 +40,6 @@ export const updateClientData = (id, payload) => {
   return async (dispatch) => {
     try {
       const res = await axios.put(`${CLIENTS}/update/${id}`, payload);
-      console.log("updateClientData response:", res.data); // Log para verificar la respuesta
       dispatch(updateClient(res.data));
     } catch (err) {
       console.log(err);
@@ -53,7 +51,6 @@ export const deleteClient = (id) => {
   return async (dispatch) => {
     try {
       await axios.delete(`${CLIENTS}/delete/${id}`);
-      console.log("deleteClient response:", id); // Log para verificar la respuesta
       dispatch(removeClient(id));
     } catch (err) {
       console.log(err);

@@ -117,7 +117,6 @@ function DeviceTable() {
     }
   };
 
-  console.log("Dispositivos cargados:", dispositivos);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -163,14 +162,6 @@ function DeviceTable() {
     if (!device.UltimaConexion) return "text-gray-400";
     return estaOnline(device) ? "text-green-500" : "text-red-500";
   };
-
-  useEffect(() => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/api/clientes-distribuidores`)
-      .then((res) => {
-        console.log("Data sin Redux:", res.data);
-      });
-  }, []);
 
   const filterDevices = () => {
     return dispositivos
@@ -245,7 +236,6 @@ function DeviceTable() {
     setIsMultimediaModalOpen(true);
   };
 
-  console.log("Relaciones cliente-distribuidor:", relaciones);
 
   return (
     <div className="flex flex-col border border-[#F2F5F6] rounded w-auto bg-[#F2F5F6] mt-4">

@@ -11,7 +11,6 @@ import InputField from "../clientRegistration/Componentes/InputField";
 
 function Navbar() {
   const pathname = usePathname();
-  console.log("ruta: ", pathname);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const [dropProfile, setDropProfile] = useState(false);
@@ -26,7 +25,6 @@ function Navbar() {
     DNI: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
-  console.log(user);
 
   useEffect(() => {
     if (user) {
@@ -72,7 +70,6 @@ function Navbar() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log("handleChange", name, value);
 
     const processedValue = name === "admin" ? value === "true" : value;
 
@@ -96,7 +93,6 @@ function Navbar() {
   const validateInput = (value, regex) => regex.test(value);
 
   const registrar = (name, processedValue) => {
-    console.log("Registrar", name, processedValue);
 
     return setRegisterUser((prev) => ({
       ...prev,
@@ -111,7 +107,6 @@ function Navbar() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Handle Submit");
 
     const { Name, Email, DNI } = registerUser;
     if (!Name || !Email || !DNI) {
@@ -120,7 +115,6 @@ function Navbar() {
       return;
     }
 
-    console.log(registerUser);
 
     dispatch(
       updateAuthUser(user.id, { ...registerUser, tokenUser: user.token })
@@ -129,7 +123,6 @@ function Navbar() {
   };
 
   const handleLogout = () => {
-    console.log("logout");
 
     dispatch(logoutUser());
     localStorage.clear();
